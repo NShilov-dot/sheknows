@@ -56,6 +56,58 @@ database feature, all organized with feature-first Clean Architecture.
 The app calls `Environment.validate()` at startup and fails fast with a clear
 message if `SUPABASE_URL` or `SUPABASE_PUBLISHABLE_KEY` are missing.
 
+## New project checklist
+
+Complete these steps every time you start a project from this template. Items
+marked **(before release)** can wait until you ship, everything else should be
+done up front.
+
+### 1. App identity
+
+- [ ] Replace `com.example.flutter_supabase_starter` with your real bundle ID in
+      **all four places**, keeping them identical:
+  - `namespace` and `applicationId` in [`android/app/build.gradle.kts`](android/app/build.gradle.kts)
+  - the OAuth `<intent-filter>` scheme in [`android/app/src/main/AndroidManifest.xml`](android/app/src/main/AndroidManifest.xml)
+  - `CFBundleURLName` / `CFBundleURLSchemes` in [`ios/Runner/Info.plist`](ios/Runner/Info.plist)
+  - `Environment.oauthRedirectUrl` in [`lib/config/environment.dart`](lib/config/environment.dart)
+- [ ] Update the app display name (`android:label`, `CFBundleDisplayName`) and
+      the package name in [`pubspec.yaml`](pubspec.yaml).
+
+### 2. Supabase project
+
+- [ ] Create a new Supabase project and fill `env.json` with its URL and
+      publishable key (see [Quick start](#quick-start)). Never commit `env.json`.
+- [ ] Apply all migrations in order (see [Database setup](#database-setup)).
+      Note: the task title length migration fails if a pre-existing `tasks`
+      table already contains titles longer than 200 characters — irrelevant for
+      a fresh project.
+- [ ] **Password requirements** — Dashboard -> Authentication -> Providers ->
+      Email: set minimum length to at least `8` and require letters + digits so
+      server rules match
+      [`AuthValidators`](lib/features/auth/presentation/utils/auth_validators.dart).
+- [ ] **Leaked password protection** — enable HaveIBeenPwned checks under
+      [Password security](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+- [ ] Add your OAuth redirect URL (your new scheme + `://login-callback`) under
+      Authentication -> URL Configuration.
+
+### 3. OAuth providers
+
+- [ ] Enable Google (or other providers) with real client credentials
+      (see [Google OAuth setup](#google-oauth-setup)).
+
+### 4. Before release
+
+- [ ] **(before release)** Replace the debug signing config in
+      [`android/app/build.gradle.kts`](android/app/build.gradle.kts) with a real
+      release keystore.
+- [ ] **(before release)** Switch OAuth redirects from the custom URL scheme to
+      verified **Android App Links** / **iOS Universal Links** (requires a
+      domain; see
+      [Production note](#production-note-custom-schemes-vs-app-links)).
+- [ ] **(before release)** Re-run the Supabase
+      [security advisors](https://supabase.com/docs/guides/database/database-advisors)
+      (Dashboard -> Advisors) and `flutter analyze` + `flutter test`.
+
 ## Database setup
 
 Apply the included migrations to create the `profiles` and `tasks` tables with
@@ -75,18 +127,6 @@ the Supabase Dashboard SQL editor and run them in order:
 2. [`20250619100000_create_tasks.sql`](supabase/migrations/20250619100000_create_tasks.sql)
 3. [`20250619200000_harden_profiles_rls.sql`](supabase/migrations/20250619200000_harden_profiles_rls.sql) (safe no-op if profiles was created with the updated policies)
 4. [`20250619300000_limit_task_title_length.sql`](supabase/migrations/20250619300000_limit_task_title_length.sql) (safe no-op if tasks was created with the updated title check)
-
-## Auth security checklist
-
-Apply these in each new Supabase project (Dashboard settings, not app code):
-
-1. **Password requirements** — Authentication -> Providers -> Email: set minimum
-   length to at least `8` and require letters + digits so server rules match
-   [`AuthValidators`](lib/features/auth/presentation/utils/auth_validators.dart).
-2. **Leaked password protection** — enable HaveIBeenPwned checks under
-   [Password security](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
-3. **Replace `com.example...`** — change the Android `applicationId`, iOS bundle
-   ID, and OAuth redirect scheme before shipping.
 
 ## Google OAuth setup
 
