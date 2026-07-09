@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter_starter_kit/core/constants/tasks.dart';
 import 'package:supabase_flutter_starter_kit/core/di/injection.dart';
 import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
@@ -106,11 +107,17 @@ class _TasksViewState extends State<_TasksView> {
                         labelText: 'New task',
                         border: OutlineInputBorder(),
                       ),
+                      maxLength: kTaskTitleMaxLength,
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _addTask(),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
+                        final trimmed = value?.trim() ?? '';
+                        if (trimmed.isEmpty) {
                           return 'Enter a task title';
+                        }
+                        if (trimmed.length > kTaskTitleMaxLength) {
+                          return 'Title must be at most '
+                              '$kTaskTitleMaxLength characters';
                         }
                         return null;
                       },

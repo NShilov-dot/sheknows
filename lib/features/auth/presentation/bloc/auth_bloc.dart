@@ -42,8 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription<dynamic>? _authSubscription;
 
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
-    emit(const AuthLoading());
-
+    // Stay on AuthInitial while restoring the session so the router can show
+    // a splash instead of flashing protected or auth screens.
     final currentUserResult = await _getCurrentUser(const NoParams());
     currentUserResult.fold(
       (_) => emit(const AuthUnauthenticated()),
@@ -77,7 +77,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignInWithEmailRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final validationError = _validateCredentials(event.email, event.password);
+    final validationError = _validateCredentials(
+      event.email,
+      event.password,
+    );
     if (validationError != null) {
       emit(AuthError(validationError));
       return;
@@ -97,7 +100,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignUpWithEmailRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final validationError = _validateCredentials(event.email, event.password);
+    final validationError = _validateCredentials(
+      event.email,
+      event.password,
+      forRegistration: true,
+    );
     if (validationError != null) {
       emit(AuthError(validationError));
       return;
@@ -151,13 +158,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthUnauthenticated());
   }
 
-  ValidationFailure? _validateCredentials(String email, String password) {
+  ValidationFailure? _validateCredentials(
+    String email,
+    String password, {
+    bool forRegistration = false,
+  }) {
     final emailError = AuthValidators.email(email);
     if (emailError != null) {
       return ValidationFailure(emailError);
     }
 
-    final passwordError = AuthValidators.password(password);
+    final passwordError = AuthValidators.password(
+      password,
+      forRegistration: forRegistration,
+    );
     if (passwordError != null) {
       return ValidationFailure(passwordError);
     }

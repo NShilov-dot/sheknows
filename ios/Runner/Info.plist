@@ -24,6 +24,9 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- TEMPLATE: replace com.example.flutter_supabase_starter URL scheme when
+	     changing the iOS bundle identifier. Keep in sync with AndroidManifest,
+	     Environment.oauthRedirectUrl, and Supabase Auth redirect URLs. -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

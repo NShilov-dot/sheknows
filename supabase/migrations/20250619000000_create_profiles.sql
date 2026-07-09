@@ -12,12 +12,21 @@ alter table public.profiles enable row level security;
 create policy "Users read own profile"
   on public.profiles
   for select
+  to authenticated
   using (auth.uid() = id);
+
+-- Users can insert only their own profile (covers edge cases if the trigger misses).
+create policy "Users insert own profile"
+  on public.profiles
+  for insert
+  to authenticated
+  with check (auth.uid() = id);
 
 -- Users can update only their own profile.
 create policy "Users update own profile"
   on public.profiles
   for update
+  to authenticated
   using (auth.uid() = id)
   with check (auth.uid() = id);
 

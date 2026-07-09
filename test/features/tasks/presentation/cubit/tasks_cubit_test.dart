@@ -125,5 +125,22 @@ void main() {
         ),
       ],
     );
+
+    blocTest<TasksCubit, TasksState>(
+      'ignores titles longer than the max length',
+      setUp: () {
+        when(() => getTasks(any())).thenAnswer((_) async => Right(page));
+      },
+      build: buildCubit,
+      act: (cubit) async {
+        await cubit.loadTasks(userId);
+        await cubit.addTask('a' * 201);
+      },
+      expect: () => [
+        const TasksLoading(),
+        TasksLoaded(tasks: page.tasks, hasMore: page.hasMore),
+      ],
+      verify: (_) => verifyNever(() => createTask(any())),
+    );
   });
 }

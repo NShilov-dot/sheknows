@@ -11,6 +11,9 @@ class Environment {
   /// Deep link used for OAuth redirect on mobile/desktop.
   /// Must match the scheme registered in the native platform config and the
   /// redirect URL added in Supabase Dashboard -> Authentication -> URL Configuration.
+  ///
+  /// Custom schemes are fine for local/template use. Prefer HTTPS App Links /
+  /// Universal Links before shipping a production app (see README).
   static const String oauthRedirectUrl =
       'com.example.flutter_supabase_starter://login-callback';
 

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter_starter_kit/core/constants/pagination.dart';
+import 'package:supabase_flutter_starter_kit/core/constants/tasks.dart';
 import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
 import 'package:supabase_flutter_starter_kit/features/tasks/domain/entities/task_entity.dart';
 import 'package:supabase_flutter_starter_kit/features/tasks/domain/usecases/task_usecases.dart';
@@ -77,7 +78,9 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> addTask(String title) async {
     final userId = _userId;
     final trimmed = title.trim();
-    if (userId == null || trimmed.isEmpty) {
+    if (userId == null ||
+        trimmed.isEmpty ||
+        trimmed.length > kTaskTitleMaxLength) {
       return;
     }
 

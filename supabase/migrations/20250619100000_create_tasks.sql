@@ -2,7 +2,10 @@
 create table public.tasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
-  title text not null check (char_length(trim(title)) > 0),
+  title text not null check (
+    char_length(trim(title)) > 0
+    and char_length(trim(title)) <= 200
+  ),
   is_completed boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

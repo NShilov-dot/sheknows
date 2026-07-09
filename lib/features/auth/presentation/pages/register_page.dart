@@ -111,7 +111,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'At least ${AuthValidators.minPasswordLength} characters',
+              'At least ${AuthValidators.minPasswordLength} characters, '
+              'with a letter and a number',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

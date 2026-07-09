@@ -21,11 +21,8 @@ void main() {
       expect(AuthValidators.password(''), 'Password is required');
     });
 
-    test('returns error when shorter than the minimum length', () {
-      expect(
-        AuthValidators.password('123'),
-        'Password must be at least ${AuthValidators.minPasswordLength} characters',
-      );
+    test('allows any non-empty password for sign-in', () {
+      expect(AuthValidators.password('123'), isNull);
     });
 
     test('rejects surrounding whitespace during registration', () {
@@ -35,8 +32,29 @@ void main() {
       );
     });
 
-    test('returns null for a valid password', () {
-      expect(AuthValidators.password('secret123'), isNull);
+    test('returns error when shorter than the minimum length on registration', () {
+      expect(
+        AuthValidators.password('Ab1', forRegistration: true),
+        'Password must be at least ${AuthValidators.minPasswordLength} characters',
+      );
+    });
+
+    test('returns error when registration password lacks a letter or number', () {
+      expect(
+        AuthValidators.password('abcdefgh', forRegistration: true),
+        'Password must include at least one letter and one number',
+      );
+      expect(
+        AuthValidators.password('12345678', forRegistration: true),
+        'Password must include at least one letter and one number',
+      );
+    });
+
+    test('returns null for a valid registration password', () {
+      expect(
+        AuthValidators.password('secret123', forRegistration: true),
+        isNull,
+      );
     });
   });
 

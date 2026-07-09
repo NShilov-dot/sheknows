@@ -73,6 +73,20 @@ the Supabase Dashboard SQL editor and run them in order:
 
 1. [`20250619000000_create_profiles.sql`](supabase/migrations/20250619000000_create_profiles.sql)
 2. [`20250619100000_create_tasks.sql`](supabase/migrations/20250619100000_create_tasks.sql)
+3. [`20250619200000_harden_profiles_rls.sql`](supabase/migrations/20250619200000_harden_profiles_rls.sql) (safe no-op if profiles was created with the updated policies)
+4. [`20250619300000_limit_task_title_length.sql`](supabase/migrations/20250619300000_limit_task_title_length.sql) (safe no-op if tasks was created with the updated title check)
+
+## Auth security checklist
+
+Apply these in each new Supabase project (Dashboard settings, not app code):
+
+1. **Password requirements** — Authentication -> Providers -> Email: set minimum
+   length to at least `8` and require letters + digits so server rules match
+   [`AuthValidators`](lib/features/auth/presentation/utils/auth_validators.dart).
+2. **Leaked password protection** — enable HaveIBeenPwned checks under
+   [Password security](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+3. **Replace `com.example...`** — change the Android `applicationId`, iOS bundle
+   ID, and OAuth redirect scheme before shipping.
 
 ## Google OAuth setup
 
@@ -90,6 +104,14 @@ the Supabase Dashboard SQL editor and run them in order:
 
 If you change the app's bundle identifier, update the scheme in all three places
 (the two native files above and `Environment.oauthRedirectUrl`) so they match.
+
+### Production note: custom schemes vs App Links
+
+The starter uses a custom URL scheme for OAuth redirects because it works without
+owning a domain. Custom schemes can be claimed by other apps on the same device.
+For production apps, prefer verified **Android App Links** and **iOS Universal
+Links** (HTTPS redirect URLs) and update `Environment.oauthRedirectUrl` plus the
+native configs accordingly.
 
 ## Architecture
 

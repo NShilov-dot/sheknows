@@ -17,24 +17,39 @@ class AppRouter {
   final AuthBloc _authBloc;
 
   late final GoRouter router = GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     refreshListenable: _AuthRefreshListenable(_authBloc),
     redirect: (context, state) {
       final authState = _authBloc.state;
-      final isOnAuthPage =
-          state.matchedLocation == '/login' || state.matchedLocation == '/register';
+      final location = state.matchedLocation;
+      final isOnAuthPage = location == '/login' || location == '/register';
+      final isOnSplash = location == '/splash';
 
-      if (authState is AuthInitial || authState is AuthLoading) {
+      // Session restore in progress — keep users on splash.
+      if (authState is AuthInitial) {
+        return isOnSplash ? null : '/splash';
+      }
+
+      // In-progress sign-in / sign-out: do not yank the current screen away.
+      if (authState is AuthLoading) {
         return null;
       }
 
       if (authState is AuthAuthenticated) {
-        return isOnAuthPage ? '/home' : null;
+        return isOnAuthPage || isOnSplash ? '/home' : null;
       }
 
+      // Unauthenticated, AuthError, etc.
+      if (isOnSplash) {
+        return '/login';
+      }
       return isOnAuthPage ? null : '/login';
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const _SplashPage(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),
@@ -53,6 +68,17 @@ class AppRouter {
       ),
     ],
   );
+}
+
+class _SplashPage extends StatelessWidget {
+  const _SplashPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
 }
 
 class _AuthRefreshListenable extends ChangeNotifier {

@@ -37,6 +37,9 @@ void main() {
     registerFallbackValue(
       const SignInWithEmailParams(email: email, password: password),
     );
+    registerFallbackValue(
+      const SignUpWithEmailParams(email: email, password: password),
+    );
   });
 
   setUp(() {
@@ -92,6 +95,44 @@ void main() {
       ),
       expect: () => [isA<AuthError>()],
       verify: (_) => verifyNever(() => signInWithEmail(any())),
+    );
+  });
+
+  group('AuthSignUpWithEmailRequested', () {
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthLoading, AuthAuthenticated] on success',
+      setUp: () {
+        when(() => signUpWithEmail(any()))
+            .thenAnswer((_) async => const Right(user));
+      },
+      build: buildBloc,
+      act: (bloc) => bloc.add(
+        const AuthSignUpWithEmailRequested(email: email, password: password),
+      ),
+      expect: () => const [AuthLoading(), AuthAuthenticated(user)],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthError] without calling the use case for a weak password',
+      build: buildBloc,
+      act: (bloc) => bloc.add(
+        const AuthSignUpWithEmailRequested(email: email, password: 'short'),
+      ),
+      expect: () => [isA<AuthError>()],
+      verify: (_) => verifyNever(() => signUpWithEmail(any())),
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthError] without calling the use case for surrounding spaces',
+      build: buildBloc,
+      act: (bloc) => bloc.add(
+        const AuthSignUpWithEmailRequested(
+          email: email,
+          password: ' secret123 ',
+        ),
+      ),
+      expect: () => [isA<AuthError>()],
+      verify: (_) => verifyNever(() => signUpWithEmail(any())),
     );
   });
 }
