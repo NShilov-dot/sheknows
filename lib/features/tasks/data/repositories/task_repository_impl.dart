@@ -14,13 +14,13 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, TasksPageResult>> getTasks({
     required String userId,
-    required int page,
+    DateTime? before,
     required int pageSize,
   }) async {
     try {
       final pageResult = await _remoteDataSource.getTasks(
         userId: userId,
-        page: page,
+        before: before,
         pageSize: pageSize,
       );
       return Right(pageResult);

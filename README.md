@@ -9,6 +9,7 @@ database feature, all organized with feature-first Clean Architecture.
 - Email/password sign in and sign up with client-side validation
 - Google OAuth via deep link redirect
 - Session persistence and reactive auth state through `onAuthStateChange`
+- In-app account deletion (Apple Guideline 5.1.1(v)) via a security-definer RPC
 - Route guards with `go_router` that redirect based on auth state
 - Sample `profiles` feature demonstrating Supabase Database access with Row Level Security
 - Sample `tasks` to-do feature demonstrating per-user CRUD with RLS and FK indexing
@@ -127,6 +128,7 @@ the Supabase Dashboard SQL editor and run them in order:
 2. [`20250619100000_create_tasks.sql`](supabase/migrations/20250619100000_create_tasks.sql)
 3. [`20250619200000_harden_profiles_rls.sql`](supabase/migrations/20250619200000_harden_profiles_rls.sql) (safe no-op if profiles was created with the updated policies)
 4. [`20250619300000_limit_task_title_length.sql`](supabase/migrations/20250619300000_limit_task_title_length.sql) (safe no-op if tasks was created with the updated title check)
+5. [`20250619400000_delete_own_account.sql`](supabase/migrations/20250619400000_delete_own_account.sql) (adds the `delete_own_account` RPC powering in-app account deletion)
 
 ## Google OAuth setup
 

@@ -84,6 +84,28 @@ void main() {
     );
   });
 
+  group('loadMore', () {
+    blocTest<TasksCubit, TasksState>(
+      'keys the next page on the last loaded task via `before`',
+      setUp: () {
+        when(() => getTasks(any())).thenAnswer(
+          (_) async => Right(TasksPageResult(tasks: [task], hasMore: true)),
+        );
+      },
+      build: buildCubit,
+      act: (cubit) async {
+        await cubit.loadTasks(userId);
+        await cubit.loadMore();
+      },
+      verify: (_) {
+        final params =
+            verify(() => getTasks(captureAny())).captured.cast<GetTasksParams>();
+        expect(params.first.before, isNull);
+        expect(params.last.before, task.createdAt);
+      },
+    );
+  });
+
   group('addTask', () {
     blocTest<TasksCubit, TasksState>(
       'updates list locally without refetching on success',

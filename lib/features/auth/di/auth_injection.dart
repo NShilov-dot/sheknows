@@ -20,6 +20,7 @@ void registerAuthDependencies(GetIt sl) {
     ..registerLazySingleton(() => SignUpWithEmailUseCase(sl<AuthRepository>()))
     ..registerLazySingleton(() => SignInWithGoogleUseCase(sl<AuthRepository>()))
     ..registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()))
+    ..registerLazySingleton(() => DeleteAccountUseCase(sl<AuthRepository>()))
     ..registerFactory(
       () => AuthBloc(
         getAuthStateChanges: sl<GetAuthStateChangesUseCase>(),
@@ -28,6 +29,7 @@ void registerAuthDependencies(GetIt sl) {
         signUpWithEmail: sl<SignUpWithEmailUseCase>(),
         signInWithGoogle: sl<SignInWithGoogleUseCase>(),
         signOut: sl<SignOutUseCase>(),
+        deleteAccount: sl<DeleteAccountUseCase>(),
       ),
     );
 }

@@ -6,7 +6,7 @@ import 'package:supabase_flutter_starter_kit/features/tasks/domain/entities/task
 abstract class TaskRepository {
   Future<Either<Failure, TasksPageResult>> getTasks({
     required String userId,
-    required int page,
+    DateTime? before,
     required int pageSize,
   });
 

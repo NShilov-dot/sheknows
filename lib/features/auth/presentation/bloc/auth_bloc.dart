@@ -16,12 +16,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required SignUpWithEmailUseCase signUpWithEmail,
     required SignInWithGoogleUseCase signInWithGoogle,
     required SignOutUseCase signOut,
+    required DeleteAccountUseCase deleteAccount,
   })  : _getAuthStateChanges = getAuthStateChanges,
         _getCurrentUser = getCurrentUser,
         _signInWithEmail = signInWithEmail,
         _signUpWithEmail = signUpWithEmail,
         _signInWithGoogle = signInWithGoogle,
         _signOut = signOut,
+        _deleteAccount = deleteAccount,
         super(const AuthInitial()) {
     on<AuthStarted>(_onStarted);
     on<AuthUserChanged>(_onUserChanged);
@@ -29,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignUpWithEmailRequested>(_onSignUpWithEmail);
     on<AuthSignInWithGoogleRequested>(_onSignInWithGoogle);
     on<AuthSignOutRequested>(_onSignOut);
+    on<AuthDeleteAccountRequested>(_onDeleteAccount);
     on<AuthErrorCleared>(_onErrorCleared);
   }
 
@@ -38,6 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignUpWithEmailUseCase _signUpWithEmail;
   final SignInWithGoogleUseCase _signInWithGoogle;
   final SignOutUseCase _signOut;
+  final DeleteAccountUseCase _deleteAccount;
 
   StreamSubscription<dynamic>? _authSubscription;
 
@@ -148,6 +152,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await _signOut(const NoParams());
+    result.fold(
+      (failure) => emit(AuthError(failure)),
+      (_) => emit(const AuthUnauthenticated()),
+    );
+  }
+
+  Future<void> _onDeleteAccount(
+    AuthDeleteAccountRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _deleteAccount(const NoParams());
     result.fold(
       (failure) => emit(AuthError(failure)),
       (_) => emit(const AuthUnauthenticated()),

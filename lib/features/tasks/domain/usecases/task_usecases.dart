@@ -9,12 +9,15 @@ import 'package:supabase_flutter_starter_kit/features/tasks/domain/repositories/
 class GetTasksParams {
   const GetTasksParams({
     required this.userId,
-    this.page = 0,
+    this.before,
     this.pageSize = kTasksPageSize,
   });
 
   final String userId;
-  final int page;
+
+  /// Cursor: fetch tasks created strictly before this timestamp. Null loads
+  /// the first (newest) page.
+  final DateTime? before;
   final int pageSize;
 }
 
@@ -27,7 +30,7 @@ class GetTasksUseCase implements UseCase<TasksPageResult, GetTasksParams> {
   Future<Either<Failure, TasksPageResult>> call(GetTasksParams params) {
     return _repository.getTasks(
       userId: params.userId,
-      page: params.page,
+      before: params.before,
       pageSize: params.pageSize,
     );
   }

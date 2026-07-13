@@ -24,15 +24,13 @@ class TasksCubit extends Cubit<TasksState> {
   final DeleteTaskUseCase _deleteTask;
 
   String? _userId;
-  int _currentPage = 0;
   bool _hasMore = false;
 
   Future<void> loadTasks(String userId) async {
     _userId = userId;
-    _currentPage = 0;
     emit(const TasksLoading());
     final result = await _getTasks(
-      GetTasksParams(userId: userId, page: 0, pageSize: kTasksPageSize),
+      GetTasksParams(userId: userId, pageSize: kTasksPageSize),
     );
     result.fold(
       (failure) => emit(TasksError(failure)),
@@ -46,14 +44,19 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> loadMore() async {
     final userId = _userId;
     final current = _loadedState;
-    if (userId == null || current == null || !_hasMore || current.isLoadingMore) {
+    if (userId == null ||
+        current == null ||
+        current.tasks.isEmpty ||
+        !_hasMore ||
+        current.isLoadingMore) {
       return;
     }
 
     emit(current.copyWith(isLoadingMore: true, clearMutationFailure: true));
-    final nextPage = _currentPage + 1;
+    // Cursor is the oldest task currently loaded (list is newest-first).
+    final cursor = current.tasks.last.createdAt;
     final result = await _getTasks(
-      GetTasksParams(userId: userId, page: nextPage, pageSize: kTasksPageSize),
+      GetTasksParams(userId: userId, before: cursor, pageSize: kTasksPageSize),
     );
     result.fold(
       (failure) => emit(
@@ -63,7 +66,6 @@ class TasksCubit extends Cubit<TasksState> {
         ),
       ),
       (page) {
-        _currentPage = nextPage;
         _hasMore = page.hasMore;
         emit(
           TasksLoaded(

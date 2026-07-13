@@ -92,3 +92,14 @@ class SignOutUseCase implements UseCase<void, NoParams> {
     return _repository.signOut();
   }
 }
+
+class DeleteAccountUseCase implements UseCase<void, NoParams> {
+  DeleteAccountUseCase(this._repository);
+
+  final AuthRepository _repository;
+
+  @override
+  Future<Either<Failure, void>> call(NoParams params) {
+    return _repository.deleteAccount();
+  }
+}

@@ -55,6 +55,10 @@ final class AuthSignOutRequested extends AuthEvent {
   const AuthSignOutRequested();
 }
 
+final class AuthDeleteAccountRequested extends AuthEvent {
+  const AuthDeleteAccountRequested();
+}
+
 final class AuthErrorCleared extends AuthEvent {
   const AuthErrorCleared();
 }

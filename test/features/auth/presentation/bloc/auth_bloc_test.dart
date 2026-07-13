@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
+import 'package:supabase_flutter_starter_kit/core/usecases/usecase.dart';
 import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
 import 'package:supabase_flutter_starter_kit/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
@@ -21,6 +22,8 @@ class _MockSignInWithGoogle extends Mock implements SignInWithGoogleUseCase {}
 
 class _MockSignOut extends Mock implements SignOutUseCase {}
 
+class _MockDeleteAccount extends Mock implements DeleteAccountUseCase {}
+
 void main() {
   late _MockGetAuthStateChanges getAuthStateChanges;
   late _MockGetCurrentUser getCurrentUser;
@@ -28,6 +31,7 @@ void main() {
   late _MockSignUpWithEmail signUpWithEmail;
   late _MockSignInWithGoogle signInWithGoogle;
   late _MockSignOut signOut;
+  late _MockDeleteAccount deleteAccount;
 
   const email = 'user@example.com';
   const password = 'secret123';
@@ -40,6 +44,7 @@ void main() {
     registerFallbackValue(
       const SignUpWithEmailParams(email: email, password: password),
     );
+    registerFallbackValue(const NoParams());
   });
 
   setUp(() {
@@ -49,6 +54,7 @@ void main() {
     signUpWithEmail = _MockSignUpWithEmail();
     signInWithGoogle = _MockSignInWithGoogle();
     signOut = _MockSignOut();
+    deleteAccount = _MockDeleteAccount();
   });
 
   AuthBloc buildBloc() => AuthBloc(
@@ -58,6 +64,7 @@ void main() {
         signUpWithEmail: signUpWithEmail,
         signInWithGoogle: signInWithGoogle,
         signOut: signOut,
+        deleteAccount: deleteAccount,
       );
 
   group('AuthSignInWithEmailRequested', () {
@@ -133,6 +140,31 @@ void main() {
       ),
       expect: () => [isA<AuthError>()],
       verify: (_) => verifyNever(() => signUpWithEmail(any())),
+    );
+  });
+
+  group('AuthDeleteAccountRequested', () {
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthLoading, AuthUnauthenticated] on success',
+      setUp: () {
+        when(() => deleteAccount(any()))
+            .thenAnswer((_) async => const Right(null));
+      },
+      build: buildBloc,
+      act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
+      expect: () => const [AuthLoading(), AuthUnauthenticated()],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthLoading, AuthError] on failure',
+      setUp: () {
+        when(() => deleteAccount(any()))
+            .thenAnswer((_) async => const Left(ServerFailure('Delete failed')));
+      },
+      build: buildBloc,
+      act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
+      expect: () =>
+          const [AuthLoading(), AuthError(ServerFailure('Delete failed'))],
     );
   });
 }

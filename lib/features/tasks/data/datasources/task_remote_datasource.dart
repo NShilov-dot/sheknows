@@ -6,7 +6,7 @@ import 'package:supabase_flutter_starter_kit/features/tasks/domain/entities/task
 abstract class TaskRemoteDataSource {
   Future<TasksPageResult> getTasks({
     required String userId,
-    required int page,
+    DateTime? before,
     required int pageSize,
   });
 
@@ -33,18 +33,25 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   @override
   Future<TasksPageResult> getTasks({
     required String userId,
-    required int page,
+    DateTime? before,
     required int pageSize,
   }) async {
     try {
-      final from = page * pageSize;
-      final to = from + pageSize;
-      final rows = await _client
-          .from(_table)
-          .select()
-          .eq('user_id', userId)
+      // Keyset pagination: fetch the page of rows older than `before` instead
+      // of a numeric offset, so inserts/deletes at the head can't shift the
+      // window and cause duplicate or skipped rows. Uses the
+      // (user_id, created_at desc) index. Fetch one extra row to detect
+      // `hasMore`, then trim it.
+      final base = _client.from(_table).select().eq('user_id', userId);
+      // ponytail: keys on created_at only. Two tasks with the exact same
+      // microsecond timestamp straddling a page boundary could skip one row;
+      // upgrade to a (created_at, id) composite cursor if that ever matters.
+      final filtered = before == null
+          ? base
+          : base.lt('created_at', before.toUtc().toIso8601String());
+      final rows = await filtered
           .order('created_at', ascending: false)
-          .range(from, to);
+          .limit(pageSize + 1);
       final hasMore = rows.length > pageSize;
       final pageRows = hasMore ? rows.sublist(0, pageSize) : rows;
       return TasksPageResult(

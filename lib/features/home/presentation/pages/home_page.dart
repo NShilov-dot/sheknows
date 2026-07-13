@@ -87,9 +87,54 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
             icon: const Icon(Icons.checklist),
             label: const Text('Open tasks'),
           ),
+          const Spacer(),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => _confirmDeleteAccount(context),
+              icon: Icon(
+                Icons.delete_forever,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              label: Text(
+                'Delete account',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+          'This permanently deletes your account and all of your data. '
+          'This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(dialogContext).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<AuthBloc>().add(const AuthDeleteAccountRequested());
+    }
   }
 }
 
