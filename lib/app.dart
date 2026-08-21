@@ -45,9 +45,11 @@ class _SupabaseAppState extends State<SupabaseApp> {
             current is AuthUnauthenticated && previous is AuthAuthenticated,
         listener: (_, __) => sl<ProfileCubit>().reset(),
         child: MaterialApp.router(
-          title: 'Supabase Starter',
+          title: 'sheknows',
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.theme,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: ThemeMode.dark, // Lunar Bloom is dark-first.
           routerConfig: _router,
         ),
       ),

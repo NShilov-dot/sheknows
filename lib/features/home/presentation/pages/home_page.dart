@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Supabase Starter'),
+        title: const Text('sheknows'),
         actions: [
           IconButton(
             onPressed: () {
@@ -83,9 +83,9 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
           _ProfileSection(user: widget.user),
           const SizedBox(height: 32),
           FilledButton.icon(
-            onPressed: () => context.go('/tasks'),
-            icon: const Icon(Icons.checklist),
-            label: const Text('Open tasks'),
+            onPressed: () => context.go('/cycle'),
+            icon: const Icon(Icons.calendar_month),
+            label: const Text('Track my cycle'),
           ),
           const Spacer(),
           Align(
