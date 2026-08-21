@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 
 /// The Lunar Bloom signature element: a moon that waxes and wanes with the
 /// user's cycle.

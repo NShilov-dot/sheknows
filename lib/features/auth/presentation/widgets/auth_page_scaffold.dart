@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthPageScaffold extends StatelessWidget {
   const AuthPageScaffold({

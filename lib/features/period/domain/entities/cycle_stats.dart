@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 /// Number of past cycles used to compute averages and predictions.
 const int kCycleAveragingWindow = 6;

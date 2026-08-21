@@ -1,4 +1,4 @@
-import 'package:supabase_flutter_starter_kit/features/profile/domain/entities/profile_entity.dart';
+import 'package:sheknows/features/profile/domain/entities/profile_entity.dart';
 
 class ProfileModel extends ProfileEntity {
   const ProfileModel({

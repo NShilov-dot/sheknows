@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 /// Interactive month calendar for the cycle.
 ///

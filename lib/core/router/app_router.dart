@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/pages/login_page.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/pages/register_page.dart';
-import 'package:supabase_flutter_starter_kit/features/home/presentation/pages/home_page.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/pages/period_tracker_page.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/features/auth/presentation/pages/login_page.dart';
+import 'package:sheknows/features/auth/presentation/pages/register_page.dart';
+import 'package:sheknows/features/home/presentation/pages/home_page.dart';
+import 'package:sheknows/features/period/presentation/pages/period_tracker_page.dart';
 
 enum _AuthRouteStatus { pending, authenticated, unauthenticated }
 

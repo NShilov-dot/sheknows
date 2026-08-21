@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 sealed class PeriodState extends Equatable {
   const PeriodState();

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter_starter_kit/core/theme/app_theme.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/widgets/moon_cycle_indicator.dart';
+import 'package:sheknows/core/theme/app_theme.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/presentation/widgets/moon_cycle_indicator.dart';
 
 CycleStats _stats({int? cycleDay, int? averageCycleLength}) {
   return CycleStats(

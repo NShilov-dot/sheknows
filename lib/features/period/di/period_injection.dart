@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/features/period/data/datasources/period_remote_datasource.dart';
-import 'package:supabase_flutter_starter_kit/features/period/data/repositories/period_repository_impl.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/repositories/period_repository.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/usecases/period_usecases.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/period/data/datasources/period_remote_datasource.dart';
+import 'package:sheknows/features/period/data/repositories/period_repository_impl.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/repositories/period_repository.dart';
+import 'package:sheknows/features/period/domain/usecases/period_usecases.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 
 void registerPeriodDependencies(GetIt sl) {
   sl

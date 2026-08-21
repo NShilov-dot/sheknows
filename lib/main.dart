@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/app.dart';
-import 'package:supabase_flutter_starter_kit/config/environment.dart';
-import 'package:supabase_flutter_starter_kit/core/di/injection.dart';
-import 'package:supabase_flutter_starter_kit/utils/app_initializer.dart';
+import 'package:sheknows/app.dart';
+import 'package:sheknows/config/environment.dart';
+import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/utils/app_initializer.dart';
 
 void main() async {
   await AppInitializer.initialize();

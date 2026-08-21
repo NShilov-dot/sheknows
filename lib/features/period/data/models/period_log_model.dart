@@ -1,4 +1,4 @@
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 class PeriodLogModel extends PeriodLogEntity {
   const PeriodLogModel({

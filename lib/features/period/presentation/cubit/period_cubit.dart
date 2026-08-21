@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/usecases/period_usecases.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/domain/usecases/period_usecases.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
 
 class PeriodCubit extends Cubit<PeriodState> {
   PeriodCubit({

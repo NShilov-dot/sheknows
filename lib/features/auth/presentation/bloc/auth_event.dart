@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
+import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 
 sealed class AuthEvent extends Equatable {
   const AuthEvent();

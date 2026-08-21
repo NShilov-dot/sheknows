@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter_starter_kit/core/error/exceptions.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sheknows/core/error/exceptions.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
+import 'package:sheknows/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._remoteDataSource);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 
 const _weekdayNames = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',

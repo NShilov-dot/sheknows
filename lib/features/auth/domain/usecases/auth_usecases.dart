@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/core/usecases/usecase.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/core/usecases/usecase.dart';
+import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
+import 'package:sheknows/features/auth/domain/repositories/auth_repository.dart';
 
 class GetAuthStateChangesUseCase {
   GetAuthStateChangesUseCase(this._repository);

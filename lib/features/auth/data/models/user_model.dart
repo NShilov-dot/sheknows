@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
+import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   const UserModel({

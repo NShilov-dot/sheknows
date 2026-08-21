@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/core/error/exceptions.dart' as app_exceptions;
-import 'package:supabase_flutter_starter_kit/features/period/data/models/period_log_model.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/features/period/data/models/period_log_model.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 abstract class PeriodRemoteDataSource {
   Future<List<PeriodLogModel>> getPeriodLogs(String userId);

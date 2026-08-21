@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/repositories/auth_repository.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/usecases/auth_usecases.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:sheknows/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:sheknows/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sheknows/features/auth/domain/usecases/auth_usecases.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 
 void registerAuthDependencies(GetIt sl) {
   sl

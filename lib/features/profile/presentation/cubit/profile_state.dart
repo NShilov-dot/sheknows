@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/profile/domain/entities/profile_entity.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/profile/domain/entities/profile_entity.dart';
 
 sealed class ProfileState extends Equatable {
   const ProfileState();

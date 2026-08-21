@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/utils/auth_validators.dart';
-import 'package:supabase_flutter_starter_kit/core/usecases/usecase.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/usecases/auth_usecases.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/core/usecases/usecase.dart';
+import 'package:sheknows/features/auth/domain/usecases/auth_usecases.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({

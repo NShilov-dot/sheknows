@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/profile/domain/usecases/get_profile_usecase.dart';
-import 'package:supabase_flutter_starter_kit/features/profile/presentation/cubit/profile_state.dart';
+import 'package:sheknows/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:sheknows/features/profile/presentation/cubit/profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit({required GetProfileUseCase getProfile})

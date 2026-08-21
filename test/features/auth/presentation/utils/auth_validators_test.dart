@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 
 void main() {
   group('AuthValidators.email', () {

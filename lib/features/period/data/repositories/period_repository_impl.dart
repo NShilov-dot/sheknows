@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter_starter_kit/core/error/exceptions.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/features/period/data/datasources/period_remote_datasource.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/repositories/period_repository.dart';
+import 'package:sheknows/core/error/exceptions.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/features/period/data/datasources/period_remote_datasource.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/domain/repositories/period_repository.dart';
 
 class PeriodRepositoryImpl implements PeriodRepository {
   PeriodRepositoryImpl(this._remoteDataSource);

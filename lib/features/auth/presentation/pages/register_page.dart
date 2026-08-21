@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/utils/auth_validators.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/widgets/auth_page_scaffold.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

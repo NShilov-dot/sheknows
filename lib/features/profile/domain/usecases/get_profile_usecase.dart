@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/core/usecases/usecase.dart';
-import 'package:supabase_flutter_starter_kit/features/profile/domain/entities/profile_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/profile/domain/repositories/profile_repository.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/core/usecases/usecase.dart';
+import 'package:sheknows/features/profile/domain/entities/profile_entity.dart';
+import 'package:sheknows/features/profile/domain/repositories/profile_repository.dart';
 
 class GetProfileParams {
   const GetProfileParams(this.userId);

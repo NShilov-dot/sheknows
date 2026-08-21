@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter_starter_kit/core/di/injection.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/cycle_stats.dart';
-import 'package:supabase_flutter_starter_kit/features/period/domain/entities/period_log_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/cubit/period_cubit.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/cubit/period_state.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/widgets/cycle_calendar.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/widgets/day_details_sheet.dart';
-import 'package:supabase_flutter_starter_kit/features/period/presentation/widgets/moon_cycle_indicator.dart';
+import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/features/period/presentation/widgets/cycle_calendar.dart';
+import 'package:sheknows/features/period/presentation/widgets/day_details_sheet.dart';
+import 'package:sheknows/features/period/presentation/widgets/moon_cycle_indicator.dart';
 
 class PeriodTrackerPage extends StatelessWidget {
   const PeriodTrackerPage({super.key});

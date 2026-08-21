@@ -2,13 +2,13 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter_starter_kit/core/error/failures.dart';
-import 'package:supabase_flutter_starter_kit/core/usecases/usecase.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/entities/user_entity.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/domain/usecases/auth_usecases.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
-import 'package:supabase_flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/core/usecases/usecase.dart';
+import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
+import 'package:sheknows/features/auth/domain/usecases/auth_usecases.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 
 class _MockGetAuthStateChanges extends Mock implements GetAuthStateChangesUseCase {}
 

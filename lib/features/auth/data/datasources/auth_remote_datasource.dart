@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter_starter_kit/config/environment.dart';
-import 'package:supabase_flutter_starter_kit/core/error/exceptions.dart' as app_exceptions;
-import 'package:supabase_flutter_starter_kit/features/auth/data/models/user_model.dart';
+import 'package:sheknows/config/environment.dart';
+import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges;
