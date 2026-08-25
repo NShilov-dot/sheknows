@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/error/failures.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/domain/usecases/period_usecases.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
@@ -11,11 +12,17 @@ class PeriodCubit extends Cubit<PeriodState> {
     required LogPeriodStartUseCase logPeriodStart,
     required UpdatePeriodLogUseCase updatePeriodLog,
     required DeletePeriodLogUseCase deletePeriodLog,
+    required GetDayLogsUseCase getDayLogs,
+    required UpsertDayLogUseCase upsertDayLog,
+    required DeleteDayLogUseCase deleteDayLog,
     required CycleStatsCalculator statsCalculator,
   })  : _getPeriodLogs = getPeriodLogs,
         _logPeriodStart = logPeriodStart,
         _updatePeriodLog = updatePeriodLog,
         _deletePeriodLog = deletePeriodLog,
+        _getDayLogs = getDayLogs,
+        _upsertDayLog = upsertDayLog,
+        _deleteDayLog = deleteDayLog,
         _statsCalculator = statsCalculator,
         super(const PeriodInitial());
 
@@ -23,6 +30,9 @@ class PeriodCubit extends Cubit<PeriodState> {
   final LogPeriodStartUseCase _logPeriodStart;
   final UpdatePeriodLogUseCase _updatePeriodLog;
   final DeletePeriodLogUseCase _deletePeriodLog;
+  final GetDayLogsUseCase _getDayLogs;
+  final UpsertDayLogUseCase _upsertDayLog;
+  final DeleteDayLogUseCase _deleteDayLog;
   final CycleStatsCalculator _statsCalculator;
 
   String? _userId;
@@ -30,10 +40,14 @@ class PeriodCubit extends Cubit<PeriodState> {
   Future<void> load(String userId) async {
     _userId = userId;
     emit(const PeriodLoading());
-    final result = await _getPeriodLogs(GetPeriodLogsParams(userId: userId));
-    result.fold(
+    final logsResult = await _getPeriodLogs(GetPeriodLogsParams(userId: userId));
+    final dayResult = await _getDayLogs(GetDayLogsParams(userId: userId));
+    logsResult.fold(
       (failure) => emit(PeriodError(failure)),
-      (logs) => emit(_loadedState(logs)),
+      (logs) => dayResult.fold(
+        (failure) => emit(PeriodError(failure)),
+        (dayLogs) => emit(_loadedState(logs, dayLogs)),
+      ),
     );
   }
 
@@ -192,6 +206,90 @@ class PeriodCubit extends Cubit<PeriodState> {
     );
   }
 
+  // -- Day logs (intimacy / symptoms / mood / notes) -----------------------
+
+  /// Creates or updates the day log for [date] with the given trackers.
+  /// When every tracker is empty the day log is removed instead of stored.
+  /// Optimistically applies the change and reconciles with the server.
+  Future<void> saveDayLog(
+    DateTime date, {
+    SexualActivity? sexualActivity,
+    Set<Symptom> symptoms = const {},
+    Mood? mood,
+    String? notes,
+  }) async {
+    final userId = _userId;
+    final snapshot = _loaded;
+    if (userId == null || snapshot == null || snapshot.isLoading) {
+      return;
+    }
+
+    final day = _dateOnly(date);
+    final existing = snapshot.dayLogFor(day);
+    final now = DateTime.now().toUtc();
+    final target = DayLogEntity(
+      id: existing?.id ?? 'pending-${now.microsecondsSinceEpoch}',
+      userId: userId,
+      date: day,
+      sexualActivity: sexualActivity,
+      symptoms: symptoms,
+      mood: mood,
+      notes: notes,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    );
+
+    // Clearing every tracker removes the day log entirely.
+    if (target.isEmpty) {
+      if (existing != null) {
+        await deleteDayLog(existing.id);
+      }
+      return;
+    }
+
+    emit(_withDayLogs(snapshot, _upsertedDayLogs(snapshot.dayLogs, target),
+        isLoading: true));
+
+    final result = await _upsertDayLog(
+      UpsertDayLogParams(
+        userId: userId,
+        date: day,
+        sexualActivity: sexualActivity,
+        symptoms: symptoms,
+        mood: mood,
+        notes: notes,
+      ),
+    );
+    result.fold(
+      (failure) => _rollback(snapshot, failure),
+      (saved) => _replaceDayLogAndFinish(day, saved),
+    );
+  }
+
+  Future<void> deleteDayLog(String dayLogId) async {
+    final snapshot = _loaded;
+    if (snapshot == null ||
+        snapshot.isLoading ||
+        dayLogId.startsWith('pending-')) {
+      return;
+    }
+
+    final remaining =
+        snapshot.dayLogs.where((log) => log.id != dayLogId).toList();
+    emit(snapshot.copyWith(dayLogs: remaining, clearMutationFailure: true));
+
+    final result = await _deleteDayLog(DeleteDayLogParams(dayLogId));
+    result.fold(
+      (failure) => _rollback(snapshot, failure),
+      (_) {
+        final stateNow = _loaded;
+        if (stateNow != null) {
+          emit(stateNow.copyWith(isLoading: false, clearMutationFailure: true));
+        }
+      },
+    );
+  }
+
   // -- helpers -------------------------------------------------------------
 
   List<PeriodLogEntity> _replaced(
@@ -214,6 +312,10 @@ class PeriodCubit extends Cubit<PeriodState> {
       logs: sorted,
       stats: _statsCalculator.calculate(sorted),
       isLoading: isLoading,
+      // Forward progress (optimistic apply / reconcile) always clears a stale
+      // failure — only _rollback sets one. Otherwise a later identical failure
+      // would compare equal and the UI would swallow its snackbar.
+      clearMutationFailure: true,
     );
   }
 
@@ -242,6 +344,38 @@ class PeriodCubit extends Cubit<PeriodState> {
     emit(_withLogs(stateNow, logs));
   }
 
+  /// Replaces (by day) or inserts [entry] into [logs], newest day first.
+  List<DayLogEntity> _upsertedDayLogs(
+    List<DayLogEntity> logs,
+    DayLogEntity entry,
+  ) {
+    final others =
+        logs.where((log) => !log.isOnDay(entry.date)).toList(growable: true)
+          ..add(entry)
+          ..sort((a, b) => b.date.compareTo(a.date));
+    return others;
+  }
+
+  PeriodLoaded _withDayLogs(
+    PeriodLoaded base,
+    List<DayLogEntity> dayLogs, {
+    bool isLoading = false,
+  }) {
+    return base.copyWith(
+      dayLogs: dayLogs,
+      isLoading: isLoading,
+      clearMutationFailure: true,
+    );
+  }
+
+  void _replaceDayLogAndFinish(DateTime day, DayLogEntity saved) {
+    final stateNow = _loaded;
+    if (stateNow == null) {
+      return;
+    }
+    emit(_withDayLogs(stateNow, _upsertedDayLogs(stateNow.dayLogs, saved)));
+  }
+
   /// Restores the pre-mutation snapshot and surfaces the failure.
   void _rollback(PeriodLoaded snapshot, Failure failure) {
     emit(
@@ -252,10 +386,17 @@ class PeriodCubit extends Cubit<PeriodState> {
     );
   }
 
-  PeriodLoaded _loadedState(List<PeriodLogEntity> logs) {
+  static DateTime _dateOnly(DateTime value) =>
+      DateTime(value.year, value.month, value.day);
+
+  PeriodLoaded _loadedState(
+    List<PeriodLogEntity> logs,
+    List<DayLogEntity> dayLogs,
+  ) {
     final now = DateTime.now();
     return PeriodLoaded(
       logs: [...logs]..sort((a, b) => b.startDate.compareTo(a.startDate)),
+      dayLogs: [...dayLogs]..sort((a, b) => b.date.compareTo(a.date)),
       displayedMonth: DateTime(now.year, now.month),
       stats: _statsCalculator.calculate(logs),
     );

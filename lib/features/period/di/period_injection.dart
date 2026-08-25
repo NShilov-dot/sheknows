@@ -21,6 +21,9 @@ void registerPeriodDependencies(GetIt sl) {
       () => UpdatePeriodLogUseCase(sl<PeriodRepository>()),
     )
     ..registerLazySingleton(() => DeletePeriodLogUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => GetDayLogsUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => UpsertDayLogUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => DeleteDayLogUseCase(sl<PeriodRepository>()))
     ..registerLazySingleton<CycleStatsCalculator>(
       () => const CycleStatsCalculator(),
     )
@@ -30,6 +33,9 @@ void registerPeriodDependencies(GetIt sl) {
         logPeriodStart: sl<LogPeriodStartUseCase>(),
         updatePeriodLog: sl<UpdatePeriodLogUseCase>(),
         deletePeriodLog: sl<DeletePeriodLogUseCase>(),
+        getDayLogs: sl<GetDayLogsUseCase>(),
+        upsertDayLog: sl<UpsertDayLogUseCase>(),
+        deleteDayLog: sl<DeleteDayLogUseCase>(),
         statsCalculator: sl<CycleStatsCalculator>(),
       ),
     );

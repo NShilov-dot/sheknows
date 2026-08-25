@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 /// Interactive month calendar for the cycle.
@@ -7,12 +8,14 @@ import 'package:sheknows/features/period/domain/entities/period_log_entity.dart'
 /// * Months are swipeable via a [PageView] (36 months back, 24 forward).
 /// * Logged period days render as a continuous rounded band across the week.
 /// * The predicted next start is shown as a soft filled circle.
+/// * Days with intimacy or other tracking show small dots underneath.
 /// * Tapping a day reports it through [onDaySelected].
 class CycleCalendar extends StatefulWidget {
   const CycleCalendar({
     super.key,
     required this.month,
     required this.logs,
+    required this.dayLogs,
     required this.stats,
     required this.onDaySelected,
     required this.onMonthChanged,
@@ -20,6 +23,7 @@ class CycleCalendar extends StatefulWidget {
 
   final DateTime month;
   final List<PeriodLogEntity> logs;
+  final List<DayLogEntity> dayLogs;
   final CycleStats? stats;
   final ValueChanged<DateTime> onDaySelected;
   final ValueChanged<DateTime> onMonthChanged;
@@ -138,6 +142,7 @@ class _CycleCalendarState extends State<CycleCalendar> {
                     itemBuilder: (context, index) => _MonthPage(
                       month: _monthAt(index),
                       logs: widget.logs,
+                      dayLogs: widget.dayLogs,
                       stats: widget.stats,
                       onDaySelected: widget.onDaySelected,
                     ),
@@ -190,12 +195,14 @@ class _MonthPage extends StatelessWidget {
   const _MonthPage({
     required this.month,
     required this.logs,
+    required this.dayLogs,
     required this.stats,
     required this.onDaySelected,
   });
 
   final DateTime month;
   final List<PeriodLogEntity> logs;
+  final List<DayLogEntity> dayLogs;
   final CycleStats? stats;
   final ValueChanged<DateTime> onDaySelected;
 
@@ -217,6 +224,7 @@ class _MonthPage extends StatelessWidget {
           child: _DayCell(
             day: day,
             band: _bandFor(day),
+            marks: _marksFor(day),
             isPredictedStart: _isSameDay(day, stats?.nextPredictedStart),
             isToday: _isSameDay(day, DateTime.now()),
             onTap: () => onDaySelected(day),
@@ -257,6 +265,22 @@ class _MonthPage extends StatelessWidget {
     return null;
   }
 
+  /// The tracking markers (intimacy / other) to show under [day], if any.
+  _DayMarks _marksFor(DateTime day) {
+    for (final log in dayLogs) {
+      if (!log.isOnDay(day)) {
+        continue;
+      }
+      return _DayMarks(
+        intimacy: log.sexualActivity != null,
+        other: log.symptoms.isNotEmpty ||
+            log.mood != null ||
+            (log.notes != null && log.notes!.trim().isNotEmpty),
+      );
+    }
+    return const _DayMarks(intimacy: false, other: false);
+  }
+
   static DateTime _shift(DateTime day, int days) =>
       DateTime(day.year, day.month, day.day + days);
 
@@ -275,10 +299,20 @@ class _BandInfo {
   final bool extendsRight;
 }
 
+class _DayMarks {
+  const _DayMarks({required this.intimacy, required this.other});
+
+  final bool intimacy;
+  final bool other;
+
+  bool get hasAny => intimacy || other;
+}
+
 class _DayCell extends StatelessWidget {
   const _DayCell({
     required this.day,
     required this.band,
+    required this.marks,
     required this.isPredictedStart,
     required this.isToday,
     required this.onTap,
@@ -286,22 +320,22 @@ class _DayCell extends StatelessWidget {
 
   final DateTime day;
   final _BandInfo? band;
+  final _DayMarks marks;
   final bool isPredictedStart;
   final bool isToday;
   final VoidCallback onTap;
-
-  static final _today = DateTime.now();
-
-  bool get _isFuture => day.isAfter(_today);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    // Compute "future" against a fresh clock each build so shading stays correct
+    // if the app is left open across midnight (isToday uses DateTime.now() too).
+    final isFuture = day.isAfter(DateTime.now());
     final hasBand = band != null;
-    final isOnBand = hasBand && !_isFuture;
+    final isOnBand = hasBand && !isFuture;
 
-    var labelColor = _isFuture
+    var labelColor = isFuture
         ? scheme.onSurface.withValues(alpha: 0.35)
         : scheme.onSurface;
     if (isOnBand) {
@@ -324,7 +358,7 @@ class _DayCell extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: scheme.secondary.withValues(
-                      alpha: _isFuture ? 0.25 : 0.9,
+                      alpha: isFuture ? 0.25 : 0.9,
                     ),
                     borderRadius: BorderRadius.horizontal(
                       left: band!.extendsLeft
@@ -376,8 +410,39 @@ class _DayCell extends StatelessWidget {
                   : FontWeight.w500,
             ),
           ),
+
+          // Tracking dots (intimacy / other) under the day number.
+          if (marks.hasAny)
+            Positioned(
+              bottom: 5,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (marks.intimacy)
+                    _Dot(color: isOnBand ? scheme.onSecondary : scheme.primary),
+                  if (marks.intimacy && marks.other) const SizedBox(width: 3),
+                  if (marks.other)
+                    _Dot(color: isOnBand ? scheme.onSecondary : scheme.tertiary),
+                ],
+              ),
+            ),
         ],
       ),
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  const _Dot({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 5,
+      height: 5,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }
@@ -432,6 +497,16 @@ class _CalendarLegend extends StatelessWidget {
             ),
           ),
           'Today',
+          theme,
+        ),
+        _legendItem(
+          _Dot(color: scheme.primary),
+          'Intimacy',
+          theme,
+        ),
+        _legendItem(
+          _Dot(color: scheme.tertiary),
+          'Symptoms/notes',
           theme,
         ),
       ],

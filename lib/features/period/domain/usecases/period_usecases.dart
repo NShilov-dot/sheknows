@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:sheknows/core/error/failures.dart';
 import 'package:sheknows/core/usecases/usecase.dart';
+import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/domain/repositories/period_repository.dart';
 
@@ -103,5 +104,77 @@ class DeletePeriodLogUseCase implements UseCase<void, DeletePeriodLogParams> {
   @override
   Future<Either<Failure, void>> call(DeletePeriodLogParams params) {
     return _repository.deletePeriodLog(params.periodId);
+  }
+}
+
+// -- Day logs (intimacy / symptoms / mood / notes) ---------------------------
+
+class GetDayLogsParams {
+  const GetDayLogsParams({required this.userId});
+
+  final String userId;
+}
+
+class GetDayLogsUseCase implements UseCase<List<DayLogEntity>, GetDayLogsParams> {
+  GetDayLogsUseCase(this._repository);
+
+  final PeriodRepository _repository;
+
+  @override
+  Future<Either<Failure, List<DayLogEntity>>> call(GetDayLogsParams params) {
+    return _repository.getDayLogs(params.userId);
+  }
+}
+
+class UpsertDayLogParams {
+  const UpsertDayLogParams({
+    required this.userId,
+    required this.date,
+    this.sexualActivity,
+    this.symptoms = const {},
+    this.mood,
+    this.notes,
+  });
+
+  final String userId;
+  final DateTime date;
+  final SexualActivity? sexualActivity;
+  final Set<Symptom> symptoms;
+  final Mood? mood;
+  final String? notes;
+}
+
+class UpsertDayLogUseCase implements UseCase<DayLogEntity, UpsertDayLogParams> {
+  UpsertDayLogUseCase(this._repository);
+
+  final PeriodRepository _repository;
+
+  @override
+  Future<Either<Failure, DayLogEntity>> call(UpsertDayLogParams params) {
+    return _repository.upsertDayLog(
+      userId: params.userId,
+      date: params.date,
+      sexualActivity: params.sexualActivity,
+      symptoms: params.symptoms,
+      mood: params.mood,
+      notes: params.notes,
+    );
+  }
+}
+
+class DeleteDayLogParams {
+  const DeleteDayLogParams(this.dayLogId);
+
+  final String dayLogId;
+}
+
+class DeleteDayLogUseCase implements UseCase<void, DeleteDayLogParams> {
+  DeleteDayLogUseCase(this._repository);
+
+  final PeriodRepository _repository;
+
+  @override
+  Future<Either<Failure, void>> call(DeleteDayLogParams params) {
+    return _repository.deleteDayLog(params.dayLogId);
   }
 }

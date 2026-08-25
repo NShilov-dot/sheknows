@@ -90,10 +90,12 @@ class _PeriodBody extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (_) => DayDetailsSheet(
         day: day,
         logs: state.logs,
         stats: state.stats,
+        dayLog: state.dayLogFor(day),
         cubit: cubit,
       ),
     );
@@ -127,6 +129,7 @@ class _PeriodBody extends StatelessWidget {
                   month:
                       loaded?.displayedMonth ?? DateTime.now(),
                   logs: loaded?.logs ?? const [],
+                  dayLogs: loaded?.dayLogs ?? const [],
                   stats: loaded?.stats,
                   onDaySelected: (day) => _onDaySelected(context, day),
                   onMonthChanged: (month) =>

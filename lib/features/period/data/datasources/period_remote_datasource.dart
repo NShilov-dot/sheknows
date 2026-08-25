@@ -1,6 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/features/period/data/models/day_log_model.dart';
 import 'package:sheknows/features/period/data/models/period_log_model.dart';
+import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 
 abstract class PeriodRemoteDataSource {
@@ -22,6 +24,19 @@ abstract class PeriodRemoteDataSource {
   });
 
   Future<void> deletePeriodLog(String periodId);
+
+  Future<List<DayLogModel>> getDayLogs(String userId);
+
+  Future<DayLogModel> upsertDayLog({
+    required String userId,
+    required DateTime date,
+    SexualActivity? sexualActivity,
+    Set<Symptom> symptoms,
+    Mood? mood,
+    String? notes,
+  });
+
+  Future<void> deleteDayLog(String dayLogId);
 }
 
 class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
@@ -30,6 +45,7 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
   final SupabaseClient _client;
 
   static const _table = 'period_logs';
+  static const _dayTable = 'day_logs';
 
   @override
   Future<List<PeriodLogModel>> getPeriodLogs(String userId) async {
@@ -117,6 +133,69 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
       throw app_exceptions.ServerException(error.message);
     } catch (_) {
       throw const app_exceptions.ServerException('Failed to delete period');
+    }
+  }
+
+  @override
+  Future<List<DayLogModel>> getDayLogs(String userId) async {
+    try {
+      final rows = await _client
+          .from(_dayTable)
+          .select()
+          .eq('user_id', userId)
+          .order('log_date', ascending: false);
+      return rows.map(DayLogModel.fromJson).toList();
+    } on PostgrestException catch (error) {
+      throw app_exceptions.ServerException(error.message);
+    } catch (_) {
+      throw const app_exceptions.ServerException('Failed to load day logs');
+    }
+  }
+
+  @override
+  Future<DayLogModel> upsertDayLog({
+    required String userId,
+    required DateTime date,
+    SexualActivity? sexualActivity,
+    Set<Symptom> symptoms = const {},
+    Mood? mood,
+    String? notes,
+  }) async {
+    try {
+      final row = await _client
+          .from(_dayTable)
+          .upsert(
+            DayLogModel(
+              id: '',
+              userId: userId,
+              date: date,
+              sexualActivity: sexualActivity,
+              symptoms: symptoms,
+              mood: mood,
+              notes: notes,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ).toUpsertJson(),
+            onConflict: 'user_id,log_date',
+          )
+          .select()
+          .single();
+      return DayLogModel.fromJson(row);
+    } on PostgrestException catch (error) {
+      throw app_exceptions.ServerException(error.message);
+    } catch (_) {
+      throw const app_exceptions.ServerException('Failed to save day log');
+    }
+  }
+
+  @override
+  Future<void> deleteDayLog(String dayLogId) async {
+    try {
+      await _client.from(_dayTable).delete().eq('id', dayLogId);
+    } on PostgrestException catch (error) {
+      throw app_exceptions.ServerException(error.message);
+    } catch (_) {
+      throw const app_exceptions.ServerException('Failed to delete day log');
     }
   }
 
