@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sheknows/features/auth/di/auth_injection.dart';
+import 'package:sheknows/features/daily_log/di/daily_log_injection.dart';
 import 'package:sheknows/features/period/di/period_injection.dart';
 import 'package:sheknows/features/profile/di/profile_injection.dart';
 
@@ -11,4 +12,5 @@ Future<void> initDependencies() async {
   registerAuthDependencies(sl);
   registerProfileDependencies(sl);
   registerPeriodDependencies(sl);
+  registerDailyLogDependencies(sl);
 }

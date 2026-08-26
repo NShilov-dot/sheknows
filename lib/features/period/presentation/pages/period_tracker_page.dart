@@ -80,21 +80,22 @@ class _PeriodTrackerView extends StatelessWidget {
 class _PeriodBody extends StatelessWidget {
   const _PeriodBody();
 
-  void _onDaySelected(BuildContext context, DateTime day) {
-    final cubit = context.read<PeriodCubit>();
-    final state = cubit.state;
-    if (state is! PeriodLoaded) {
-      return;
-    }
-
+  void _onDaySelected(
+    BuildContext context,
+    DateTime day,
+    PeriodLoaded state,
+    String userId,
+  ) {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (_) => DayDetailsSheet(
         day: day,
+        userId: userId,
         logs: state.logs,
         stats: state.stats,
-        cubit: cubit,
+        periodCubit: context.read<PeriodCubit>(),
       ),
     );
   }
@@ -123,12 +124,18 @@ class _PeriodBody extends StatelessWidget {
             child: BlocBuilder<PeriodCubit, PeriodState>(
               builder: (context, state) {
                 final loaded = state is PeriodLoaded ? state : null;
+                final userId = loaded?.logs.firstOrNull?.userId;
                 return CycleCalendar(
                   month:
                       loaded?.displayedMonth ?? DateTime.now(),
                   logs: loaded?.logs ?? const [],
                   stats: loaded?.stats,
-                  onDaySelected: (day) => _onDaySelected(context, day),
+                  onDaySelected: (day) {
+                    if (loaded == null || userId == null) {
+                      return;
+                    }
+                    _onDaySelected(context, day, loaded, userId);
+                  },
                   onMonthChanged: (month) =>
                       context.read<PeriodCubit>().goToMonth(month),
                 );
@@ -350,7 +357,7 @@ class _HistoryTile extends StatelessWidget {
       ),
       title: Text(_dateRange),
       subtitle: Text(
-        '${log.durationInDays} day${log.durationInDays == 1 ? '' : 's'}'
+        '${log.durationInDays()} day${log.durationInDays() == 1 ? '' : 's'}'
         '${log.flow == null ? '' : ' · ${log.flow!.name} flow'}'
         '${isPending ? ' · saving…' : ''}',
       ),

@@ -76,7 +76,7 @@ void main() {
       expect(stats.currentPeriod?.id, 'log-1');
       expect(stats.currentCycleDay, 4); // Aug 18 -> Aug 21 inclusive.
       expect(ongoing.isOngoing, isTrue);
-      expect(ongoing.durationInDays, 4);
+      expect(ongoing.durationInDays(now: now), 4);
     });
 
     test('coversDay includes start and end dates', () {
