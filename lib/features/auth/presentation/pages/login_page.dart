@@ -5,7 +5,9 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
 
 class LoginPage extends StatefulWidget {
@@ -95,23 +97,12 @@ class _LoginPageState extends State<LoginPage> {
               isLoading: isLoading,
               onPressed: _submit,
             ),
-            const SizedBox(height: 16),
-            const AuthFormDivider(),
-            const SizedBox(height: 16),
-            AuthGoogleButton(
+            AuthAlternativeActions(
               isLoading: isLoading,
-              onPressed: _signInWithGoogle,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account?"),
-                TextButton(
-                  onPressed: isLoading ? null : () => context.go('/register'),
-                  child: const Text('Sign up'),
-                ),
-              ],
+              onGooglePressed: _signInWithGoogle,
+              promptText: "Don't have an account?",
+              actionLabel: 'Sign up',
+              onActionPressed: () => context.go('/register'),
             ),
           ],
         ),

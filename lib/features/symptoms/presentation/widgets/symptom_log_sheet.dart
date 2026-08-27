@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/constants/symptoms.dart';
+import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
@@ -125,7 +126,6 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final materialLocalizations = MaterialLocalizations.of(context);
     final isEditing = widget.existing != null;
 
     return SafeArea(
@@ -156,60 +156,26 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
               ],
 
               const SizedBox(height: 4),
-              _SectionLabel('Severity', icon: Icons.thermostat),
+              const SectionLabel('Severity', icon: Icons.thermostat),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final severity in SymptomSeverity.values)
-                    ChoiceChip(
-                      label: Text(symptomSeverityLabel(severity)),
-                      selected: _severity == severity,
-                      onSelected: (_) => setState(() => _severity = severity),
-                    ),
-                ],
+              _SeverityChips(
+                selected: _severity,
+                onSelected: (severity) => setState(() => _severity = severity),
               ),
               const SizedBox(height: 16),
 
-              _SectionLabel('When', icon: Icons.schedule),
+              const SectionLabel('When', icon: Icons.schedule),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickDate,
-                      icon: const Icon(Icons.calendar_today, size: 18),
-                      label: Text(
-                        materialLocalizations.formatMediumDate(_dateTime),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickTime,
-                      icon: const Icon(Icons.access_time, size: 18),
-                      label: Text(
-                        TimeOfDay.fromDateTime(_dateTime).format(context),
-                      ),
-                    ),
-                  ),
-                ],
+              _WhenRow(
+                dateTime: _dateTime,
+                onPickDate: _pickDate,
+                onPickTime: _pickTime,
               ),
               const SizedBox(height: 16),
 
-              _SectionLabel('Notes', icon: Icons.notes_outlined),
+              const SectionLabel('Notes', icon: Icons.notes_outlined),
               const SizedBox(height: 8),
-              TextField(
-                controller: _notes,
-                minLines: 1,
-                maxLines: 3,
-                maxLength: kSymptomNotesMaxLength,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  hintText: 'Anything worth remembering',
-                ),
-              ),
+              _NotesField(controller: _notes),
               const SizedBox(height: 8),
               FilledButton.icon(
                 onPressed: _type == null ? null : _save,
@@ -254,7 +220,7 @@ class _CategoryChips extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionLabel(symptomCategoryLabel(category), icon: _iconFor(category)),
+        SectionLabel(symptomCategoryLabel(category), icon: _iconFor(category)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -282,21 +248,84 @@ class _CategoryChips extends StatelessWidget {
       };
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text, {required this.icon});
+class _SeverityChips extends StatelessWidget {
+  const _SeverityChips({required this.selected, required this.onSelected});
 
-  final String text;
-  final IconData icon;
+  final SymptomSeverity selected;
+  final ValueChanged<SymptomSeverity> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    return Wrap(
+      spacing: 8,
+      children: [
+        for (final severity in SymptomSeverity.values)
+          ChoiceChip(
+            label: Text(symptomSeverityLabel(severity)),
+            selected: selected == severity,
+            onSelected: (_) => onSelected(severity),
+          ),
+      ],
+    );
+  }
+}
+
+class _WhenRow extends StatelessWidget {
+  const _WhenRow({
+    required this.dateTime,
+    required this.onPickDate,
+    required this.onPickTime,
+  });
+
+  final DateTime dateTime;
+  final VoidCallback onPickDate;
+  final VoidCallback onPickTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final materialLocalizations = MaterialLocalizations.of(context);
     return Row(
       children: [
-        Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
-        const SizedBox(width: 6),
-        Text(text, style: theme.textTheme.titleSmall),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onPickDate,
+            icon: const Icon(Icons.calendar_today, size: 18),
+            label: Text(
+              materialLocalizations.formatMediumDate(dateTime),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onPickTime,
+            icon: const Icon(Icons.access_time, size: 18),
+            label: Text(
+              TimeOfDay.fromDateTime(dateTime).format(context),
+            ),
+          ),
+        ),
       ],
+    );
+  }
+}
+
+class _NotesField extends StatelessWidget {
+  const _NotesField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      minLines: 1,
+      maxLines: 3,
+      maxLength: kSymptomNotesMaxLength,
+      textCapitalization: TextCapitalization.sentences,
+      decoration: const InputDecoration(
+        hintText: 'Anything worth remembering',
+      ),
     );
   }
 }

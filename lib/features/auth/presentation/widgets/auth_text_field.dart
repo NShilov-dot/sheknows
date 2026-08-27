@@ -10,7 +10,6 @@ class AuthTextField extends StatelessWidget {
     this.textInputAction,
     this.autofillHints,
     this.focusNode,
-    this.enabled = true,
     this.onFieldSubmitted,
     this.onChanged,
     super.key,
@@ -23,7 +22,6 @@ class AuthTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
   final FocusNode? focusNode;
-  final bool enabled;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
 
@@ -32,7 +30,6 @@ class AuthTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
-      enabled: enabled,
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
@@ -57,7 +54,6 @@ class AuthPasswordField extends StatefulWidget {
     this.textInputAction = TextInputAction.done,
     this.autofillHints,
     this.focusNode,
-    this.enabled = true,
     this.onFieldSubmitted,
     this.onChanged,
     super.key,
@@ -69,7 +65,6 @@ class AuthPasswordField extends StatefulWidget {
   final TextInputAction textInputAction;
   final Iterable<String>? autofillHints;
   final FocusNode? focusNode;
-  final bool enabled;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
 
@@ -89,7 +84,6 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
     return TextFormField(
       controller: widget.controller,
       focusNode: widget.focusNode,
-      enabled: widget.enabled,
       validator: widget.validator,
       obscureText: _obscurePassword,
       keyboardType: TextInputType.visiblePassword,
@@ -106,7 +100,7 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
         labelText: widget.label,
         border: const OutlineInputBorder(),
         suffixIcon: IconButton(
-          onPressed: widget.enabled ? _toggleVisibility : null,
+          onPressed: _toggleVisibility,
           icon: Icon(
             _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),

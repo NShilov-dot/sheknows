@@ -31,35 +31,24 @@ class MoonCycleIndicator extends StatelessWidget {
     return ((day - 1) / _cycleLength).clamp(0.0, 0.999);
   }
 
-  String get _phaseName {
-    const names = [
-      ('New moon', 'Your period is arriving or has just started'),
-      ('Waxing crescent', 'Follicular phase — energy is building'),
-      ('First quarter', 'Follicular phase — momentum'),
-      ('Waxing gibbous', 'Approaching ovulation'),
-      ('Full moon', 'Ovulation window'),
-      ('Waning gibbous', 'Luteal phase — wind down'),
-      ('Last quarter', 'Luteal phase'),
-      ('Waning crescent', 'Late luteal — be gentle with yourself'),
-    ];
-    final index = (_phase * names.length).floor().clamp(0, names.length - 1);
-    return names[index].$1;
-  }
+  /// (name, hint) for each eighth of the cycle.
+  static const List<(String, String)> _phases = [
+    ('New moon', 'Your period is here or about to arrive'),
+    ('Waxing crescent', 'Energy is building'),
+    ('First quarter', 'Steady momentum'),
+    ('Waxing gibbous', 'Ovulation is approaching'),
+    ('Full moon', 'Peak of your cycle'),
+    ('Waning gibbous', 'Wind-down begins'),
+    ('Last quarter', 'Reflect and rest'),
+    ('Waning crescent', 'Be gentle with yourself'),
+  ];
 
-  String get _phaseHint {
-    const hints = [
-      'Your period is here or about to arrive',
-      'Energy is building',
-      'Steady momentum',
-      'Ovulation is approaching',
-      'Peak of your cycle',
-      'Wind-down begins',
-      'Reflect and rest',
-      'Be gentle with yourself',
-    ];
-    final index = (_phase * hints.length).floor().clamp(0, hints.length - 1);
-    return hints[index];
-  }
+  int get _phaseIndex =>
+      (_phase * _phases.length).floor().clamp(0, _phases.length - 1);
+
+  String get _phaseName => _phases[_phaseIndex].$1;
+
+  String get _phaseHint => _phases[_phaseIndex].$2;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +138,7 @@ class _GlowingMoon extends StatelessWidget {
 /// `cos(2π·phase) > 0`, away from it when negative — producing crescent,
 /// quarter, and gibbous shapes automatically.
 class _MoonPainter extends CustomPainter {
-  _MoonPainter({
+  const _MoonPainter({
     required this.phase,
     required this.litColor,
     required this.shadowColor,
@@ -195,7 +184,7 @@ class _MoonPainter extends CustomPainter {
       return;
     }
     // New moon shortcut — only the base disc.
-    if (k.abs() < 0.01 && (p < 0.005 || p > 0.995)) {
+    if (p < 0.005 || p > 0.995) {
       return;
     }
 

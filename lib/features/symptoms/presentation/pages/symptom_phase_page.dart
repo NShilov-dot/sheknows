@@ -7,9 +7,9 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_phase_trends.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_state.dart';
-import 'package:sheknows/features/symptoms/presentation/utils/analytics_range.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
+import 'package:sheknows/features/symptoms/presentation/widgets/range_selector.dart';
 
 class SymptomPhasePage extends StatelessWidget {
   const SymptomPhasePage({super.key});
@@ -78,7 +78,7 @@ class _Loaded extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _RangeSelector(
+              RangeSelector(
                 range: state.range,
                 onChanged: (range) =>
                     context.read<SymptomPhaseCubit>().setRange(range),
@@ -95,28 +95,6 @@ class _Loaded extends StatelessWidget {
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _RangeSelector extends StatelessWidget {
-  const _RangeSelector({required this.range, required this.onChanged});
-
-  final AnalyticsRange range;
-  final ValueChanged<AnalyticsRange> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      children: [
-        for (final option in AnalyticsRange.values)
-          ChoiceChip(
-            label: Text(option.label),
-            selected: range == option,
-            onSelected: (_) => onChanged(option),
-          ),
       ],
     );
   }
