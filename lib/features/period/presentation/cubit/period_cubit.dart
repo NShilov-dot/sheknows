@@ -95,7 +95,11 @@ class PeriodCubit extends Cubit<PeriodState> {
 
   /// Logs a new period starting on [startDate]. Optimistically inserts a
   /// pending entry and reconciles with the server response.
-  Future<void> startPeriod(DateTime startDate) async {
+  Future<void> startPeriod(
+    DateTime startDate, {
+    FlowLevel? flow,
+    String? notes,
+  }) async {
     final userId = _userId;
     final snapshot = _loaded;
     if (userId == null || snapshot == null || snapshot.isLoading) {
@@ -107,6 +111,8 @@ class PeriodCubit extends Cubit<PeriodState> {
       id: optimisticId,
       userId: userId,
       startDate: startDate.dateOnly,
+      flow: flow,
+      notes: notes,
       createdAt: DateTime.now().toUtc(),
       updatedAt: DateTime.now().toUtc(),
     );
@@ -120,7 +126,12 @@ class PeriodCubit extends Cubit<PeriodState> {
     );
 
     final result = await _logPeriodStart(
-      LogPeriodStartParams(userId: userId, startDate: startDate),
+      LogPeriodStartParams(
+        userId: userId,
+        startDate: startDate,
+        flow: flow,
+        notes: notes,
+      ),
     );
     result.fold(
       (failure) => _rollback(snapshot, failure),

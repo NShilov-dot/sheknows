@@ -71,7 +71,7 @@ class CycleStatsCalculator {
     // Period lengths, using ended periods only for a stable average.
     final periodLengths = sorted
         .where((log) => !log.isOngoing)
-        .map((log) => log.durationInDays)
+        .map((log) => log.durationInDays())
         .toList();
     final recentPeriods = periodLengths.length > kCycleAveragingWindow
         ? periodLengths.sublist(periodLengths.length - kCycleAveragingWindow)

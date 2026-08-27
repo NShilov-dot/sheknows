@@ -23,7 +23,7 @@ String dayStatusLabel({
         day.dateOnly.difference(covering.startDate.dateOnly).inDays + 1;
     return covering.isOngoing
         ? l10n.cycleStatusBleedingDay(dayNumber)
-        : l10n.cycleStatusDayOfPeriod(covering.durationInDays, dayNumber);
+        : l10n.cycleStatusDayOfPeriod(covering.durationInDays(), dayNumber);
   }
   if (_isSameDay(day, stats.nextPredictedStart)) {
     return l10n.cycleStatusPredictedStart;

@@ -76,11 +76,7 @@ void main() {
       expect(stats.currentPeriod?.id, 'log-1');
       expect(stats.currentCycleDay, 4); // Aug 18 -> Aug 21 inclusive.
       expect(ongoing.isOngoing, isTrue);
-      // An ongoing period counts up to the real today (the entity getter has no
-      // injectable clock), so derive the expectation the same way.
-      final expectedDuration =
-          DateTime.now().difference(DateTime(2026, 8, 18)).inDays + 1;
-      expect(ongoing.durationInDays, expectedDuration);
+      expect(ongoing.durationInDays(now: now), 4);
     });
 
     test('coversDay includes start and end dates', () {

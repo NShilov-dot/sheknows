@@ -32,7 +32,7 @@ class CycleInsightsCard extends StatelessWidget {
         if (stats.currentPeriod != null)
           (
             l10n.cycleInsightsCurrentPeriod,
-            l10n.cycleInsightsBleedingDay(stats.currentPeriod!.durationInDays),
+            l10n.cycleInsightsBleedingDay(stats.currentPeriod!.durationInDays()),
           ),
         if (stats.hasPrediction)
           (

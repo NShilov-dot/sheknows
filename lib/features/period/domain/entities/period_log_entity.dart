@@ -41,9 +41,9 @@ class PeriodLogEntity extends Equatable {
   bool get isOngoing => endDate == null;
 
   /// Number of days from start to end, inclusive. Ongoing periods count
-  /// up to today.
-  int get durationInDays {
-    final last = endDate ?? DateTime.now();
+  /// up to [now] (defaults to the current time).
+  int durationInDays({DateTime? now}) {
+    final last = endDate ?? now ?? DateTime.now();
     final start = startDate.dateOnly;
     final end = last.dateOnly;
     return end.difference(start).inDays + 1;

@@ -59,7 +59,7 @@ class PeriodHistoryTile extends StatelessWidget {
     final isPending = log.id.startsWith('pending-');
 
     final subtitleParts = [
-      l10n.commonDaysCount(log.durationInDays),
+      l10n.commonDaysCount(log.durationInDays()),
       if (log.flow != null)
         switch (log.flow!) {
           FlowLevel.light => l10n.cycleHistoryFlowLight,
