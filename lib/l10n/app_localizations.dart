@@ -280,6 +280,12 @@ abstract class AppLocalizations {
   /// **'Go home'**
   String get commonGoHome;
 
+  /// Advances to the next onboarding page. Keep short — it is a filled button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get commonNext;
+
   /// Free-text notes. Calendar legend label for the notes dot, and the notes section heading in the day sheet. Also used by the symptom log sheet (another agent's file).
   ///
   /// In en, this message translates to:
@@ -297,6 +303,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page not found'**
   String get commonPageNotFoundTitle;
+
+  /// Skips the onboarding pitch and goes straight to sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get commonSkip;
 
   /// Body copy on the start-up failure screen. One key on purpose — the two sentences must not be split, the raw error text is rendered separately below it.
   ///
@@ -928,17 +940,47 @@ abstract class AppLocalizations {
   /// **'Track my cycle'**
   String get homeTrackCycleButton;
 
+  /// Primary button on the last onboarding page; leads to sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get onboardingGetStarted;
+
+  /// Headline of the second onboarding page — the phase-analytics value pitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Spot your patterns, not just your symptoms.'**
+  String get onboardingPatternsHeadline;
+
+  /// Body copy under the second onboarding headline.
+  ///
+  /// In en, this message translates to:
+  /// **'Every symptom you log is matched to your cycle phase automatically — see what really happens, phase by phase.'**
+  String get onboardingPatternsSubtext;
+
+  /// Headline of the first onboarding page — the prediction value pitch.
+  ///
+  /// In en, this message translates to:
+  /// **'See your next period coming.'**
+  String get onboardingPredictHeadline;
+
+  /// Body copy under the first onboarding headline. "sheknows" is the product name — never translated.
+  ///
+  /// In en, this message translates to:
+  /// **'sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.'**
+  String get onboardingPredictSubtext;
+
   /// Submit button of the symptom log sheet when creating a new entry.
   ///
   /// In en, this message translates to:
   /// **'Add symptom'**
   String get symptomAddSymptom;
 
-  /// Screen-reader label collapsing one chart bar (its label, painted bar and count) into a single announcement. {label} is an already-localized symptom type, severity or 'Entries' label; {value} is the count. Not a plural: {label} is an arbitrary noun the number cannot agree with.
+  /// Screen-reader label collapsing one chart bar (its label, painted bar and count) into a single announcement. {label} is an already-localized symptom type, severity or 'Entries' label. {value} is the count ALREADY FORMATTED by the caller via NumberFormat, so the announcement matches the digits on screen — passing a raw int would make a screen reader say "1234" where the eye reads "1,234".
   ///
   /// In en, this message translates to:
   /// **'{label}: {value}'**
-  String symptomBarRowSemanticsLabel(String label, int value);
+  String symptomBarRowSemanticsLabel(String label, String value);
 
   /// Section header grouping discharge symptoms. Supplies the noun that the Watery/Mucus/Spotting labels omit, so it must stay a noun.
   ///
@@ -1065,18 +1107,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick a symptom to continue'**
   String get symptomPickToContinue;
-
-  /// OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. A fixed literal, not a counted quantity: no placeholder, no ICU plural.
-  ///
-  /// In en, this message translates to:
-  /// **'30 days'**
-  String get symptomRange30Days;
-
-  /// OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. Fixed literal, no placeholder, no plural.
-  ///
-  /// In en, this message translates to:
-  /// **'90 days'**
-  String get symptomRange90Days;
 
   /// Time-window option in the symptom analytics range selector meaning no lower bound - all history. Sits next to the '30 days'/'90 days' options in the same small selector, so keep it equally short.
   ///
@@ -1270,7 +1300,7 @@ abstract class AppLocalizations {
   /// **'When'**
   String get symptomWhenSectionLabel;
 
-  /// Body copy of the symptoms-list empty state. It quotes the FAB label by name: the quoted word MUST match this language's symptomLogFab value exactly.
+  /// Body copy of the symptoms empty state. It quotes the log button's own label, so the quoted word MUST equal symptomLogAction in the same language.
   ///
   /// In en, this message translates to:
   /// **'Tap Log to record how you feel.'**

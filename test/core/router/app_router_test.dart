@@ -77,7 +77,7 @@ void main() {
     });
 
     test('a message on the state does not change routing', () {
-      const withMessage = AuthUnauthenticated(message: 'Check your email');
+      const withMessage = AuthUnauthenticated(notice: AuthNotice.confirmEmail);
       expect(resolveAuthRedirect(withMessage, '/register'), isNull);
       expect(resolveAuthRedirect(withMessage, '/home'), '/login');
     });
@@ -95,6 +95,63 @@ void main() {
       expect(resolveAuthRedirect(errored, '/login'), isNull);
       expect(resolveAuthRedirect(errored, '/register'), isNull);
     });
+  });
+
+  group('resolveAuthRedirect before onboarding has been seen', () {
+    test('funnels an unauthenticated visitor to onboarding from anywhere', () {
+      for (final location in [
+        '/splash',
+        '/login',
+        '/register',
+        ...protectedRoutes,
+      ]) {
+        expect(
+          resolveAuthRedirect(unauthenticated, location,
+              hasSeenOnboarding: false),
+          '/onboarding',
+          reason: '$location should show the value pitch first',
+        );
+      }
+    });
+
+    test('leaves the onboarding screen itself alone', () {
+      expect(
+        resolveAuthRedirect(unauthenticated, '/onboarding',
+            hasSeenOnboarding: false),
+        isNull,
+      );
+    });
+
+    test('an authenticated session skips onboarding entirely', () {
+      expect(
+        resolveAuthRedirect(authenticated, '/onboarding',
+            hasSeenOnboarding: false),
+        '/home',
+      );
+      for (final location in protectedRoutes) {
+        expect(
+          resolveAuthRedirect(authenticated, location,
+              hasSeenOnboarding: false),
+          isNull,
+        );
+      }
+    });
+
+    test('still waits on splash while the session is restoring', () {
+      expect(
+        resolveAuthRedirect(const AuthInitial(), '/onboarding',
+            hasSeenOnboarding: false),
+        '/splash',
+      );
+    });
+  });
+
+  test('once onboarding is seen, its route falls through to login', () {
+    expect(
+      resolveAuthRedirect(unauthenticated, '/onboarding',
+          hasSeenOnboarding: true),
+      '/login',
+    );
   });
 
   test('an unknown location is still guarded', () {

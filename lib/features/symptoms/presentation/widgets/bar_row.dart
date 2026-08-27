@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// A labelled horizontal bar: label, a proportional fill over a track, and the
 /// value. Uses [AnimatedFractionallySizedBox] — no chart dependency for a
@@ -22,6 +24,12 @@ class BarRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    // Formatted once and used for BOTH the visible count and the semantics
+    // label — a raw int in the label made a screen reader say "1234" where the
+    // eye read "1,234".
+    final formattedValue =
+        NumberFormat.decimalPattern(l10n.localeName).format(value);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       // One node per bar: the label, the painted bar and the count are a single
@@ -29,7 +37,7 @@ class BarRow extends StatelessWidget {
       child: Semantics(
         container: true,
         excludeSemantics: true,
-        label: '$label: $value',
+        label: l10n.symptomBarRowSemanticsLabel(label, formattedValue),
         child: Row(
           children: [
             // Expanded, not Flexible: this is a ranked chart, so every bar has
@@ -67,7 +75,7 @@ class BarRow extends StatelessWidget {
             ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 28),
               child: Text(
-                '$value',
+                formattedValue,
                 textAlign: TextAlign.end,
                 style: theme.textTheme.bodyMedium,
               ),

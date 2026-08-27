@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_phase.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_phase_trends.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_cubit.dart';
@@ -13,26 +11,20 @@ import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dar
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/range_selector.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class SymptomPhasePage extends StatelessWidget {
   const SymptomPhasePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthBloc, AuthState, String?>(
-      selector: (state) => state is AuthAuthenticated ? state.user.id : null,
-      builder: (context, userId) {
-        if (userId == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        return BlocProvider(
-          create: (_) => sl<SymptomPhaseCubit>()..load(userId),
-          // The id the error state's retry re-runs the load with.
-          child: _PhaseView(userId: userId),
-        );
-      },
+    return AuthGate(
+      builder: (context, userId) => BlocProvider(
+        create: (_) => sl<SymptomPhaseCubit>()..load(userId),
+        // The id the error state's retry re-runs the load with.
+        child: _PhaseView(userId: userId),
+      ),
     );
   }
 }
@@ -46,7 +38,7 @@ class _PhaseView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('By cycle phase'),
+        title: Text(AppLocalizations.of(context).symptomPhaseTitle),
         leading: BackButton(onPressed: () => context.go('/symptoms')),
       ),
       body: BlocBuilder<SymptomPhaseCubit, SymptomPhaseState>(
@@ -152,6 +144,7 @@ class _PhaseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Padding(
@@ -161,13 +154,13 @@ class _PhaseCard extends StatelessWidget {
           children: [
             Text(
               summary.phase == CyclePhase.unknown
-                  ? 'Not enough cycle data'
-                  : cyclePhaseLabel(summary.phase),
+                  ? l10n.symptomPhaseNotEnoughCycleData
+                  : cyclePhaseLabel(l10n, summary.phase),
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.md),
             BarRow(
-              label: 'Entries',
+              label: l10n.symptomPhaseEntriesBarLabel,
               value: summary.count,
               fraction: summary.count / maxCount,
               color: theme.colorScheme.primary,
@@ -181,7 +174,10 @@ class _PhaseCard extends StatelessWidget {
                   for (final entry in summary.topTypes)
                     Chip(
                       label: Text(
-                        '${symptomTypeLabel(entry.type)} ×${entry.count}',
+                        l10n.symptomPhaseTypeCountChip(
+                          symptomTypeLabel(l10n, entry.type),
+                          entry.count,
+                        ),
                       ),
                       visualDensity: VisualDensity.compact,
                     ),
@@ -205,6 +201,7 @@ class _EmptyPhases extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 64),
       child: Column(
@@ -214,15 +211,15 @@ class _EmptyPhases extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             hasUnplaced
-                ? 'No cycle data for this window'
-                : 'No symptoms in this window',
+                ? l10n.symptomPhaseNoCycleDataTitle
+                : l10n.symptomEmptyWindowTitle,
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             hasUnplaced
-                ? 'Log your period dates to see phase patterns.'
-                : 'Log symptoms and periods to see phase patterns.',
+                ? l10n.symptomPhaseEmptyLogPeriodsBody
+                : l10n.symptomPhaseEmptyLogBothBody,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

@@ -5,6 +5,7 @@ import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/domain/usecases/period_usecases.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 
 class PeriodCubit extends Cubit<PeriodState> {
   PeriodCubit({
@@ -105,7 +106,7 @@ class PeriodCubit extends Cubit<PeriodState> {
     final optimistic = PeriodLogEntity(
       id: optimisticId,
       userId: userId,
-      startDate: DateTime(startDate.year, startDate.month, startDate.day),
+      startDate: startDate.dateOnly,
       createdAt: DateTime.now().toUtc(),
       updatedAt: DateTime.now().toUtc(),
     );
@@ -222,7 +223,7 @@ class PeriodCubit extends Cubit<PeriodState> {
       return;
     }
 
-    final day = _dateOnly(date);
+    final day = date.dateOnly;
     final existing = snapshot.dayLogFor(day);
     final now = DateTime.now().toUtc();
     final target = DayLogEntity(
@@ -318,7 +319,7 @@ class PeriodCubit extends Cubit<PeriodState> {
       id: log.id,
       userId: log.userId,
       startDate: log.startDate,
-      endDate: DateTime(endDate.year, endDate.month, endDate.day),
+      endDate: endDate.dateOnly,
       flow: log.flow,
       notes: log.notes,
       createdAt: log.createdAt,
@@ -379,9 +380,6 @@ class PeriodCubit extends Cubit<PeriodState> {
       ),
     );
   }
-
-  static DateTime _dateOnly(DateTime value) =>
-      DateTime(value.year, value.month, value.day);
 
   PeriodLoaded _loadedState(
     List<PeriodLogEntity> logs,

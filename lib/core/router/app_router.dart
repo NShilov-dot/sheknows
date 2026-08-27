@@ -7,6 +7,8 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/pages/login_page.dart';
 import 'package:sheknows/features/auth/presentation/pages/register_page.dart';
 import 'package:sheknows/features/home/presentation/pages/home_page.dart';
+import 'package:sheknows/features/onboarding/data/onboarding_prefs.dart';
+import 'package:sheknows/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:sheknows/features/period/presentation/pages/period_tracker_page.dart';
 import 'package:sheknows/features/splash/presentation/pages/splash_page.dart';
 import 'package:sheknows/features/symptoms/presentation/pages/symptom_phase_page.dart';
@@ -14,9 +16,14 @@ import 'package:sheknows/features/symptoms/presentation/pages/symptom_trends_pag
 import 'package:sheknows/features/symptoms/presentation/pages/symptoms_page.dart';
 
 @visibleForTesting
-String? resolveAuthRedirect(AuthState authState, String location) {
+String? resolveAuthRedirect(
+  AuthState authState,
+  String location, {
+  bool hasSeenOnboarding = true,
+}) {
   final isOnAuthPage = location == '/login' || location == '/register';
   final isOnSplash = location == '/splash';
+  final isOnOnboarding = location == '/onboarding';
 
   // Session restore in progress — keep users on splash.
   if (authState is AuthInitial) {
@@ -29,11 +36,17 @@ String? resolveAuthRedirect(AuthState authState, String location) {
   }
 
   if (authState is AuthAuthenticated) {
-    return isOnAuthPage || isOnSplash ? '/home' : null;
+    // A returning/restored session skips onboarding entirely.
+    return isOnAuthPage || isOnSplash || isOnOnboarding ? '/home' : null;
   }
 
-  // Unauthenticated, AuthError, etc.
-  if (isOnSplash) {
+  // Unauthenticated, AuthError, etc. A first-time visitor sees the value
+  // pitch before any auth screen — from any entry point, including a direct
+  // link to /login or /register.
+  if (!hasSeenOnboarding) {
+    return isOnOnboarding ? null : '/onboarding';
+  }
+  if (isOnSplash || isOnOnboarding) {
     return '/login';
   }
   return isOnAuthPage ? null : '/login';
@@ -49,13 +62,20 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     initialLocation: '/splash',
     refreshListenable: _refresh,
-    redirect: (context, state) =>
-        resolveAuthRedirect(_authBloc.state, state.matchedLocation),
+    redirect: (context, state) => resolveAuthRedirect(
+      _authBloc.state,
+      state.matchedLocation,
+      hasSeenOnboarding: OnboardingPrefs.hasSeenOnboarding(),
+    ),
     errorBuilder: (context, state) => const RouteNotFoundPage(),
     routes: [
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingPage(),
       ),
       GoRoute(
         path: '/login',

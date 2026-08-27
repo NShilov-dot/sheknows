@@ -5,7 +5,7 @@ import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
-import 'package:sheknows/features/period/presentation/utils/period_labels.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class PeriodHistoryList extends StatelessWidget {
   const PeriodHistoryList({super.key});
@@ -51,19 +51,23 @@ class PeriodHistoryTile extends StatelessWidget {
   /// than left live to buzz and do nothing.
   final bool busy;
 
-  String get _dateRange {
-    final start = '${log.startDate.day}/${log.startDate.month}';
-    if (log.isOngoing) {
-      return '$start – ongoing';
-    }
-    return '$start – ${log.endDate!.day}/${log.endDate!.month}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final scheme = theme.colorScheme;
     final isPending = log.id.startsWith('pending-');
+
+    final subtitleParts = [
+      l10n.commonDaysCount(log.durationInDays),
+      if (log.flow != null)
+        switch (log.flow!) {
+          FlowLevel.light => l10n.cycleHistoryFlowLight,
+          FlowLevel.medium => l10n.cycleHistoryFlowMedium,
+          FlowLevel.heavy => l10n.cycleHistoryFlowHeavy,
+        },
+      if (isPending) l10n.cycleHistorySaving,
+    ];
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -74,12 +78,12 @@ class PeriodHistoryTile extends StatelessWidget {
             ? scheme.primary
             : scheme.primary.withValues(alpha: AppAlpha.muted),
       ),
-      title: Text(_dateRange),
-      subtitle: Text(
-        '${log.durationInDays} day${log.durationInDays == 1 ? '' : 's'}'
-        '${log.flow == null ? '' : ' · ${flowLevelLabel(log.flow!)} flow'}'
-        '${isPending ? ' · saving…' : ''}',
+      title: Text(
+        log.isOngoing
+            ? l10n.cycleHistoryRangeOngoing(log.startDate)
+            : l10n.cycleHistoryRange(log.startDate, log.endDate!),
       ),
+      subtitle: Text(subtitleParts.join(' · ')),
       // A 'pending-' row has no server id yet, so PeriodCubit.removePeriod
       // early-returns and the menu's Delete silently did nothing. Show that
       // it is still saving instead of offering actions that no-op.
@@ -92,24 +96,24 @@ class PeriodHistoryTile extends StatelessWidget {
           : PopupMenuButton<String>(
               // Defaults to MaterialLocalizations' generic "Show menu";
               // name what it actually opens.
-              tooltip: 'Period options',
+              tooltip: l10n.cycleHistoryMenuTooltip,
               enabled: !busy,
               itemBuilder: (menuContext) => [
                 if (!log.isOngoing)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'reopen',
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.undo),
-                      title: Text('Reopen (ongoing)'),
+                      leading: const Icon(Icons.undo),
+                      title: Text(l10n.cycleHistoryReopen),
                     ),
                   ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(Icons.delete_outline),
-                    title: Text('Delete'),
+                    leading: const Icon(Icons.delete_outline),
+                    title: Text(l10n.commonDelete),
                   ),
                 ),
               ],
@@ -136,6 +140,7 @@ class _HistoryEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -149,12 +154,12 @@ class _HistoryEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'No periods logged yet',
+              l10n.cycleHistoryEmptyTitle,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Tap "My period started today" to start tracking.',
+              l10n.cycleHistoryEmptyBody,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,

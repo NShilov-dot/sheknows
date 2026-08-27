@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Chronological list of symptom entries, grouped under a date header whenever
 /// the day changes.
@@ -78,14 +79,18 @@ class SymptomTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final time = TimeOfDay.fromDateTime(log.loggedAt).format(context);
     final notes = log.notes?.trim();
     return ListTile(
       onTap: onTap,
-      title: Text(symptomTypeLabel(log.type)),
+      title: Text(symptomTypeLabel(l10n, log.type)),
       subtitle: Text(
         [
-          '${symptomSeverityLabel(log.severity)} · $time',
+          l10n.symptomHistoryTileSubtitle(
+            symptomSeverityLabel(l10n, log.severity),
+            time,
+          ),
           if (notes != null && notes.isNotEmpty) notes,
         ].join('\n'),
         maxLines: 3,

@@ -5,6 +5,7 @@ import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class AuthPageScaffold extends StatelessWidget {
   const AuthPageScaffold({
@@ -24,21 +25,27 @@ class AuthPageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: BlocConsumer<AuthBloc, AuthState>(
           listenWhen: (previous, current) =>
               current is AuthError ||
-              (current is AuthUnauthenticated && current.message != null),
+              (current is AuthUnauthenticated && current.notice != null),
           listener: (context, state) {
             if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(failureMessage(state.failure))),
+                SnackBar(content: Text(failureMessage(l10n, state.failure))),
               );
               context.read<AuthBloc>().add(const AuthErrorCleared());
             }
-            if (state is AuthUnauthenticated && state.message != null) {
-              onUnauthenticatedMessage?.call(context, state.message!);
+            if (state is AuthUnauthenticated && state.notice != null) {
+              onUnauthenticatedMessage?.call(
+                context,
+                switch (state.notice!) {
+                  AuthNotice.confirmEmail => l10n.authConfirmEmailNotice,
+                },
+              );
             }
           },
           builder: (context, state) {

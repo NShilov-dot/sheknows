@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/period/presentation/widgets/calendar/calendar_labels.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/month_page.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// A single day square of the calendar grid.
 class DayCell extends StatelessWidget {
@@ -53,6 +53,7 @@ class DayCell extends StatelessWidget {
       container: true,
       selected: isOnBand,
       label: _semanticsLabel(
+        AppLocalizations.of(context),
         hasBand: hasBand,
         isFuture: isFuture,
       ),
@@ -163,17 +164,26 @@ class DayCell extends StatelessWidget {
   }
 
   /// The screen-reader label: the date followed by whichever states the cell
-  /// paints. Kept in one place so localization has a single string list.
-  String _semanticsLabel({required bool hasBand, required bool isFuture}) {
-    final parts = <String>[
-      '${day.day} ${kCalendarMonthNames[day.month - 1]}',
-      if (hasBand) isFuture ? 'predicted period' : 'period logged',
-      if (isPredictedStart) 'predicted period start',
-      if (isToday) 'today',
-      if (marks.intimacy) 'intimacy logged',
-      if (marks.other) 'has notes',
+  /// paints.
+  String _semanticsLabel(
+    AppLocalizations l10n, {
+    required bool hasBand,
+    required bool isFuture,
+  }) {
+    final states = <String>[
+      if (hasBand)
+        isFuture
+            ? l10n.cycleDayCellStatePredictedPeriod
+            : l10n.cycleDayCellStatePeriodLogged,
+      if (isPredictedStart) l10n.cycleDayCellStatePredictedStart,
+      if (isToday) l10n.cycleDayCellStateToday,
+      if (marks.intimacy) l10n.cycleDayCellStateIntimacyLogged,
+      if (marks.other) l10n.cycleDayCellStateHasNotes,
     ];
-    return parts.join(', ');
+    // The joined form would leave a dangling separator with no states.
+    return states.isEmpty
+        ? l10n.cycleDayCellSemanticsDateOnly(day)
+        : l10n.cycleDayCellSemantics(day, states.join(', '));
   }
 }
 

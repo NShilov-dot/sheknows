@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sheknows/features/period/presentation/widgets/calendar/calendar_labels.dart';
 
 /// Monday-first row of weekday initials above the calendar grid.
 class WeekdayHeader extends StatelessWidget {
@@ -8,9 +7,12 @@ class WeekdayHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // narrowWeekdays is Sunday-indexed; the grid is Monday-first.
+    final nw = MaterialLocalizations.of(context).narrowWeekdays;
+    final labels = [...nw.sublist(1), nw.first];
     return Row(
       children: [
-        for (final name in kCalendarWeekdayNames)
+        for (final name in labels)
           Expanded(
             child: Center(
               child: Text(

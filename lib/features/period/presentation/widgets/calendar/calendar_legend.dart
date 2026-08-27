@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/day_cell.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Key to the calendar's bands, circles and dots.
 class CalendarLegend extends StatelessWidget {
@@ -9,6 +10,7 @@ class CalendarLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Wrap(
       alignment: WrapAlignment.center,
@@ -27,7 +29,7 @@ class CalendarLegend extends StatelessWidget {
               ),
             ),
           ),
-          label: 'Logged',
+          label: l10n.cycleLegendLogged,
         ),
         _LegendItem(
           marker: Container(
@@ -38,7 +40,7 @@ class CalendarLegend extends StatelessWidget {
               color: scheme.secondary.withValues(alpha: AppAlpha.faint),
             ),
           ),
-          label: 'Predicted',
+          label: l10n.cycleLegendPredicted,
         ),
         _LegendItem(
           marker: Container(
@@ -50,15 +52,15 @@ class CalendarLegend extends StatelessWidget {
               border: Border.all(color: scheme.primary, width: 1.5),
             ),
           ),
-          label: 'Today',
+          label: l10n.cycleLegendToday,
         ),
         _LegendItem(
           marker: Dot(color: scheme.primary),
-          label: 'Intimacy',
+          label: l10n.cycleIntimacy,
         ),
         _LegendItem(
           marker: Dot(color: scheme.tertiary),
-          label: 'Notes',
+          label: l10n.commonNotes,
         ),
       ],
     );

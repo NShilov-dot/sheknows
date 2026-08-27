@@ -4,35 +4,26 @@ import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_history_list.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_sheet.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class SymptomsPage extends StatelessWidget {
   const SymptomsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthBloc, AuthState, String?>(
-      selector: (state) => state is AuthAuthenticated ? state.user.id : null,
-      builder: (context, userId) {
-        if (userId == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return BlocProvider(
-          create: (_) => sl<SymptomsCubit>()..load(userId),
-          // The id the error state's retry re-runs the load with.
-          child: _SymptomsView(userId: userId),
-        );
-      },
+    return AuthGate(
+      builder: (context, userId) => BlocProvider(
+        create: (_) => sl<SymptomsCubit>()..load(userId),
+        // The id the error state's retry re-runs the load with.
+        child: _SymptomsView(userId: userId),
+      ),
     );
   }
 }
@@ -55,14 +46,15 @@ class _SymptomsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Symptoms'),
+        title: Text(l10n.symptomsTitle),
         leading: BackButton(onPressed: () => context.go('/home')),
         actions: [
           IconButton(
             icon: const Icon(Icons.insights),
-            tooltip: 'Trends',
+            tooltip: l10n.symptomTrendsTitle,
             onPressed: () => context.go('/symptom-trends'),
           ),
         ],
@@ -70,7 +62,7 @@ class _SymptomsView extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openLogSheet(context),
         icon: const Icon(Icons.add),
-        label: const Text('Log'),
+        label: Text(l10n.symptomLogAction),
       ),
       body: BlocConsumer<SymptomsCubit, SymptomsState>(
         listenWhen: (previous, current) {
@@ -83,7 +75,14 @@ class _SymptomsView extends StatelessWidget {
         listener: (context, state) {
           if (state is SymptomsLoaded && state.mutationFailure != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failureMessage(state.mutationFailure!))),
+              SnackBar(
+                content: Text(
+                  failureMessage(
+                    AppLocalizations.of(context),
+                    state.mutationFailure!,
+                  ),
+                ),
+              ),
             );
           }
         },
@@ -157,6 +156,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -167,12 +167,12 @@ class _EmptyState extends StatelessWidget {
                 size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'No symptoms logged yet',
+              l10n.symptomsEmptyTitle,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Tap Log to record how you feel.',
+              l10n.symptomsEmptyBody,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

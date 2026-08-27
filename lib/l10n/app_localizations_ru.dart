@@ -133,6 +133,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonGoHome => 'На главную';
 
   @override
+  String get commonNext => 'Далее';
+
+  @override
   String get commonNotes => 'Заметки';
 
   @override
@@ -140,6 +143,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commonPageNotFoundTitle => 'Страница не найдена';
+
+  @override
+  String get commonSkip => 'Пропустить';
 
   @override
   String get commonStartupFailureBody =>
@@ -525,10 +531,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeTrackCycleButton => 'Отслеживать цикл';
 
   @override
+  String get onboardingGetStarted => 'Начать';
+
+  @override
+  String get onboardingPatternsHeadline =>
+      'Замечайте закономерности, а не только симптомы.';
+
+  @override
+  String get onboardingPatternsSubtext =>
+      'Каждый отмеченный симптом автоматически сопоставляется с фазой цикла — посмотрите, что происходит на самом деле, фаза за фазой.';
+
+  @override
+  String get onboardingPredictHeadline =>
+      'Узнайте о следующих месячных заранее.';
+
+  @override
+  String get onboardingPredictSubtext =>
+      'sheknows изучает ваш ритм и прогнозирует цикл — чтобы ничто не застало вас врасплох.';
+
+  @override
   String get symptomAddSymptom => 'Добавить симптом';
 
   @override
-  String symptomBarRowSemanticsLabel(String label, int value) {
+  String symptomBarRowSemanticsLabel(String label, String value) {
     return '$label: $value';
   }
 
@@ -602,12 +627,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get symptomPickToContinue => 'Выберите симптом, чтобы продолжить';
-
-  @override
-  String get symptomRange30Days => '30 дней';
-
-  @override
-  String get symptomRange90Days => '90 дней';
 
   @override
   String get symptomRangeAllTime => 'Всё время';
@@ -718,7 +737,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get symptomsEmptyBody =>
-      'Нажмите «Записать», чтобы отметить самочувствие.';
+      'Нажмите «Добавить», чтобы отметить самочувствие.';
 
   @override
   String get symptomsEmptyTitle => 'Пока нет записей о симптомах';

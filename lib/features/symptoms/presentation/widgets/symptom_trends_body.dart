@@ -6,6 +6,7 @@ import 'package:sheknows/features/symptoms/presentation/utils/analytics_range.da
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/range_selector.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Loaded body of the symptom trends screen: range selector, summary card and
 /// the frequency/severity breakdowns. Owns the selected [AnalyticsRange] so a
@@ -97,7 +98,7 @@ class _SummaryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
-                '$total ${total == 1 ? 'entry' : 'entries'} logged',
+                AppLocalizations.of(context).symptomTrendsEntriesLogged(total),
                 style: theme.textTheme.titleMedium,
               ),
             ),
@@ -119,11 +120,14 @@ class _FrequencySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Most frequent', style: theme.textTheme.titleSmall),
+        Text(
+          AppLocalizations.of(context).symptomTrendsMostFrequent,
+          style: theme.textTheme.titleSmall,
+        ),
         const SizedBox(height: AppSpacing.md),
         for (final entry in trends.byType)
           BarRow(
-            label: symptomTypeLabel(entry.type),
+            label: symptomTypeLabel(AppLocalizations.of(context), entry.type),
             value: entry.count,
             fraction: entry.count / trends.maxTypeCount,
             color: theme.colorScheme.primary,
@@ -146,11 +150,14 @@ class _SeveritySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('By severity', style: theme.textTheme.titleSmall),
+        Text(
+          AppLocalizations.of(context).symptomTrendsBySeverity,
+          style: theme.textTheme.titleSmall,
+        ),
         const SizedBox(height: AppSpacing.md),
         for (final severity in SymptomSeverity.values)
           BarRow(
-            label: symptomSeverityLabel(severity),
+            label: symptomSeverityLabel(AppLocalizations.of(context), severity),
             value: trends.bySeverity[severity] ?? 0,
             fraction: (trends.bySeverity[severity] ?? 0) / maxCount,
             color: theme.colorScheme.tertiary,
@@ -166,6 +173,7 @@ class _EmptyTrends extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 64),
       child: Column(
@@ -173,10 +181,11 @@ class _EmptyTrends extends StatelessWidget {
           Icon(Icons.insights_outlined,
               size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(height: AppSpacing.md),
-          Text('No symptoms in this window', style: theme.textTheme.titleMedium),
+          Text(l10n.symptomEmptyWindowTitle,
+              style: theme.textTheme.titleMedium),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Log symptoms to see your trends.',
+            l10n.symptomTrendsEmptyBody,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

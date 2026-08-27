@@ -7,6 +7,7 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
 import 'package:sheknows/features/auth/presentation/widgets/register_form.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -68,9 +69,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AuthPageScaffold(
-      title: 'Create account',
-      subtitle: 'Sign up with email or Google',
+      title: l10n.authRegisterTitle,
+      subtitle: l10n.authRegisterSubtitle,
       onUnauthenticatedMessage: (context, message) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
@@ -97,8 +99,8 @@ class _RegisterPageState extends State<RegisterPage> {
           AuthAlternativeActions(
             isLoading: isLoading,
             onGooglePressed: _signInWithGoogle,
-            promptText: 'Already have an account?',
-            actionLabel: 'Sign in',
+            promptText: l10n.authHasAccountPrompt,
+            actionLabel: l10n.authSignIn,
             onActionPressed: () => context.go('/login'),
           ),
         ],

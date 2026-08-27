@@ -5,6 +5,7 @@ import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class PeriodActionsCard extends StatelessWidget {
   const PeriodActionsCard({super.key});
@@ -16,7 +17,7 @@ class PeriodActionsCard extends StatelessWidget {
       initialDate: now,
       firstDate: now.subtract(const Duration(days: 365 * 2)),
       lastDate: now,
-      helpText: 'When did your period start?',
+      helpText: AppLocalizations.of(context).cyclePeriodStartPickerHelp,
     );
     if (picked != null && context.mounted) {
       HapticFeedback.mediumImpact();
@@ -31,6 +32,7 @@ class PeriodActionsCard extends StatelessWidget {
           ? (state.stats, state.isLoading)
           : (null, false),
       builder: (context, selected) {
+        final l10n = AppLocalizations.of(context);
         final (stats, isLoading) = selected;
         if (stats == null) {
           return const SizedBox.shrink();
@@ -58,7 +60,7 @@ class PeriodActionsCard extends StatelessWidget {
                   icon: startInFlight
                       ? const _ButtonSpinner()
                       : const Icon(Icons.water_drop),
-                  label: const Text('My period started today'),
+                  label: Text(l10n.cycleStartPeriodButton),
                 ),
                 // Held back until the start actually lands, so the two buttons
                 // do not swap under the user's thumb mid-write.
@@ -78,7 +80,7 @@ class PeriodActionsCard extends StatelessWidget {
                                 .endPeriod(DateTime.now());
                           },
                     icon: const Icon(Icons.stop_circle_outlined),
-                    label: const Text('End period today'),
+                    label: Text(l10n.cycleEndPeriodButton),
                   ),
                 ],
               ],

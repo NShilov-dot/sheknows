@@ -5,6 +5,7 @@ import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/period/presentation/widgets/cycle_insights_card.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Regression tests for Group 4 (layout robustness).
 ///
@@ -39,6 +40,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.dark,
+        // BarRow reads its semantics label and formats its count through
+        // AppLocalizations, so the delegates have to be installed. Pinned to
+        // English so the formatted count is deterministic.
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         // The scaler has to be applied inside MaterialApp — it installs its
         // own MediaQuery from the view, which would discard an outer one.
         builder: (context, inner) => MediaQuery(
@@ -118,7 +125,8 @@ void main() {
       expect(t.takeException(), isNull);
 
       // The count column grows past its 28dp minimum rather than clipping.
-      final count = t.renderObject<RenderBox>(find.text('1234'));
+      // Rendered through NumberFormat.decimalPattern, so grouped.
+      final count = t.renderObject<RenderBox>(find.text('1,234'));
       expect(count.size.width, greaterThan(28));
     });
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class AuthTextField extends StatelessWidget {
   const AuthTextField({
@@ -85,6 +86,7 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return TextFormField(
       key: widget.fieldKey,
       controller: widget.controller,
@@ -108,7 +110,8 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
           icon: Icon(
             _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),
-          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+          tooltip:
+              _obscurePassword ? l10n.authShowPassword : l10n.authHidePassword,
         ),
       ),
     );

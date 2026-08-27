@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Shown by [GoRouter.errorBuilder] when a location matches no route — a stale
 /// deep link, or a typo'd push. Replaces go_router's raw exception screen.
@@ -10,6 +11,7 @@ class RouteNotFoundPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -22,10 +24,11 @@ class RouteNotFoundPage extends StatelessWidget {
                     size: AppIconSize.empty,
                     color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(height: AppSpacing.md),
-                Text('Page not found', style: theme.textTheme.titleMedium),
+                Text(l10n.commonPageNotFoundTitle,
+                    style: theme.textTheme.titleMedium),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'That link does not lead anywhere.',
+                  l10n.commonPageNotFoundBody,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -34,7 +37,7 @@ class RouteNotFoundPage extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xl),
                 FilledButton(
                   onPressed: () => context.go('/home'),
-                  child: const Text('Go home'),
+                  child: Text(l10n.commonGoHome),
                 ),
               ],
             ),

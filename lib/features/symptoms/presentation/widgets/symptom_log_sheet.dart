@@ -8,6 +8,7 @@ import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.da
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Bottom sheet for adding or editing a single symptom entry. Shared between
 /// the dedicated symptoms page (new entry, free date/time) and the period day
@@ -137,6 +138,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final isEditing = widget.existing != null;
 
     return SafeArea(
@@ -153,7 +155,9 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                isEditing ? 'Edit symptom' : 'Log a symptom',
+                isEditing
+                    ? l10n.symptomLogSheetEditTitle
+                    : l10n.symptomLogSheetNewTitle,
                 style: theme.textTheme.titleMedium,
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -168,7 +172,8 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
               ],
 
               const SizedBox(height: AppSpacing.xs),
-              const SectionLabel('Severity', icon: Icons.thermostat),
+              SectionLabel(l10n.symptomSeveritySectionLabel,
+                  icon: Icons.thermostat),
               const SizedBox(height: AppSpacing.sm),
               _SeverityChips(
                 selected: _severity,
@@ -176,7 +181,8 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
               ),
               const SizedBox(height: AppSpacing.lg),
 
-              const SectionLabel('When', icon: Icons.schedule),
+              SectionLabel(l10n.symptomWhenSectionLabel,
+                  icon: Icons.schedule),
               const SizedBox(height: AppSpacing.sm),
               _WhenRow(
                 dateTime: _dateTime,
@@ -185,7 +191,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
               ),
               const SizedBox(height: AppSpacing.lg),
 
-              const SectionLabel('Notes', icon: Icons.notes_outlined),
+              SectionLabel(l10n.commonNotes, icon: Icons.notes_outlined),
               const SizedBox(height: AppSpacing.sm),
               _NotesField(controller: _notes),
               const SizedBox(height: AppSpacing.sm),
@@ -204,10 +210,10 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                   // "Just a moment…" would promise a resolution that cannot
                   // arrive. Name that dead end instead.
                   final hint = _type == null
-                      ? 'Pick a symptom to continue'
+                      ? l10n.symptomPickToContinue
                       : state is SymptomsError
-                          ? 'Could not load your symptoms — close and try again'
-                          : (busy ? 'Just a moment…' : null);
+                          ? l10n.symptomLoadFailedCloseSheet
+                          : (busy ? l10n.symptomJustAMoment : null);
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -215,8 +221,9 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                       FilledButton.icon(
                         onPressed: _type == null || busy ? null : _save,
                         icon: const Icon(Icons.check),
-                        label:
-                            Text(isEditing ? 'Save changes' : 'Add symptom'),
+                        label: Text(isEditing
+                            ? l10n.symptomSaveChanges
+                            : l10n.symptomAddSymptom),
                       ),
                       if (hint != null) ...[
                         const SizedBox(height: AppSpacing.xs),
@@ -235,7 +242,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                           icon: Icon(Icons.delete_outline,
                               color: theme.colorScheme.error),
                           label: Text(
-                            'Delete',
+                            l10n.commonDelete,
                             style: TextStyle(color: theme.colorScheme.error),
                           ),
                         ),
@@ -265,12 +272,13 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final types =
         SymptomType.values.where((type) => categoryOf(type) == category);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(symptomCategoryLabel(category), icon: _iconFor(category)),
+        SectionLabel(symptomCategoryLabel(l10n, category), icon: _iconFor(category)),
         const SizedBox(height: AppSpacing.sm),
         Wrap(
           spacing: 8,
@@ -278,7 +286,7 @@ class _CategoryChips extends StatelessWidget {
           children: [
             for (final type in types)
               ChoiceChip(
-                label: Text(symptomTypeLabel(type)),
+                label: Text(symptomTypeLabel(l10n, type)),
                 selected: selected == type,
                 onSelected: (isSelected) {
                   HapticFeedback.selectionClick();
@@ -308,12 +316,13 @@ class _SeverityChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 8,
       children: [
         for (final severity in SymptomSeverity.values)
           ChoiceChip(
-            label: Text(symptomSeverityLabel(severity)),
+            label: Text(symptomSeverityLabel(l10n, severity)),
             selected: selected == severity,
             onSelected: (_) {
               HapticFeedback.selectionClick();
@@ -387,8 +396,8 @@ class _NotesField extends StatelessWidget {
       maxLines: 3,
       maxLength: kSymptomNotesMaxLength,
       textCapitalization: TextCapitalization.sentences,
-      decoration: const InputDecoration(
-        hintText: 'Anything worth remembering',
+      decoration: InputDecoration(
+        hintText: AppLocalizations.of(context).symptomNotesHint,
       ),
     );
   }

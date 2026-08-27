@@ -126,6 +126,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonGoHome => 'Go home';
 
   @override
+  String get commonNext => 'Next';
+
+  @override
   String get commonNotes => 'Notes';
 
   @override
@@ -133,6 +136,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonPageNotFoundTitle => 'Page not found';
+
+  @override
+  String get commonSkip => 'Skip';
 
   @override
   String get commonStartupFailureBody =>
@@ -515,10 +521,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeTrackCycleButton => 'Track my cycle';
 
   @override
+  String get onboardingGetStarted => 'Get started';
+
+  @override
+  String get onboardingPatternsHeadline =>
+      'Spot your patterns, not just your symptoms.';
+
+  @override
+  String get onboardingPatternsSubtext =>
+      'Every symptom you log is matched to your cycle phase automatically — see what really happens, phase by phase.';
+
+  @override
+  String get onboardingPredictHeadline => 'See your next period coming.';
+
+  @override
+  String get onboardingPredictSubtext =>
+      'sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.';
+
+  @override
   String get symptomAddSymptom => 'Add symptom';
 
   @override
-  String symptomBarRowSemanticsLabel(String label, int value) {
+  String symptomBarRowSemanticsLabel(String label, String value) {
     return '$label: $value';
   }
 
@@ -591,12 +615,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get symptomPickToContinue => 'Pick a symptom to continue';
-
-  @override
-  String get symptomRange30Days => '30 days';
-
-  @override
-  String get symptomRange90Days => '90 days';
 
   @override
   String get symptomRangeAllTime => 'All time';

@@ -3,34 +3,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_history_list.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_trends_body.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class SymptomTrendsPage extends StatelessWidget {
   const SymptomTrendsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthBloc, AuthState, String?>(
-      selector: (state) => state is AuthAuthenticated ? state.user.id : null,
-      builder: (context, userId) {
-        if (userId == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        return BlocProvider(
-          create: (_) => sl<SymptomsCubit>()..load(userId),
-          // This page owns its cubit instance, so its own retry is the only
-          // thing that can re-drive the load.
-          child: _TrendsView(userId: userId),
-        );
-      },
+    return AuthGate(
+      builder: (context, userId) => BlocProvider(
+        create: (_) => sl<SymptomsCubit>()..load(userId),
+        // This page owns its cubit instance, so its own retry is the only
+        // thing that can re-drive the load.
+        child: _TrendsView(userId: userId),
+      ),
     );
   }
 }
@@ -42,14 +34,15 @@ class _TrendsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trends'),
+        title: Text(l10n.symptomTrendsTitle),
         leading: BackButton(onPressed: () => context.go('/symptoms')),
         actions: [
           IconButton(
             icon: const Icon(Icons.pie_chart_outline),
-            tooltip: 'By cycle phase',
+            tooltip: l10n.symptomPhaseTitle,
             onPressed: () => context.go('/symptom-phases'),
           ),
         ],

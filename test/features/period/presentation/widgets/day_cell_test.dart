@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:sheknows/core/theme/app_theme.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/day_cell.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/month_page.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
       theme: AppTheme.dark,
+      // The cell composes its semantics label through AppLocalizations.
+      // Pinned to English so the label below is deterministic.
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
           body: Center(child: SizedBox.square(dimension: 48, child: child))),
     );
@@ -27,6 +34,13 @@ DayCell _cell({
     );
 
 void main() {
+  setUpAll(initializeDateFormatting);
+
+  late AppLocalizations en;
+  setUpAll(() async {
+    en = await AppLocalizations.delegate.load(const Locale('en'));
+  });
+
   testWidgets('announces the date and every painted state once',
       (tester) async {
     final handle = tester.ensureSemantics();
@@ -43,22 +57,17 @@ void main() {
       ),
     );
 
-    final expected = '${today.day} '
-        '${const [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ][today.month - 1]}'
-        ', period logged, today, intimacy logged, has notes';
+    // Both the date order and the separators come from the ARB keys, so the
+    // expectation cannot drift from what the widget builds.
+    final expected = en.cycleDayCellSemantics(
+      DateTime(today.year, today.month, today.day),
+      [
+        en.cycleDayCellStatePeriodLogged,
+        en.cycleDayCellStateToday,
+        en.cycleDayCellStateIntimacyLogged,
+        en.cycleDayCellStateHasNotes,
+      ].join(', '),
+    );
 
     expect(
       tester.getSemantics(find.byType(DayCell)),
@@ -88,7 +97,7 @@ void main() {
 
     expect(
       tester.getSemantics(find.byType(DayCell)).label,
-      endsWith(', predicted period'),
+      endsWith(', ${en.cycleDayCellStatePredictedPeriod}'),
     );
     handle.dispose();
   });

@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
-import 'package:sheknows/features/period/presentation/widgets/calendar/calendar_labels.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/calendar_legend.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/month_page.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/weekday_header.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Interactive month calendar for the cycle.
 ///
@@ -103,6 +104,7 @@ class _CycleCalendarState extends State<CycleCalendar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final visibleMonth =
         DateTime(widget.month.year, widget.month.month);
 
@@ -113,13 +115,13 @@ class _CycleCalendarState extends State<CycleCalendar> {
           children: [
             IconButton(
               icon: const Icon(Icons.chevron_left),
-              tooltip: 'Previous month',
+              tooltip: l10n.cycleCalendarPreviousMonth,
               onPressed: _page > 0 ? () => _animateTo(_page - 1) : null,
             ),
             Flexible(
               child: Text(
-                '${kCalendarMonthNames[visibleMonth.month - 1]} '
-                '${visibleMonth.year}',
+                DateFormat.yMMMM(Localizations.localeOf(context).toString())
+                    .format(visibleMonth),
                 style: theme.textTheme.titleMedium,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -128,7 +130,7 @@ class _CycleCalendarState extends State<CycleCalendar> {
             ),
             IconButton(
               icon: const Icon(Icons.chevron_right),
-              tooltip: 'Next month',
+              tooltip: l10n.cycleCalendarNextMonth,
               onPressed:
                   _page < _totalPages - 1 ? () => _animateTo(_page + 1) : null,
             ),

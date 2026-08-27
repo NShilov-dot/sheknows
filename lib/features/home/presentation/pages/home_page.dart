@@ -11,32 +11,34 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/home/presentation/widgets/delete_account_dialog.dart';
 import 'package:sheknows/features/home/presentation/widgets/profile_section.dart';
 import 'package:sheknows/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (previous, current) => current is AuthError,
       listener: (context, state) {
         if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failureMessage(state.failure))),
+            SnackBar(content: Text(failureMessage(l10n, state.failure))),
           );
           context.read<AuthBloc>().add(const AuthErrorCleared());
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('sheknows'),
+          title: Text(l10n.homeAppBarTitle),
           actions: [
             IconButton(
               onPressed: () {
                 context.read<AuthBloc>().add(const AuthSignOutRequested());
               },
               icon: const Icon(Icons.logout),
-              tooltip: 'Sign out',
+              tooltip: l10n.homeSignOutTooltip,
             ),
           ],
         ),
@@ -81,6 +83,7 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     const padding = EdgeInsets.all(AppSpacing.xl);
 
     return SafeArea(
@@ -101,18 +104,20 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Signed in',
+                          l10n.homeSignedIn,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        Text('Email: ${widget.user.email}'),
+                        Text(l10n.homeEmailLabel(widget.user.email)),
                         const SizedBox(height: AppSpacing.sm),
                         Text(
-                          'Email confirmed: ${widget.user.emailConfirmed ? 'Yes' : 'No'}',
+                          widget.user.emailConfirmed
+                              ? l10n.homeEmailConfirmedYes
+                              : l10n.homeEmailConfirmedNo,
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         Text(
-                          'Profile',
+                          l10n.homeProfileSectionTitle,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: AppSpacing.sm),
@@ -121,13 +126,13 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
                         FilledButton.icon(
                           onPressed: () => context.go('/cycle'),
                           icon: const Icon(Icons.calendar_month),
-                          label: const Text('Track my cycle'),
+                          label: Text(l10n.homeTrackCycleButton),
                         ),
                         const SizedBox(height: AppSpacing.md),
                         FilledButton.icon(
                           onPressed: () => context.go('/symptoms'),
                           icon: const Icon(Icons.healing_outlined),
-                          label: const Text('Log symptoms'),
+                          label: Text(l10n.homeLogSymptomsButton),
                         ),
                         const Spacer(),
                         Align(
@@ -139,7 +144,7 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
                               color: Theme.of(context).colorScheme.error,
                             ),
                             label: Text(
-                              'Delete account',
+                              l10n.homeDeleteAccountButton,
                               style: TextStyle(
                                   color: Theme.of(context).colorScheme.error),
                             ),

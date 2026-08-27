@@ -135,6 +135,10 @@
   "@commonGoHome": {
     "description": "Button on the 'Page not found' screen that navigates to /home. Keep short — it is a filled button."
   },
+  "commonNext": "Next",
+  "@commonNext": {
+    "description": "Advances to the next onboarding page. Keep short — it is a filled button."
+  },
   "commonNotes": "Notes",
   "@commonNotes": {
     "description": "Free-text notes. Calendar legend label for the notes dot, and the notes section heading in the day sheet. Also used by the symptom log sheet (another agent's file)."
@@ -146,6 +150,10 @@
   "commonPageNotFoundTitle": "Page not found",
   "@commonPageNotFoundTitle": {
     "description": "Title of the router fallback screen shown when a deep link or push matches no route."
+  },
+  "commonSkip": "Skip",
+  "@commonSkip": {
+    "description": "Skips the onboarding pitch and goes straight to sign-in."
   },
   "commonStartupFailureBody": "Restarting the app usually fixes this. If it keeps happening, send us the details below.",
   "@commonStartupFailureBody": {
@@ -673,19 +681,39 @@
   "@homeTrackCycleButton": {
     "description": "Primary button on the home screen that opens the menstrual cycle tracker. Keep short — it sits next to an icon on one line."
   },
+  "onboardingGetStarted": "Get started",
+  "@onboardingGetStarted": {
+    "description": "Primary button on the last onboarding page; leads to sign-in."
+  },
+  "onboardingPatternsHeadline": "Spot your patterns, not just your symptoms.",
+  "@onboardingPatternsHeadline": {
+    "description": "Headline of the second onboarding page — the phase-analytics value pitch."
+  },
+  "onboardingPatternsSubtext": "Every symptom you log is matched to your cycle phase automatically — see what really happens, phase by phase.",
+  "@onboardingPatternsSubtext": {
+    "description": "Body copy under the second onboarding headline."
+  },
+  "onboardingPredictHeadline": "See your next period coming.",
+  "@onboardingPredictHeadline": {
+    "description": "Headline of the first onboarding page — the prediction value pitch."
+  },
+  "onboardingPredictSubtext": "sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.",
+  "@onboardingPredictSubtext": {
+    "description": "Body copy under the first onboarding headline. \"sheknows\" is the product name — never translated."
+  },
   "symptomAddSymptom": "Add symptom",
   "@symptomAddSymptom": {
     "description": "Submit button of the symptom log sheet when creating a new entry."
   },
   "symptomBarRowSemanticsLabel": "{label}: {value}",
   "@symptomBarRowSemanticsLabel": {
-    "description": "Screen-reader label collapsing one chart bar (its label, painted bar and count) into a single announcement. {label} is an already-localized symptom type, severity or 'Entries' label; {value} is the count. Not a plural: {label} is an arbitrary noun the number cannot agree with.",
+    "description": "Screen-reader label collapsing one chart bar (its label, painted bar and count) into a single announcement. {label} is an already-localized symptom type, severity or 'Entries' label. {value} is the count ALREADY FORMATTED by the caller via NumberFormat, so the announcement matches the digits on screen — passing a raw int would make a screen reader say \"1234\" where the eye reads \"1,234\".",
     "placeholders": {
       "label": {
         "type": "String"
       },
       "value": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -788,14 +816,6 @@
   "symptomPickToContinue": "Pick a symptom to continue",
   "@symptomPickToContinue": {
     "description": "Hint under the disabled submit button in the log sheet when no symptom type is selected yet."
-  },
-  "symptomRange30Days": "30 days",
-  "@symptomRange30Days": {
-    "description": "OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. A fixed literal, not a counted quantity: no placeholder, no ICU plural."
-  },
-  "symptomRange90Days": "90 days",
-  "@symptomRange90Days": {
-    "description": "OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. Fixed literal, no placeholder, no plural."
   },
   "symptomRangeAllTime": "All time",
   "@symptomRangeAllTime": {
@@ -932,7 +952,7 @@
   },
   "symptomsEmptyBody": "Tap Log to record how you feel.",
   "@symptomsEmptyBody": {
-    "description": "Body copy of the symptoms-list empty state. It quotes the FAB label by name: the quoted word MUST match this language's symptomLogFab value exactly."
+    "description": "Body copy of the symptoms empty state. It quotes the log button's own label, so the quoted word MUST equal symptomLogAction in the same language."
   },
   "symptomsEmptyTitle": "No symptoms logged yet",
   "@symptomsEmptyTitle": {

@@ -1,34 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class CycleInsightsCard extends StatelessWidget {
   const CycleInsightsCard({super.key});
 
-  static String _formatDate(DateTime date) =>
-      '${date.day} ${_statsMonthNames[date.month - 1]} ${date.year}';
-
-  static const _statsMonthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-
-  static List<(String, String)> _itemsFor(CycleStats stats) => <(String, String)>[
-        ('Logged periods', '${stats.periodCount}'),
+  static List<(String, String)> _itemsFor(
+    AppLocalizations l10n,
+    CycleStats stats,
+  ) =>
+      <(String, String)>[
+        (
+          l10n.cycleInsightsLoggedPeriods,
+          NumberFormat.decimalPattern(l10n.localeName).format(stats.periodCount),
+        ),
         if (stats.averageCycleLength != null)
-          ('Avg cycle length', '${stats.averageCycleLength} days'),
+          (
+            l10n.cycleInsightsAvgCycleLength,
+            l10n.commonDaysCount(stats.averageCycleLength!),
+          ),
         if (stats.averagePeriodLength != null)
-          ('Avg period length', '${stats.averagePeriodLength} days'),
+          (
+            l10n.cycleInsightsAvgPeriodLength,
+            l10n.commonDaysCount(stats.averagePeriodLength!),
+          ),
         if (stats.currentPeriod != null)
           (
-            'Current period',
-            'Day ${stats.currentPeriod!.durationInDays} of bleeding',
+            l10n.cycleInsightsCurrentPeriod,
+            l10n.cycleInsightsBleedingDay(stats.currentPeriod!.durationInDays),
           ),
         if (stats.hasPrediction)
-          ('Next period expected', _formatDate(stats.nextPredictedStart!)),
+          (
+            l10n.cycleInsightsNextPeriod,
+            l10n.cycleNextPeriodDate(stats.nextPredictedStart!),
+          ),
       ];
 
   @override
@@ -39,6 +49,7 @@ class CycleInsightsCard extends StatelessWidget {
         if (stats == null) {
           return const SizedBox.shrink();
         }
+        final l10n = AppLocalizations.of(context);
 
         return Card(
           child: Padding(
@@ -46,15 +57,18 @@ class CycleInsightsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Insights', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  l10n.cycleInsightsTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.md),
-                for (final item in _itemsFor(stats))
+                for (final item in _itemsFor(l10n, stats))
                   InsightRow(label: item.$1, value: item.$2),
                 if (!stats.hasPrediction && stats.periodCount < 2)
                   Padding(
                     padding: const EdgeInsets.only(top: AppSpacing.sm),
                     child: Text(
-                      'Log at least two periods to see cycle predictions.',
+                      l10n.cycleInsightsPredictionHint,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,

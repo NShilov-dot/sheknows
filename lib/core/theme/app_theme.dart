@@ -97,11 +97,9 @@ abstract final class AppTheme {
           onSurface: const Color(0xFF241F3D),
           surfaceContainerHighest: const Color(0xFFEFEAF6),
           onSurfaceVariant: const Color(0xFF6B6486),
-          // #B0AAC4 topped out at 2.12:1 on the light scaffold, so it could
-          // not form a visible boundary at ANY alpha — a boundary colour that
-          // cannot bound. Same lavender hue, walked dark enough to clear the
-          // 3:1 WCAG 1.4.11 minimum on both the card (3.46:1) and the
-          // scaffold (3.29:1).
+          // #B0AAC4 topped out at 2.12:1 on the light scaffold — unusable at
+          // any alpha. Same hue, dark enough to clear WCAG 1.4.11's 3:1 on
+          // both card (3.46:1) and scaffold (3.29:1).
           outline: const Color(0xFF8C879C),
           error: const Color(0xFFB3261E),
           onError: Colors.white,
@@ -143,12 +141,9 @@ abstract final class AppTheme {
         foregroundColor: scheme.onSurface,
         elevation: 0,
         centerTitle: false,
-        // NOT the bare SystemUiOverlayStyle.light/.dark constants: those carry
-        // systemNavigationBarColor black/white, and when the AppBar is the only
-        // annotated region Flutter forwards that to Android — clobbering the
-        // AppTheme.night nav bar AppInitializer sets, so the bar flipped from
-        // indigo to black the moment you landed on a screen with an AppBar.
-        // Spelling it out keeps this in step with AppInitializer.
+        // NOT the bare SystemUiOverlayStyle.light/.dark constants: they carry
+        // systemNavigationBarColor black/white, which Flutter forwards to
+        // Android and which clobbers the nav bar AppInitializer sets.
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: const Color(0x00000000),
           statusBarIconBrightness:

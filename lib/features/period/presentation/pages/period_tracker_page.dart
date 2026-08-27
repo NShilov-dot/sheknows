@@ -14,26 +14,19 @@ import 'package:sheknows/features/period/presentation/widgets/cycle_insights_car
 import 'package:sheknows/features/period/presentation/widgets/cycle_moon_header.dart';
 import 'package:sheknows/features/period/presentation/widgets/period_actions_card.dart';
 import 'package:sheknows/features/period/presentation/widgets/period_history_list.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class PeriodTrackerPage extends StatelessWidget {
   const PeriodTrackerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthBloc, AuthState, String?>(
-      selector: (state) => state is AuthAuthenticated ? state.user.id : null,
-      builder: (context, userId) {
-        if (userId == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return BlocProvider(
-          create: (_) => sl<PeriodCubit>()..load(userId),
-          child: const _PeriodTrackerView(),
-        );
-      },
+    return AuthGate(
+      builder: (context, userId) => BlocProvider(
+        create: (_) => sl<PeriodCubit>()..load(userId),
+        child: const _PeriodTrackerView(),
+      ),
     );
   }
 }
@@ -45,7 +38,7 @@ class _PeriodTrackerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cycle'),
+        title: Text(AppLocalizations.of(context).cycleTitle),
         leading: BackButton(onPressed: () => context.go('/home')),
       ),
       body: BlocConsumer<PeriodCubit, PeriodState>(
@@ -59,7 +52,14 @@ class _PeriodTrackerView extends StatelessWidget {
         listener: (context, state) {
           if (state is PeriodLoaded && state.mutationFailure != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failureMessage(state.mutationFailure!))),
+              SnackBar(
+                content: Text(
+                  failureMessage(
+                    AppLocalizations.of(context),
+                    state.mutationFailure!,
+                  ),
+                ),
+              ),
             );
           }
         },
@@ -107,7 +107,7 @@ class _PeriodBody extends StatelessWidget {
             const PeriodActionsCard(),
             const SizedBox(height: AppSpacing.xl),
             Text(
-              'History',
+              AppLocalizations.of(context).cycleHistoryTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -142,7 +142,7 @@ class _PeriodErrorView extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              failureMessage(failure),
+              failureMessage(AppLocalizations.of(context), failure),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -158,7 +158,7 @@ class _PeriodErrorView extends StatelessWidget {
                 context.read<PeriodCubit>().load(authState.user.id);
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Try again'),
+              label: Text(AppLocalizations.of(context).commonTryAgain),
             ),
           ],
         ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// The email / password / confirm-password form of the register page.
 ///
@@ -39,6 +41,7 @@ class RegisterForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AutofillGroup(
       child: Form(
         key: formKey,
@@ -48,24 +51,34 @@ class RegisterForm extends StatelessWidget {
           children: [
             AuthTextField(
               controller: emailController,
-              label: 'Email',
+              label: l10n.authEmailLabel,
               focusNode: emailFocusNode,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.email],
-              validator: AuthValidators.email,
+              validator: (value) {
+                final error = AuthValidators.email(value);
+                return error == null
+                    ? null
+                    : authValidationMessage(l10n, error);
+              },
               onFieldSubmitted: (_) =>
                   FocusScope.of(context).requestFocus(passwordFocusNode),
             ),
             const SizedBox(height: AppSpacing.lg),
             AuthPasswordField(
               controller: passwordController,
-              label: 'Password',
+              label: l10n.authPasswordLabel,
               focusNode: passwordFocusNode,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.newPassword],
-              validator: (value) =>
-                  AuthValidators.password(value, forRegistration: true),
+              validator: (value) {
+                final error =
+                    AuthValidators.password(value, forRegistration: true);
+                return error == null
+                    ? null
+                    : authValidationMessage(l10n, error);
+              },
               onChanged: onPasswordChanged,
               onFieldSubmitted: (_) =>
                   FocusScope.of(context).requestFocus(confirmPasswordFocusNode),
@@ -76,18 +89,23 @@ class RegisterForm extends StatelessWidget {
             AuthPasswordField(
               fieldKey: confirmFieldKey,
               controller: confirmPasswordController,
-              label: 'Confirm password',
+              label: l10n.authConfirmPasswordLabel,
               focusNode: confirmPasswordFocusNode,
               autofillHints: const [AutofillHints.newPassword],
-              validator: (value) => AuthValidators.confirmPassword(
-                value,
-                passwordController.text,
-              ),
+              validator: (value) {
+                final error = AuthValidators.confirmPassword(
+                  value,
+                  passwordController.text,
+                );
+                return error == null
+                    ? null
+                    : authValidationMessage(l10n, error);
+              },
               onFieldSubmitted: (_) => onSubmit(),
             ),
             const SizedBox(height: AppSpacing.xl),
             AuthPrimaryButton(
-              label: 'Sign up',
+              label: l10n.authSignUp,
               isLoading: isLoading,
               onPressed: onSubmit,
             ),
@@ -104,8 +122,8 @@ class _PasswordRulesHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'At least ${AuthValidators.minPasswordLength} characters, '
-      'with a letter and a number',
+      AppLocalizations.of(context)
+          .authPasswordRulesHint(AuthValidators.minPasswordLength),
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),

@@ -9,6 +9,8 @@ import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dar
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_sheet.dart';
+import 'package:sheknows/core/utils/date_only.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// This day's symptom entries, backed by its own page-scoped [SymptomsCubit]
 /// (a fresh instance loaded to just this day's window).
@@ -21,8 +23,8 @@ class DaySymptomsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final from = DateTime(day.year, day.month, day.day);
-    final to = DateTime(day.year, day.month, day.day, 23, 59, 59, 999);
+    final from = day.dateOnly;
+    final to = day.endOfDay;
     return BlocProvider(
       create: (_) => sl<SymptomsCubit>()..load(userId, from: from, to: to),
       // Deliberately NOT a snack-bar listener. This section only ever renders
@@ -51,18 +53,22 @@ class _DaySymptomsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            const Expanded(
-              child: SectionLabel('Symptoms', icon: Icons.healing_outlined),
+            Expanded(
+              child: SectionLabel(
+                l10n.symptomsTitle,
+                icon: Icons.healing_outlined,
+              ),
             ),
             TextButton.icon(
               onPressed: () => _openSymptomSheet(context, day: day),
               icon: const Icon(Icons.add, size: AppIconSize.md),
-              label: const Text('Log'),
+              label: Text(l10n.symptomLogAction),
             ),
           ],
         ),
@@ -81,7 +87,7 @@ class _DaySymptomsBody extends StatelessWidget {
               }
               if (state is SymptomsError) {
                 return _SymptomsErrorRow(
-                  message: failureMessage(state.failure),
+                  message: failureMessage(l10n, state.failure),
                   onRetry: () => context
                       .read<SymptomsCubit>()
                       .load(userId, from: from, to: to),
@@ -100,7 +106,7 @@ class _DaySymptomsBody extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _SymptomsErrorRow(
-                      message: failureMessage(mutationFailure),
+                      message: failureMessage(l10n, mutationFailure),
                       onRetry: () => context
                           .read<SymptomsCubit>()
                           .load(userId, from: from, to: to),
@@ -116,7 +122,7 @@ class _DaySymptomsBody extends StatelessWidget {
                 return Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'No symptoms logged for this day',
+                    l10n.cycleDayNoSymptoms,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -161,6 +167,7 @@ class _SymptomLines extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         for (final log in logs)
@@ -168,10 +175,12 @@ class _SymptomLines extends StatelessWidget {
             key: ValueKey(log.id),
             contentPadding: EdgeInsets.zero,
             dense: true,
-            title: Text(symptomTypeLabel(log.type)),
+            title: Text(symptomTypeLabel(l10n, log.type)),
             subtitle: Text(
-              '${symptomSeverityLabel(log.severity)} · '
-              '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
+              l10n.symptomHistoryTileSubtitle(
+                symptomSeverityLabel(l10n, log.severity),
+                TimeOfDay.fromDateTime(log.loggedAt).format(context),
+              ),
             ),
             onTap: () =>
                 _openSymptomSheet(context, day: day, existing: log),
@@ -228,7 +237,10 @@ class _SymptomsErrorRow extends StatelessWidget {
             ),
           ),
         ),
-        TextButton(onPressed: onRetry, child: const Text('Try again')),
+        TextButton(
+          onPressed: onRetry,
+          child: Text(AppLocalizations.of(context).commonTryAgain),
+        ),
       ],
     );
   }

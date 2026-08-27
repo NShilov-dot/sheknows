@@ -124,6 +124,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get commonGoHome => 'Bosh sahifaga';
 
   @override
+  String get commonNext => 'Keyingi';
+
+  @override
   String get commonNotes => 'Eslatmalar';
 
   @override
@@ -131,6 +134,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get commonPageNotFoundTitle => 'Sahifa topilmadi';
+
+  @override
+  String get commonSkip => 'Oʻtkazib yuborish';
 
   @override
   String get commonStartupFailureBody =>
@@ -514,10 +520,29 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeTrackCycleButton => 'Tsiklni kuzatish';
 
   @override
+  String get onboardingGetStarted => 'Boshlash';
+
+  @override
+  String get onboardingPatternsHeadline =>
+      'Nafaqat simptomlarni, balki qonuniyatlarni ham koʻring.';
+
+  @override
+  String get onboardingPatternsSubtext =>
+      'Siz qayd etgan har bir simptom tsikl fazasiga avtomatik moslanadi — nima sodir boʻlayotganini faza boʻyicha koʻring.';
+
+  @override
+  String get onboardingPredictHeadline =>
+      'Keyingi hayz kunlarini oldindan bilib oling.';
+
+  @override
+  String get onboardingPredictSubtext =>
+      'sheknows sizning ritmingizni oʻrganib, tsiklni oldindan aytadi — hech narsa sizni kutilmaganda ushlamaydi.';
+
+  @override
   String get symptomAddSymptom => 'Simptomni qo\'shish';
 
   @override
-  String symptomBarRowSemanticsLabel(String label, int value) {
+  String symptomBarRowSemanticsLabel(String label, String value) {
     return '$label: $value';
   }
 
@@ -592,12 +617,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get symptomPickToContinue => 'Davom etish uchun simptomni tanlang';
-
-  @override
-  String get symptomRange30Days => '30 kun';
-
-  @override
-  String get symptomRange90Days => '90 kun';
 
   @override
   String get symptomRangeAllTime => 'Butun davr';
@@ -705,7 +724,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get symptomsEmptyBody =>
-      'O\'zingizni qanday his qilayotganingizni yozish uchun «Qo\'shish»ni bosing.';
+      'Oʻzingizni qanday his qilayotganingizni yozish uchun «Qoʻshish»ni bosing.';
 
   @override
   String get symptomsEmptyTitle => 'Hali hech qanday simptom yozilmagan';

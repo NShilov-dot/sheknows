@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class DeleteAccountDialog extends StatelessWidget {
   const DeleteAccountDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Delete account?'),
-      content: const Text(
-        'This permanently deletes your account and all of your data. '
-        'This cannot be undone.',
-      ),
+      title: Text(l10n.homeDeleteAccountDialogTitle),
+      content: Text(l10n.homeDeleteAccountDialogBody),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(
-            'Delete',
+            l10n.commonDelete,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ),

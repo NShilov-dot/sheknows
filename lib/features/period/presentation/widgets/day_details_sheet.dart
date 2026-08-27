@@ -13,6 +13,7 @@ import 'package:sheknows/features/period/presentation/utils/day_status.dart';
 import 'package:sheknows/features/period/presentation/widgets/day_details/day_header.dart';
 import 'package:sheknows/features/period/presentation/widgets/day_details/day_symptoms_section.dart';
 import 'package:sheknows/features/period/presentation/widgets/day_details/period_actions.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Bottom sheet shown when a calendar day is tapped. It offers the period
 /// actions that make sense for the day (start / end / delete) and — for days
@@ -43,6 +44,7 @@ class DayDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final today = DateTime.now();
     final isFuture = day.isAfter(today);
 
@@ -69,6 +71,7 @@ class DayDetailsSheet extends StatelessWidget {
               DayHeader(
                 day: day,
                 status: dayStatusLabel(
+                  l10n: l10n,
                   day: day,
                   today: today,
                   logs: logs,
@@ -180,6 +183,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -187,10 +191,10 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
         const SizedBox(height: 20),
         const Divider(height: 1),
         const SizedBox(height: AppSpacing.lg),
-        Text('How was your day?', style: theme.textTheme.titleMedium),
+        Text(l10n.cycleDayHowWasYourDay, style: theme.textTheme.titleMedium),
         const SizedBox(height: AppSpacing.md),
 
-        const SectionLabel('Intimacy', icon: Icons.favorite_border),
+        SectionLabel(l10n.cycleIntimacy, icon: Icons.favorite_border),
         const SizedBox(height: AppSpacing.sm),
         _IntimacyChips(
           initial: _sexualActivity,
@@ -203,7 +207,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
           const SizedBox(height: AppSpacing.lg),
         ],
 
-        const SectionLabel('Notes', icon: Icons.notes_outlined),
+        SectionLabel(l10n.commonNotes, icon: Icons.notes_outlined),
         const SizedBox(height: AppSpacing.sm),
         TextField(
           controller: _notes,
@@ -211,9 +215,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
           maxLines: 3,
           maxLength: kDayNotesMaxLength,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(
-            hintText: 'Anything you want to remember about today',
-          ),
+          decoration: InputDecoration(hintText: l10n.cycleDayNotesHint),
         ),
         const SizedBox(height: AppSpacing.sm),
         // The cubit drops a save while another mutation is in flight, so the
@@ -229,7 +231,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
                 FilledButton.icon(
                   onPressed: busy ? null : _save,
                   icon: const Icon(Icons.check),
-                  label: const Text('Save day'),
+                  label: Text(l10n.cycleSaveDay),
                 ),
                 if (widget.dayLog != null) ...[
                   const SizedBox(height: AppSpacing.xs),
@@ -238,7 +240,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
                         ? null
                         : () => _runPeriodAction(context,
                             () => widget.cubit.deleteDayLog(widget.dayLog!.id)),
-                    child: const Text('Clear this day'),
+                    child: Text(l10n.cycleClearThisDay),
                   ),
                 ],
               ],
@@ -275,13 +277,14 @@ class _IntimacyChipsState extends State<_IntimacyChips> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
         for (final activity in SexualActivity.values)
           ChoiceChip(
-            label: Text(_sexualActivityLabel(activity)),
+            label: Text(_sexualActivityLabel(l10n, activity)),
             selected: _selected == activity,
             onSelected: (selected) {
               HapticFeedback.selectionClick();
@@ -294,7 +297,8 @@ class _IntimacyChipsState extends State<_IntimacyChips> {
   }
 }
 
-String _sexualActivityLabel(SexualActivity activity) => switch (activity) {
-      SexualActivity.protected => 'Protected',
-      SexualActivity.unprotected => 'Unprotected',
+String _sexualActivityLabel(AppLocalizations l10n, SexualActivity activity) =>
+    switch (activity) {
+      SexualActivity.protected => l10n.cycleIntimacyProtected,
+      SexualActivity.unprotected => l10n.cycleIntimacyUnprotected,
     };

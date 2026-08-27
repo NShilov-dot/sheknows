@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class AuthFormDivider extends StatelessWidget {
   const AuthFormDivider({super.key});
@@ -12,7 +13,7 @@ class AuthFormDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
-            'or',
+            AppLocalizations.of(context).authDividerOr,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

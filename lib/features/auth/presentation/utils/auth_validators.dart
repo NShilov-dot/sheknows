@@ -1,3 +1,13 @@
+import 'package:sheknows/core/constants/auth.dart';
+import 'package:sheknows/core/error/validation_error.dart';
+
+// Re-exported so call sites that already import this file for the
+// validators also see the codes they return.
+export 'package:sheknows/core/error/validation_error.dart';
+
+/// Why a credential field was rejected.
+///
+
 class AuthValidators {
   AuthValidators._();
 
@@ -11,15 +21,17 @@ class AuthValidators {
   /// Minimum length enforced for new accounts.
   /// Align this with Supabase Dashboard -> Authentication -> Providers -> Email
   /// (Password requirements) so client and server rules stay in sync.
-  static const int minPasswordLength = 8;
+  /// Kept as a forwarding alias so existing call sites keep reading the
+  /// rule from the validator that enforces it.
+  static const int minPasswordLength = kMinPasswordLength;
 
-  static String? email(String? value) {
+  static AuthValidationError? email(String? value) {
     final trimmed = value?.trim() ?? '';
     if (trimmed.isEmpty) {
-      return 'Email is required';
+      return AuthValidationError.emailRequired;
     }
     if (!_emailRegex.hasMatch(trimmed)) {
-      return 'Enter a valid email address';
+      return AuthValidationError.emailInvalid;
     }
     return null;
   }
@@ -29,10 +41,13 @@ class AuthValidators {
   /// Sign-in only requires a non-empty value so existing accounts are not
   /// blocked by newer strength rules. Registration enforces length, no
   /// surrounding whitespace, and at least one letter and one digit.
-  static String? password(String? value, {bool forRegistration = false}) {
+  static AuthValidationError? password(
+    String? value, {
+    bool forRegistration = false,
+  }) {
     final password = value ?? '';
     if (password.isEmpty) {
-      return 'Password is required';
+      return AuthValidationError.passwordRequired;
     }
 
     if (!forRegistration) {
@@ -40,24 +55,24 @@ class AuthValidators {
     }
 
     if (password.trim() != password) {
-      return 'Password cannot start or end with spaces';
+      return AuthValidationError.passwordWhitespace;
     }
     if (password.length < minPasswordLength) {
-      return 'Password must be at least $minPasswordLength characters';
+      return AuthValidationError.passwordTooShort;
     }
     if (!_hasLetter.hasMatch(password) || !_hasDigit.hasMatch(password)) {
-      return 'Password must include at least one letter and one number';
+      return AuthValidationError.passwordWeak;
     }
     return null;
   }
 
-  static String? confirmPassword(String? value, String password) {
+  static AuthValidationError? confirmPassword(String? value, String password) {
     final confirmation = value ?? '';
     if (confirmation.isEmpty) {
-      return 'Confirm your password';
+      return AuthValidationError.confirmRequired;
     }
     if (confirmation != password) {
-      return 'Passwords do not match';
+      return AuthValidationError.confirmMismatch;
     }
     return null;
   }

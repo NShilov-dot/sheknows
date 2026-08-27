@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/error/failures.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// Failed-load state for the symptom screens: an icon, copy the user can act
 /// on (never the raw backend text — see [failureMessage]) and a way back in.
@@ -35,7 +36,7 @@ class SymptomsErrorView extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              failureMessage(failure),
+              failureMessage(AppLocalizations.of(context), failure),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -45,7 +46,7 @@ class SymptomsErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Try again'),
+              label: Text(AppLocalizations.of(context).commonTryAgain),
             ),
           ],
         ),

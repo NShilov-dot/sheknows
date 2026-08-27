@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -60,9 +62,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AuthPageScaffold(
-      title: 'Welcome back',
-      subtitle: 'Sign in to continue',
+      title: l10n.authLoginTitle,
+      subtitle: l10n.authLoginSubtitle,
       builder: (context, isLoading) => AutofillGroup(
         child: Form(
           key: _formKey,
@@ -72,35 +75,45 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               AuthTextField(
                 controller: _emailController,
-                label: 'Email',
+                label: l10n.authEmailLabel,
                 focusNode: _emailFocusNode,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.email],
-                validator: AuthValidators.email,
+                validator: (value) {
+                  final error = AuthValidators.email(value);
+                  return error == null
+                      ? null
+                      : authValidationMessage(l10n, error);
+                },
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_passwordFocusNode),
               ),
               const SizedBox(height: AppSpacing.lg),
               AuthPasswordField(
                 controller: _passwordController,
-                label: 'Password',
+                label: l10n.authPasswordLabel,
                 focusNode: _passwordFocusNode,
                 autofillHints: const [AutofillHints.password],
-                validator: AuthValidators.password,
+                validator: (value) {
+                  final error = AuthValidators.password(value);
+                  return error == null
+                      ? null
+                      : authValidationMessage(l10n, error);
+                },
                 onFieldSubmitted: (_) => _submit(),
               ),
               const SizedBox(height: AppSpacing.xl),
               AuthPrimaryButton(
-                label: 'Sign in',
+                label: l10n.authSignIn,
                 isLoading: isLoading,
                 onPressed: _submit,
               ),
               AuthAlternativeActions(
                 isLoading: isLoading,
                 onGooglePressed: _signInWithGoogle,
-                promptText: "Don't have an account?",
-                actionLabel: 'Sign up',
+                promptText: l10n.authNoAccountPrompt,
+                actionLabel: l10n.authSignUp,
                 onActionPressed: () => context.go('/register'),
               ),
             ],

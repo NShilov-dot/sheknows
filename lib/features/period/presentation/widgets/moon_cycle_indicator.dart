@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_theme.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// The Lunar Bloom signature element: a moon that waxes and wanes with the
 /// user's cycle.
@@ -32,59 +33,63 @@ class MoonCycleIndicator extends StatelessWidget {
     return ((day - 1) / _cycleLength).clamp(0.0, 0.999);
   }
 
-  /// (name, hint) for each eighth of the cycle.
-  static const List<(String, String)> _phases = [
-    ('New moon', 'Your period is here or about to arrive'),
-    ('Waxing crescent', 'Energy is building'),
-    ('First quarter', 'Steady momentum'),
-    ('Waxing gibbous', 'Ovulation is approaching'),
-    ('Full moon', 'Peak of your cycle'),
-    ('Waning gibbous', 'Wind-down begins'),
-    ('Last quarter', 'Reflect and rest'),
-    ('Waning crescent', 'Be gentle with yourself'),
-  ];
+  /// The cycle is mapped onto the moon's eight phases.
+  static const _phaseCount = 8;
 
   int get _phaseIndex =>
-      (_phase * _phases.length).floor().clamp(0, _phases.length - 1);
+      (_phase * _phaseCount).floor().clamp(0, _phaseCount - 1);
 
-  String get _phaseName => _phases[_phaseIndex].$1;
-
-  String get _phaseHint => _phases[_phaseIndex].$2;
+  /// (name, hint) for the current eighth of the cycle.
+  (String, String) _phaseOf(AppLocalizations l10n) => switch (_phaseIndex) {
+        0 => (l10n.cycleMoonPhaseNewMoon, l10n.cycleMoonHintNewMoon),
+        1 => (
+            l10n.cycleMoonPhaseWaxingCrescent,
+            l10n.cycleMoonHintWaxingCrescent
+          ),
+        2 => (l10n.cycleMoonPhaseFirstQuarter, l10n.cycleMoonHintFirstQuarter),
+        3 => (
+            l10n.cycleMoonPhaseWaxingGibbous,
+            l10n.cycleMoonHintWaxingGibbous
+          ),
+        4 => (l10n.cycleMoonPhaseFullMoon, l10n.cycleMoonHintFullMoon),
+        5 => (
+            l10n.cycleMoonPhaseWaningGibbous,
+            l10n.cycleMoonHintWaningGibbous
+          ),
+        6 => (l10n.cycleMoonPhaseLastQuarter, l10n.cycleMoonHintLastQuarter),
+        _ => (
+            l10n.cycleMoonPhaseWaningCrescent,
+            l10n.cycleMoonHintWaningCrescent
+          ),
+      };
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final day = stats.currentCycleDay;
+    final l10n = AppLocalizations.of(context);
+    final (phaseName, phaseHint) = _phaseOf(l10n);
 
     // The moon is painted, so it carries no semantics of its own. Read the
     // whole indicator as one node instead of two disconnected text fragments.
     return Semantics(
       container: true,
       label: day == null
-          ? _phaseName
-          : 'Cycle day $day of $_cycleLength. $_phaseName. $_phaseHint',
+          ? phaseName
+          : l10n.cycleMoonSemantics(day, _cycleLength, phaseName, phaseHint),
       child: Column(
         children: [
           _GlowingMoon(phase: _phase, size: size),
           if (day != null) ...[
             const SizedBox(height: 12),
-            // Text.rich, not RichText: it applies the ambient TextScaler.
+            // One message, not two spans: ru/uz reorder the day and the
+            // total, so the two-tone styling cannot survive translation.
             ExcludeSemantics(
-              child: Text.rich(
-                TextSpan(
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: scheme.onSurface,
-                  ),
-                  children: [
-                    TextSpan(text: 'Day $day'),
-                    TextSpan(
-                      text: ' of $_cycleLength',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+              child: Text(
+                l10n.cycleMoonDayOfTotal(day, _cycleLength),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: scheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -92,7 +97,7 @@ class MoonCycleIndicator extends StatelessWidget {
             const SizedBox(height: 4),
             ExcludeSemantics(
               child: Text(
-                '$_phaseName · ${_phaseHint.toLowerCase()}',
+                l10n.cycleMoonPhaseLine(phaseName, phaseHint),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
