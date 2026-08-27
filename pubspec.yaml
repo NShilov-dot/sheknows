@@ -1,5 +1,5 @@
 name: sheknows
-description: "Flutter starter kit with Supabase authentication"
+description: "sheknows — a menstrual cycle and symptom tracker."
 publish_to: 'none'
 
 version: 1.0.0
@@ -9,6 +9,8 @@ environment:
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   connectivity_plus: ^6.1.0
@@ -21,6 +23,7 @@ dependencies:
   hive_ce_flutter: ^2.3.1
   supabase_flutter: ^2.9.1
   google_fonts: ^8.2.1
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +36,31 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
+  assets:
+    - assets/icon/
+
+# Regenerate with: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#16142B"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+
+# Regenerate with: dart run flutter_native_splash:create
+# Kills the white launch flash before the dark-first app appears.
+flutter_native_splash:
+  color: "#16142B"
+  color_dark: "#16142B"
+  image: "assets/icon/icon_foreground.png"
+  image_dark: "assets/icon/icon_foreground.png"
+  android_12:
+    color: "#16142B"
+    color_dark: "#16142B"
+    image: "assets/icon/icon_foreground.png"
+    image_dark: "assets/icon/icon_foreground.png"
+    icon_background_color: "#16142B"
+    icon_background_color_dark: "#16142B"
+

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flutter Supabase Starter</string>
+	<string>sheknows</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>flutter_supabase_starter</string>
+	<string>sheknows</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -24,7 +24,7 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<!-- TEMPLATE: replace com.example.flutter_supabase_starter URL scheme when
+	<!-- OAuth redirect scheme. Keep in sync with
 	     changing the iOS bundle identifier. Keep in sync with AndroidManifest,
 	     Environment.oauthRedirectUrl, and Supabase Auth redirect URLs. -->
 	<key>CFBundleURLTypes</key>
@@ -33,10 +33,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.example.flutter_supabase_starter</string>
+			<string>com.gaussdev.sheknows</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.example.flutter_supabase_starter</string>
+				<string>com.gaussdev.sheknows</string>
 			</array>
 		</dict>
 	</array>

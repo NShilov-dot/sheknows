@@ -20,7 +20,7 @@ class Environment {
   /// Custom schemes are fine for local/template use. Prefer HTTPS App Links /
   /// Universal Links before shipping a production app (see README).
   static const String oauthRedirectUrl =
-      'com.example.flutter_supabase_starter://login-callback';
+      'com.gaussdev.sheknows://login-callback';
 
   /// Throws a [StateError] if required configuration is missing.
   /// Call this during startup so misconfiguration fails fast with a clear message.

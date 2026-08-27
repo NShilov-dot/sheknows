@@ -1,0 +1,945 @@
+{
+  "@@locale": "en",
+  "appTitle": "sheknows",
+  "@appTitle": {
+    "description": "The application name, shown in the OS task switcher and the app bar. Product name — never translated or transliterated."
+  },
+  "authConfirmEmailNotice": "Check your email to confirm your account.",
+  "@authConfirmEmailNotice": {
+    "description": "Snack bar shown after a successful sign-up when the account still needs email confirmation; the user is then sent back to the login page."
+  },
+  "authConfirmPasswordLabel": "Confirm password",
+  "@authConfirmPasswordLabel": {
+    "description": "Floating label of the third field on the register form, where the password is typed a second time."
+  },
+  "authContinueWithGoogle": "Continue with Google",
+  "@authContinueWithGoogle": {
+    "description": "Label of the Google sign-in outlined button, shown on both the login and register pages. 'Google' is a brand name — never translate or transliterate it."
+  },
+  "authDividerOr": "or",
+  "@authDividerOr": {
+    "description": "Single word between two horizontal rules, separating the email form from the Google button. Lowercase, one word."
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Floating label of the email text field on the login and register forms. Keep short — it is a Material floating label."
+  },
+  "authHasAccountPrompt": "Already have an account?",
+  "@authHasAccountPrompt": {
+    "description": "Footer prompt on the register page, immediately followed by the 'Sign in' text button in a Wrap. Must read as a standalone question."
+  },
+  "authHidePassword": "Hide password",
+  "@authHidePassword": {
+    "description": "Tooltip / accessibility label of the eye icon in a password field while the password is visible. Tapping it hides the password. Second half of the ternary at auth_text_field.dart:111."
+  },
+  "authLoginSubtitle": "Sign in to continue",
+  "@authLoginSubtitle": {
+    "description": "Subtitle under the login page headline."
+  },
+  "authLoginTitle": "Welcome back",
+  "@authLoginTitle": {
+    "description": "Headline of the login page."
+  },
+  "authNoAccountPrompt": "Don't have an account?",
+  "@authNoAccountPrompt": {
+    "description": "Footer prompt on the login page, immediately followed by the 'Sign up' text button in a Wrap. Must read as a standalone question — the two are separate widgets, not one sentence."
+  },
+  "authPasswordLabel": "Password",
+  "@authPasswordLabel": {
+    "description": "Floating label of the password field on the login and register forms."
+  },
+  "authPasswordRulesHint": "{count, plural, one{At least {count} character, with a letter and a number} other{At least {count} characters, with a letter and a number}}",
+  "@authPasswordRulesHint": {
+    "description": "Small helper line under the password field on the register form, stating the strength rules before the user submits. count is AuthValidators.minPasswordLength (currently 8).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authRegisterSubtitle": "Sign up with email or Google",
+  "@authRegisterSubtitle": {
+    "description": "Subtitle under the register page headline. 'Google' stays as-is."
+  },
+  "authRegisterTitle": "Create account",
+  "@authRegisterTitle": {
+    "description": "Headline of the register page."
+  },
+  "authShowPassword": "Show password",
+  "@authShowPassword": {
+    "description": "Tooltip / accessibility label of the eye icon in a password field while the password is hidden. Tapping it reveals the password."
+  },
+  "authSignIn": "Sign in",
+  "@authSignIn": {
+    "description": "Sign-in action. Used twice with the same wording: the submit button of the login form, and the footer link on the register page that goes back to login. Keep short — it is a full-width filled button in one of the two places."
+  },
+  "authSignUp": "Sign up",
+  "@authSignUp": {
+    "description": "Sign-up action. Used twice with the same wording: the footer link on the login page, and the submit button of the register form. Keep short — it is a full-width filled button in one of the two places."
+  },
+  "authValidationConfirmPasswordRequired": "Confirm your password",
+  "@authValidationConfirmPasswordRequired": {
+    "description": "Validation error under the confirm-password field on the register form when it is left empty. Distinct from the field's own label (authConfirmPasswordLabel)."
+  },
+  "authValidationEmailInvalid": "Enter a valid email address",
+  "@authValidationEmailInvalid": {
+    "description": "Field validation error shown under the email field when the value does not look like an email address."
+  },
+  "authValidationEmailRequired": "Email is required",
+  "@authValidationEmailRequired": {
+    "description": "Field validation error shown under the email field when it is left empty."
+  },
+  "authValidationPasswordNeedsLetterAndNumber": "Password must include at least one letter and one number",
+  "@authValidationPasswordNeedsLetterAndNumber": {
+    "description": "Registration-only password validation error, shown when the password has no letter or no digit."
+  },
+  "authValidationPasswordNoSurroundingSpaces": "Password cannot start or end with spaces",
+  "@authValidationPasswordNoSurroundingSpaces": {
+    "description": "Registration-only password validation error, shown when the value has leading or trailing whitespace."
+  },
+  "authValidationPasswordRequired": "Password is required",
+  "@authValidationPasswordRequired": {
+    "description": "Field validation error shown under the password field when it is left empty (both sign-in and sign-up)."
+  },
+  "authValidationPasswordTooShort": "{count, plural, one{Password must be at least {count} character} other{Password must be at least {count} characters}}",
+  "@authValidationPasswordTooShort": {
+    "description": "Registration-only password validation error, shown when the password is shorter than the minimum. count is AuthValidators.minPasswordLength (currently 8).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authValidationPasswordsDoNotMatch": "Passwords do not match",
+  "@authValidationPasswordsDoNotMatch": {
+    "description": "Validation error under the confirm-password field on the register form when the two passwords differ."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic dismiss button in dialogs. Shared across features — keep as a single common key."
+  },
+  "commonDaysCount": "{count, plural, one{{count} day} other{{count} days}}",
+  "@commonDaysCount": {
+    "description": "Time-window option in the symptom analytics range selector. Used for both the 30-day and 90-day options - call it with count: 30 and count: 90. Renders inside a small segmented/chip selector, so keep it to the number plus the noun.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Destructive button in the symptom log sheet that deletes the entry being edited. The period feature and the delete-account dialog have their own 'Delete' literals (see notes) — dedupe candidates."
+  },
+  "commonGoHome": "Go home",
+  "@commonGoHome": {
+    "description": "Button on the 'Page not found' screen that navigates to /home. Keep short — it is a filled button."
+  },
+  "commonNotes": "Notes",
+  "@commonNotes": {
+    "description": "Free-text notes. Calendar legend label for the notes dot, and the notes section heading in the day sheet. Also used by the symptom log sheet (another agent's file)."
+  },
+  "commonPageNotFoundBody": "That link does not lead anywhere.",
+  "@commonPageNotFoundBody": {
+    "description": "Body copy under the 'Page not found' title on the router fallback screen."
+  },
+  "commonPageNotFoundTitle": "Page not found",
+  "@commonPageNotFoundTitle": {
+    "description": "Title of the router fallback screen shown when a deep link or push matches no route."
+  },
+  "commonStartupFailureBody": "Restarting the app usually fixes this. If it keeps happening, send us the details below.",
+  "@commonStartupFailureBody": {
+    "description": "Body copy on the start-up failure screen. One key on purpose — the two sentences must not be split, the raw error text is rendered separately below it."
+  },
+  "commonStartupFailureTitle": "sheknows couldn't start",
+  "@commonStartupFailureTitle": {
+    "description": "Title of the last-resort screen shown when app start-up (DI/Supabase/local store) failed. 'sheknows' is the product name — keep it in Latin script, do not transliterate."
+  },
+  "commonTryAgain": "Try again",
+  "@commonTryAgain": {
+    "description": "Retry button in error states. Shared across at least four screens — canonical common key, do not fork per feature."
+  },
+  "cycleCalendarNextMonth": "Next month",
+  "@cycleCalendarNextMonth": {
+    "description": "Tooltip on the right chevron above the calendar grid."
+  },
+  "cycleCalendarPreviousMonth": "Previous month",
+  "@cycleCalendarPreviousMonth": {
+    "description": "Tooltip on the left chevron above the calendar grid."
+  },
+  "cycleClearThisDay": "Clear this day",
+  "@cycleClearThisDay": {
+    "description": "Text button that deletes all tracking recorded for the tapped day."
+  },
+  "cycleDayCellSemantics": "{date}, {states}",
+  "@cycleDayCellSemantics": {
+    "description": "Screen-reader label for a calendar day square that has at least one state: the date followed by a comma-joined list of states (built in Dart from the cycleDayCellState* keys). Translators may reorder date and states.",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMMd"
+      },
+      "states": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleDayCellSemanticsDateOnly": "{date}",
+  "@cycleDayCellSemanticsDateOnly": {
+    "description": "Screen-reader label for a calendar day square with no states at all — just the date. Separate from cycleDayCellSemantics so a plain day does not read as 'August 27, ' with a dangling comma.",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMMd"
+      }
+    }
+  },
+  "cycleDayCellStateHasNotes": "has notes",
+  "@cycleDayCellStateHasNotes": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. This day has a free-text note."
+  },
+  "cycleDayCellStateIntimacyLogged": "intimacy logged",
+  "@cycleDayCellStateIntimacyLogged": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. Sexual activity recorded on this day."
+  },
+  "cycleDayCellStatePeriodLogged": "period logged",
+  "@cycleDayCellStatePeriodLogged": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. A past/current day covered by a logged period."
+  },
+  "cycleDayCellStatePredictedPeriod": "predicted period",
+  "@cycleDayCellStatePredictedPeriod": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. A future day inside a predicted period."
+  },
+  "cycleDayCellStatePredictedStart": "predicted period start",
+  "@cycleDayCellStatePredictedStart": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. This day is the predicted next period start. Deliberately separate from the sentence-case cycleStatusPredictedStart."
+  },
+  "cycleDayCellStateToday": "today",
+  "@cycleDayCellStateToday": {
+    "description": "Calendar day-cell screen-reader fragment, joined mid-sentence — keep lowercase. Distinct from the sentence-case legend label cycleLegendToday."
+  },
+  "cycleDayHeaderDate": "{date}",
+  "@cycleDayHeaderDate": {
+    "description": "Date line at the top of the day details sheet, e.g. 'Monday, August 27, 2026'. Replaces the hand-rolled weekday/month tables in day_header.dart.",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMMEEEEd"
+      }
+    }
+  },
+  "cycleDayHowWasYourDay": "How was your day?",
+  "@cycleDayHowWasYourDay": {
+    "description": "Heading of the day tracking editor (intimacy, symptoms, notes) in the day details sheet."
+  },
+  "cycleDayNoSymptoms": "No symptoms logged for this day",
+  "@cycleDayNoSymptoms": {
+    "description": "Empty state of the symptoms section inside the day details sheet."
+  },
+  "cycleDayNotesHint": "Anything you want to remember about today",
+  "@cycleDayNotesHint": {
+    "description": "Placeholder text in the day notes text field. Keep it short — it must fit one or two lines."
+  },
+  "cycleDeleteThisPeriod": "Delete this period",
+  "@cycleDeleteThisPeriod": {
+    "description": "Destructive text button in the day sheet: delete the whole logged period covering the tapped day."
+  },
+  "cycleEndPeriodButton": "End period today",
+  "@cycleEndPeriodButton": {
+    "description": "Secondary button shown while a period is ongoing; marks today as the last day of bleeding."
+  },
+  "cycleEndPeriodOnThisDay": "End period on this day",
+  "@cycleEndPeriodOnThisDay": {
+    "description": "Secondary button in the day sheet: mark the tapped day as the last day of the ongoing period."
+  },
+  "cycleFlowHeavy": "Heavy",
+  "@cycleFlowHeavy": {
+    "description": "Standalone user-facing name for FlowLevel.heavy. See cycleFlowLight."
+  },
+  "cycleFlowLight": "Light",
+  "@cycleFlowLight": {
+    "description": "Standalone user-facing name for FlowLevel.light (bleeding intensity), e.g. in a chooser or chip. ru/uz forms are plural/invariant adjectives agreeing with «выделения» / «qon ketishi»; do NOT interpolate them into another sentence — use cycleHistoryFlow* for the history subtitle."
+  },
+  "cycleFlowMedium": "Medium",
+  "@cycleFlowMedium": {
+    "description": "Standalone user-facing name for FlowLevel.medium. See cycleFlowLight."
+  },
+  "cycleHistoryEmptyBody": "Tap \"My period started today\" to start tracking.",
+  "@cycleHistoryEmptyBody": {
+    "description": "Body line of the period history empty state; it quotes the primary button. The button text is inlined per language (not a placeholder) so each locale can use its own quotation marks and word order — keep it in sync with cycleStartPeriodButton if that label changes."
+  },
+  "cycleHistoryEmptyTitle": "No periods logged yet",
+  "@cycleHistoryEmptyTitle": {
+    "description": "Title of the empty state shown in place of the period history list."
+  },
+  "cycleHistoryFlowHeavy": "Heavy flow",
+  "@cycleHistoryFlowHeavy": {
+    "description": "History row subtitle fragment for FlowLevel.heavy. See cycleHistoryFlowLight."
+  },
+  "cycleHistoryFlowLight": "Light flow",
+  "@cycleHistoryFlowLight": {
+    "description": "History row subtitle fragment for FlowLevel.light. A complete fragment, not a label interpolated into '{flow} flow' — noun and adjective must agree, so the applier switches on FlowLevel to pick cycleHistoryFlowLight/Medium/Heavy. Stays lowercase-free of sentence punctuation: it is one item in a ' · ' separated list."
+  },
+  "cycleHistoryFlowMedium": "Medium flow",
+  "@cycleHistoryFlowMedium": {
+    "description": "History row subtitle fragment for FlowLevel.medium. See cycleHistoryFlowLight."
+  },
+  "cycleHistoryMenuTooltip": "Period options",
+  "@cycleHistoryMenuTooltip": {
+    "description": "Tooltip / accessibility label of the overflow menu button on a period history row."
+  },
+  "cycleHistoryRange": "{start} – {end}",
+  "@cycleHistoryRange": {
+    "description": "Title of a finished period in the history list: the date span from first to last day of bleeding. Replaces a hand-built 'd/M – d/M', which had no year and is ambiguous between locales (d/M vs M/d). Uses the intl MMMd skeleton. The separator is an en dash.",
+    "placeholders": {
+      "start": {
+        "type": "DateTime",
+        "format": "MMMd"
+      },
+      "end": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "cycleHistoryRangeOngoing": "{start} – ongoing",
+  "@cycleHistoryRangeOngoing": {
+    "description": "Title of a still-ongoing period in the history list: start date and an open end. ru «продолжаются» agrees with the plural «месячные».",
+    "placeholders": {
+      "start": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "cycleHistoryReopen": "Reopen (ongoing)",
+  "@cycleHistoryReopen": {
+    "description": "Menu item that clears the end date of a finished period so it counts as still ongoing. Keep the ru wording of 'ongoing' identical to cycleHistoryRangeOngoing."
+  },
+  "cycleHistorySaving": "saving…",
+  "@cycleHistorySaving": {
+    "description": "History row subtitle fragment shown while an optimistic (not yet synced) period entry is being written. One item in a ' · ' separated list, so it is lowercase on purpose — do not sentence-case it. Ends with a single ellipsis character."
+  },
+  "cycleHistoryTitle": "History",
+  "@cycleHistoryTitle": {
+    "description": "Section heading above the list of past logged periods on the cycle screen."
+  },
+  "cycleInsightsAvgCycleLength": "Avg cycle length",
+  "@cycleInsightsAvgCycleLength": {
+    "description": "Insights row label; value is an average number of days between period starts. Keep short — it shares a row with the value."
+  },
+  "cycleInsightsAvgPeriodLength": "Avg period length",
+  "@cycleInsightsAvgPeriodLength": {
+    "description": "Insights row label; value is an average bleeding duration in days."
+  },
+  "cycleInsightsBleedingDay": "Day {day} of bleeding",
+  "@cycleInsightsBleedingDay": {
+    "description": "Value of the 'Current period' insights row: which day of the ongoing period today is. NOT a plural — {day} is an ordinal position, and in ru the masculine ordinal suffix -й plus nominative singular «день» is correct for every number (1-й, 2-й, 5-й, 21-й день); Uzbek '-kuni' likewise.",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleInsightsCurrentPeriod": "Current period",
+  "@cycleInsightsCurrentPeriod": {
+    "description": "Insights row label shown only while a period is ongoing; the value is the bleeding day number."
+  },
+  "cycleInsightsLoggedPeriods": "Logged periods",
+  "@cycleInsightsLoggedPeriods": {
+    "description": "Insights row label; the value is the number of period entries the user has logged."
+  },
+  "cycleInsightsNextPeriod": "Next period expected",
+  "@cycleInsightsNextPeriod": {
+    "description": "Insights row label; the value is the predicted start date of the next period."
+  },
+  "cycleInsightsPredictionHint": "Log at least two periods to see cycle predictions.",
+  "@cycleInsightsPredictionHint": {
+    "description": "Hint under the insights rows shown while the user has fewer than two logged periods, so no prediction is possible."
+  },
+  "cycleInsightsTitle": "Insights",
+  "@cycleInsightsTitle": {
+    "description": "Card title above the computed cycle statistics rows."
+  },
+  "cycleIntimacy": "Intimacy",
+  "@cycleIntimacy": {
+    "description": "Sexual activity. Used both as the calendar legend label for the intimacy dot and as the section heading in the day sheet."
+  },
+  "cycleIntimacyProtected": "Protected",
+  "@cycleIntimacyProtected": {
+    "description": "Intimacy choice chip: protected sex. Keep short — it is a chip."
+  },
+  "cycleIntimacyUnprotected": "Unprotected",
+  "@cycleIntimacyUnprotected": {
+    "description": "Intimacy choice chip: unprotected sex. Keep short — it is a chip."
+  },
+  "cycleLegendLogged": "Logged",
+  "@cycleLegendLogged": {
+    "description": "Calendar legend: the solid band marking days logged as period days."
+  },
+  "cycleLegendPredicted": "Predicted",
+  "@cycleLegendPredicted": {
+    "description": "Calendar legend: the soft circle marking the predicted next period start."
+  },
+  "cycleLegendToday": "Today",
+  "@cycleLegendToday": {
+    "description": "Calendar legend: the ring marking today's date."
+  },
+  "cycleMoonDayOfTotal": "Day {day} of {total}",
+  "@cycleMoonDayOfTotal": {
+    "description": "The large visible line under the moon: which day of the cycle out of the cycle length. Was two TextSpans ('Day $day' + ' of $_cycleLength') and must become one message so ru/uz can reorder.",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleMoonHintFirstQuarter": "Steady momentum",
+  "@cycleMoonHintFirstQuarter": {
+    "description": "Moon indicator hint for the first-quarter phase. Sentence case."
+  },
+  "cycleMoonHintFullMoon": "Peak of your cycle",
+  "@cycleMoonHintFullMoon": {
+    "description": "Moon indicator hint for the full-moon phase. Sentence case."
+  },
+  "cycleMoonHintLastQuarter": "Reflect and rest",
+  "@cycleMoonHintLastQuarter": {
+    "description": "Moon indicator hint for the last-quarter phase. Sentence case."
+  },
+  "cycleMoonHintNewMoon": "Your period is here or about to arrive",
+  "@cycleMoonHintNewMoon": {
+    "description": "Moon indicator hint for the new-moon phase. Sentence case — used as-is in the visible line and in the screen-reader label (the old .toLowerCase() must be removed)."
+  },
+  "cycleMoonHintWaningCrescent": "Be gentle with yourself",
+  "@cycleMoonHintWaningCrescent": {
+    "description": "Moon indicator hint for the waning-crescent phase. Sentence case."
+  },
+  "cycleMoonHintWaningGibbous": "Wind-down begins",
+  "@cycleMoonHintWaningGibbous": {
+    "description": "Moon indicator hint for the waning-gibbous phase. Sentence case."
+  },
+  "cycleMoonHintWaxingCrescent": "Energy is building",
+  "@cycleMoonHintWaxingCrescent": {
+    "description": "Moon indicator hint for the waxing-crescent phase. Sentence case."
+  },
+  "cycleMoonHintWaxingGibbous": "Ovulation is approaching",
+  "@cycleMoonHintWaxingGibbous": {
+    "description": "Moon indicator hint for the waxing-gibbous phase. Sentence case."
+  },
+  "cycleMoonPhaseFirstQuarter": "First quarter",
+  "@cycleMoonPhaseFirstQuarter": {
+    "description": "Moon indicator phase name, 3rd eighth of the cycle."
+  },
+  "cycleMoonPhaseFullMoon": "Full moon",
+  "@cycleMoonPhaseFullMoon": {
+    "description": "Moon indicator phase name, 5th eighth of the cycle (ovulation)."
+  },
+  "cycleMoonPhaseLastQuarter": "Last quarter",
+  "@cycleMoonPhaseLastQuarter": {
+    "description": "Moon indicator phase name, 7th eighth of the cycle."
+  },
+  "cycleMoonPhaseLine": "{phase} · {hint}",
+  "@cycleMoonPhaseLine": {
+    "description": "The small visible line under the moon: phase name and hint, both already translated. Keep the hint in its own sentence case — do not lowercase it.",
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMoonPhaseNewMoon": "New moon",
+  "@cycleMoonPhaseNewMoon": {
+    "description": "Moon indicator phase name, 1st eighth of the cycle (period days)."
+  },
+  "cycleMoonPhaseWaningCrescent": "Waning crescent",
+  "@cycleMoonPhaseWaningCrescent": {
+    "description": "Moon indicator phase name, 8th eighth of the cycle (just before the next period)."
+  },
+  "cycleMoonPhaseWaningGibbous": "Waning gibbous",
+  "@cycleMoonPhaseWaningGibbous": {
+    "description": "Moon indicator phase name, 6th eighth of the cycle."
+  },
+  "cycleMoonPhaseWaxingCrescent": "Waxing crescent",
+  "@cycleMoonPhaseWaxingCrescent": {
+    "description": "Moon indicator phase name, 2nd eighth of the cycle."
+  },
+  "cycleMoonPhaseWaxingGibbous": "Waxing gibbous",
+  "@cycleMoonPhaseWaxingGibbous": {
+    "description": "Moon indicator phase name, 4th eighth of the cycle (approaching ovulation)."
+  },
+  "cycleMoonSemantics": "Cycle day {day} of {total}. {phase}. {hint}",
+  "@cycleMoonSemantics": {
+    "description": "Screen-reader label for the whole moon indicator: cycle day, cycle length, phase name and hint. phase and hint arrive already translated from the cycleMoonPhase*/cycleMoonHint* keys. No plural: day is an ordinal and total has no noun after it.",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "phase": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleNextPeriodDate": "{date}",
+  "@cycleNextPeriodDate": {
+    "description": "Value of the 'Next period expected' row: a medium-length date. Replaces the hand-rolled '${day} ${Mon} ${year}' formatter and its English month-abbreviation table. Uses the intl yMMMd skeleton so Russian gets the genitive month («15 сент. 2026 г.») instead of a nominative month name.",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMd"
+      }
+    }
+  },
+  "cyclePeriodStartPickerHelp": "When did your period start?",
+  "@cyclePeriodStartPickerHelp": {
+    "description": "helpText (header) of the date picker for choosing the first day of a period."
+  },
+  "cyclePeriodStartedOnThisDay": "Period started on this day",
+  "@cyclePeriodStartedOnThisDay": {
+    "description": "Primary button in the day sheet: log the tapped day as a period start."
+  },
+  "cyclePhaseFollicular": "Follicular",
+  "@cyclePhaseFollicular": {
+    "description": "Cycle phase name (post-period, pre-ovulation). ru/uz add the noun 'фаза'/'faza' because a bare adjective dangles. Part of the five-phase series."
+  },
+  "cyclePhaseLuteal": "Luteal",
+  "@cyclePhaseLuteal": {
+    "description": "Cycle phase name (after ovulation, before the next period). ru/uz add the noun 'фаза'/'faza'. Part of the five-phase series."
+  },
+  "cyclePhaseMenstrual": "Menstrual",
+  "@cyclePhaseMenstrual": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart, switches on the period feature's CyclePhase) — cycle phase name, used as a card heading. Russian adjectives agree with «фаза» (feminine). Likely also minted by the period agent — dedupe."
+  },
+  "cyclePhaseOvulation": "Ovulation",
+  "@cyclePhaseOvulation": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — cycle phase name. Dedupe with the period agent."
+  },
+  "cyclePhaseUnknown": "Unknown",
+  "@cyclePhaseUnknown": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — fallback cycle phase name. Note the symptom phase screen replaces this with symptomPhaseNotEnoughCycleData in its own cards. Dedupe with the period agent."
+  },
+  "cycleSaveDay": "Save day",
+  "@cycleSaveDay": {
+    "description": "Confirm button of the day tracking editor."
+  },
+  "cycleStartPeriodButton": "My period started today",
+  "@cycleStartPeriodButton": {
+    "description": "Primary button on the cycle screen; opens the start-date picker. Keep short — it is a filled button with a leading icon."
+  },
+  "cycleStatusBleedingDay": "Bleeding · day {dayNumber} of this period",
+  "@cycleStatusBleedingDay": {
+    "description": "Day sheet status line for a day inside the period that is still ongoing. dayNumber is an ordinal (1st, 2nd day), so no plural agreement is needed in ru.",
+    "placeholders": {
+      "dayNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusCycleDay": "Cycle day {cycleDay}",
+  "@cycleStatusCycleDay": {
+    "description": "Day sheet status line for a day between the last period start and today. cycleDay is an ordinal — no plural agreement.",
+    "placeholders": {
+      "cycleDay": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusDayOfPeriod": "{count, plural, one{Day {dayNumber} of a {count}-day period} other{Day {dayNumber} of a {count}-day period}}",
+  "@cycleStatusDayOfPeriod": {
+    "description": "Day sheet status line for a day inside a finished period: which day it was and how long the period lasted. count = total period length (governs the noun, hence the plural); dayNumber = ordinal day inside it. Russian note: «из» takes the genitive, so one → «дня», all other categories → «дней».",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "dayNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusNoData": "No period data for this day",
+  "@cycleStatusNoData": {
+    "description": "Day sheet status line for a past day with nothing logged and no cycle context."
+  },
+  "cycleStatusPredictedStart": "Predicted period start",
+  "@cycleStatusPredictedStart": {
+    "description": "Day sheet status line when the tapped day is the predicted next period start. Sentence case, a standalone line — deliberately separate from the lowercase mid-sentence cycleDayCellStatePredictedStart."
+  },
+  "cycleStatusUpcoming": "Upcoming",
+  "@cycleStatusUpcoming": {
+    "description": "Day sheet status line for a future day about which nothing is known."
+  },
+  "cycleTitle": "Cycle",
+  "@cycleTitle": {
+    "description": "AppBar title of the cycle tracker screen."
+  },
+  "errorAuthGeneric": "That didn't work. Check your details and try again.",
+  "@errorAuthGeneric": {
+    "description": "Snack-bar copy for any AuthFailure. Deliberately flow-neutral: the same message is shown for failed sign-in and failed sign-up, so do NOT name the sign-in verb."
+  },
+  "errorNetworkOffline": "You're offline. Your changes are saved on this device and will sync when the connection returns.",
+  "@errorNetworkOffline": {
+    "description": "Snack-bar copy for any NetworkFailure. Reassuring on purpose — the app is offline-first, nothing is lost."
+  },
+  "errorServer": "Something went wrong on our end. Please try again in a moment.",
+  "@errorServer": {
+    "description": "Snack-bar copy for any ServerFailure. Replaces raw Postgrest/Supabase text, which must never reach the UI."
+  },
+  "errorUnknown": "Something went wrong. Please try again.",
+  "@errorUnknown": {
+    "description": "Snack-bar copy for any unclassified Failure (the default branch of failureMessage)."
+  },
+  "homeAppBarTitle": "sheknows",
+  "@homeAppBarTitle": {
+    "description": "App bar title on the home screen. Product/brand name — must stay identical in every locale, do not translate or transliterate."
+  },
+  "homeDeleteAccountButton": "Delete account",
+  "@homeDeleteAccountButton": {
+    "description": "Destructive text button at the bottom of the home screen that opens the delete-account confirmation dialog."
+  },
+  "homeDeleteAccountDialogBody": "This permanently deletes your account and all of your data. This cannot be undone.",
+  "@homeDeleteAccountDialogBody": {
+    "description": "Body text of the delete-account confirmation dialog. Health data is involved, so the warning must stay explicit that the deletion is permanent."
+  },
+  "homeDeleteAccountDialogTitle": "Delete account?",
+  "@homeDeleteAccountDialogTitle": {
+    "description": "Title of the confirmation dialog shown before permanently deleting the user's account."
+  },
+  "homeEmailConfirmedNo": "Email confirmed: No",
+  "@homeEmailConfirmedNo": {
+    "description": "Shown on the home screen when the user's email address has not been confirmed. DEBUG COPY — recommend deleting rather than translating."
+  },
+  "homeEmailConfirmedYes": "Email confirmed: Yes",
+  "@homeEmailConfirmedYes": {
+    "description": "Shown on the home screen when the user's email address has been confirmed. DEBUG COPY — recommend deleting rather than translating."
+  },
+  "homeEmailLabel": "Email: {email}",
+  "@homeEmailLabel": {
+    "description": "Label and value showing the signed-in user's email address on the home screen. {email} is the raw address and is never translated.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLogSymptomsButton": "Log symptoms",
+  "@homeLogSymptomsButton": {
+    "description": "Button on the home screen that opens the symptom logging screen. Keep short — it sits next to an icon on one line."
+  },
+  "homeProfileLoadedFromDatabase": "Loaded from the profiles table.",
+  "@homeProfileLoadedFromDatabase": {
+    "description": "Caption under the profile name when the profile came from the database. DEBUG COPY — recommend deleting rather than translating. 'profiles' is a database table name and must stay untranslated."
+  },
+  "homeProfileNameLabel": "Name: {name}",
+  "@homeProfileNameLabel": {
+    "description": "Label and value showing the user's display name in the profile section of the home screen. {name} holds either the user's own display name or the localized homeProfileNameNotSet fallback, so it is not always a person's name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeProfileNameNotSet": "Not set",
+  "@homeProfileNameNotSet": {
+    "description": "Fallback value passed into homeProfileNameLabel when the user has no display name. Must read naturally as the value after 'Name:'."
+  },
+  "homeProfileNoRowFound": "No profile row found (showing auth metadata).",
+  "@homeProfileNoRowFound": {
+    "description": "Caption under the profile name when no database profile row exists and auth metadata is displayed instead. DEBUG COPY — recommend deleting rather than translating."
+  },
+  "homeProfileSectionTitle": "Profile",
+  "@homeProfileSectionTitle": {
+    "description": "Section heading above the profile details block on the home screen."
+  },
+  "homeSignOutTooltip": "Sign out",
+  "@homeSignOutTooltip": {
+    "description": "Tooltip / accessibility label for the logout icon button in the home app bar."
+  },
+  "homeSignedIn": "Signed in",
+  "@homeSignedIn": {
+    "description": "Heading on the home screen shown once the user is authenticated. DEBUG COPY — recommend deleting rather than translating."
+  },
+  "homeTrackCycleButton": "Track my cycle",
+  "@homeTrackCycleButton": {
+    "description": "Primary button on the home screen that opens the menstrual cycle tracker. Keep short — it sits next to an icon on one line."
+  },
+  "symptomAddSymptom": "Add symptom",
+  "@symptomAddSymptom": {
+    "description": "Submit button of the symptom log sheet when creating a new entry."
+  },
+  "symptomBarRowSemanticsLabel": "{label}: {value}",
+  "@symptomBarRowSemanticsLabel": {
+    "description": "Screen-reader label collapsing one chart bar (its label, painted bar and count) into a single announcement. {label} is an already-localized symptom type, severity or 'Entries' label; {value} is the count. Not a plural: {label} is an arbitrary noun the number cannot agree with.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "symptomCategoryDischarge": "Discharge",
+  "@symptomCategoryDischarge": {
+    "description": "Section header grouping discharge symptoms. Supplies the noun that the Watery/Mucus/Spotting labels omit, so it must stay a noun."
+  },
+  "symptomCategoryMood": "Mood",
+  "@symptomCategoryMood": {
+    "description": "Section header grouping symptoms in the log sheet. Part of the five parallel category headers."
+  },
+  "symptomCategoryOther": "Other",
+  "@symptomCategoryOther": {
+    "description": "Section header for symptoms that fit no other group. Part of the five parallel category headers."
+  },
+  "symptomCategoryPain": "Pain",
+  "@symptomCategoryPain": {
+    "description": "Section header grouping symptoms in the log sheet. One of five short bare nouns (Pain / Mood / Physical / Discharge / Other) - keep them parallel in form and length."
+  },
+  "symptomCategoryPhysical": "Physical",
+  "@symptomCategoryPhysical": {
+    "description": "Section header grouping bodily symptoms (fatigue, energy, insomnia). ru/uz use the short noun «Тело»/«Tana» to stay parallel with the other four bare-noun headers; a literal adjective would dangle without a noun."
+  },
+  "symptomEmptyWindowTitle": "No symptoms in this window",
+  "@symptomEmptyWindowTitle": {
+    "description": "Headline of the empty state on both analytics screens when nothing was logged in the selected time range. One key, two call sites; the body copy under it differs per screen and stays separate."
+  },
+  "symptomHistoryTileSubtitle": "{severity} · {time}",
+  "@symptomHistoryTileSubtitle": {
+    "description": "Subtitle line of a symptom entry in the history list: the localized severity label and the entry time, separated by a middle dot. {time} is already formatted by TimeOfDay.format(context). Keep it one key — do not split the separator out.",
+    "placeholders": {
+      "severity": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomJustAMoment": "Just a moment…",
+  "@symptomJustAMoment": {
+    "description": "Hint under the temporarily disabled submit button in the log sheet while a load or another write is in flight. Keep the ellipsis character."
+  },
+  "symptomLoadFailedCloseSheet": "Could not load your symptoms — close and try again",
+  "@symptomLoadFailedCloseSheet": {
+    "description": "Hint under the disabled submit button in the log sheet when the underlying load failed; the retry button is behind the sheet, so the user must close it. Keep the dash separator."
+  },
+  "symptomLogAction": "Log",
+  "@symptomLogAction": {
+    "description": "Label of the extended FAB on the symptoms list that opens the log sheet. Must stay very short. The same word is quoted inside symptomsEmptyBody — keep them identical per language."
+  },
+  "symptomLogSheetEditTitle": "Edit symptom",
+  "@symptomLogSheetEditTitle": {
+    "description": "Title of the symptom log bottom sheet when editing an existing entry."
+  },
+  "symptomLogSheetNewTitle": "Log a symptom",
+  "@symptomLogSheetNewTitle": {
+    "description": "Title of the symptom log bottom sheet when creating a new entry."
+  },
+  "symptomNotesHint": "Anything worth remembering",
+  "@symptomNotesHint": {
+    "description": "hintText of the free-text notes field in the symptom log sheet."
+  },
+  "symptomPhaseEmptyLogBothBody": "Log symptoms and periods to see phase patterns.",
+  "@symptomPhaseEmptyLogBothBody": {
+    "description": "Body copy of the phase-screen empty state when neither symptoms nor period dates exist in the window."
+  },
+  "symptomPhaseEmptyLogPeriodsBody": "Log your period dates to see phase patterns.",
+  "@symptomPhaseEmptyLogPeriodsBody": {
+    "description": "Body copy of the phase-screen empty state when symptoms exist but period dates are missing."
+  },
+  "symptomPhaseEntriesBarLabel": "Entries",
+  "@symptomPhaseEntriesBarLabel": {
+    "description": "Label of the bar showing how many symptom entries fall in one cycle phase. Keep the noun consistent with symptomTrendsEntriesLogged."
+  },
+  "symptomPhaseNoCycleDataTitle": "No cycle data for this window",
+  "@symptomPhaseNoCycleDataTitle": {
+    "description": "Headline of the phase-screen empty state when symptoms exist in the window but no period dates place them in a phase."
+  },
+  "symptomPhaseNotEnoughCycleData": "Not enough cycle data",
+  "@symptomPhaseNotEnoughCycleData": {
+    "description": "Card heading used in place of a phase name for symptoms the app could not attribute to a cycle phase."
+  },
+  "symptomPhaseTitle": "By cycle phase",
+  "@symptomPhaseTitle": {
+    "description": "AppBar title of the cycle-phase breakdown screen, and the tooltip of the icon button on the trends screen that opens it. Same phrase in both places."
+  },
+  "symptomPhaseTypeCountChip": "{type} ×{count}",
+  "@symptomPhaseTypeCountChip": {
+    "description": "Chip listing a top symptom type and how many times it occurred in a phase. {type} is an already-localized symptom type label. The English multiplication sign is not idiomatic in Russian or Uzbek, so both use an em dash. Deliberately NOT an ICU plural: it is a numeric badge with no noun for the number to agree with — do not convert it.",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "symptomPickToContinue": "Pick a symptom to continue",
+  "@symptomPickToContinue": {
+    "description": "Hint under the disabled submit button in the log sheet when no symptom type is selected yet."
+  },
+  "symptomRange30Days": "30 days",
+  "@symptomRange30Days": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. A fixed literal, not a counted quantity: no placeholder, no ICU plural."
+  },
+  "symptomRange90Days": "90 days",
+  "@symptomRange90Days": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/analytics_range.dart) — range chip rendered by widgets/range_selector.dart:26. Fixed literal, no placeholder, no plural."
+  },
+  "symptomRangeAllTime": "All time",
+  "@symptomRangeAllTime": {
+    "description": "Time-window option in the symptom analytics range selector meaning no lower bound - all history. Sits next to the '30 days'/'90 days' options in the same small selector, so keep it equally short."
+  },
+  "symptomSaveChanges": "Save changes",
+  "@symptomSaveChanges": {
+    "description": "Submit button of the symptom log sheet when editing an existing entry."
+  },
+  "symptomSeverityMild": "Mild",
+  "@symptomSeverityMild": {
+    "description": "Symptom severity option. Shown as a chip and mid-sentence in list subtitles («Слабо · 14:30»), so ru/uz use gender-neutral adverbial forms - do NOT change to adjectives such as «Слабая», there is no noun to agree with."
+  },
+  "symptomSeverityModerate": "Moderate",
+  "@symptomSeverityModerate": {
+    "description": "Symptom severity option. Adverbial form on purpose - it appears standalone in a chip and mid-sentence in list subtitles with no noun to agree with."
+  },
+  "symptomSeverityNone": "None",
+  "@symptomSeverityNone": {
+    "description": "Symptom severity option: the symptom was absent (user recording that they did not have it). Shown as a chip and also mid-sentence in a list subtitle like «Нет · 14:30», so ru/uz deliberately use gender-neutral adverbial forms - do NOT change to adjectives, there is no controlling noun to agree with."
+  },
+  "symptomSeveritySectionLabel": "Severity",
+  "@symptomSeveritySectionLabel": {
+    "description": "Section heading above the severity chips in the symptom log sheet."
+  },
+  "symptomSeveritySevere": "Severe",
+  "@symptomSeveritySevere": {
+    "description": "Symptom severity option (strongest). Adverbial form on purpose - standalone chip and mid-sentence list subtitle, no noun to agree with."
+  },
+  "symptomTrendsBySeverity": "By severity",
+  "@symptomTrendsBySeverity": {
+    "description": "Section heading above the severity bar chart on the trends screen."
+  },
+  "symptomTrendsEmptyBody": "Log symptoms to see your trends.",
+  "@symptomTrendsEmptyBody": {
+    "description": "Body copy of the trends-screen empty state."
+  },
+  "symptomTrendsEntriesLogged": "{count, plural, one{{count} entry logged} other{{count} entries logged}}",
+  "@symptomTrendsEntriesLogged": {
+    "description": "Summary card on the trends screen: how many symptom entries fall in the selected window. Russian drops the English verb 'logged' so the noun alone carries agreement (adding a verb would force verb agreement into every plural branch). Uzbek uses the counter word 'ta'. Keep the noun consistent with symptomPhaseEntriesBarLabel.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "symptomTrendsMostFrequent": "Most frequent",
+  "@symptomTrendsMostFrequent": {
+    "description": "Section heading above the frequency bar chart on the trends screen."
+  },
+  "symptomTrendsTitle": "Trends",
+  "@symptomTrendsTitle": {
+    "description": "AppBar title of the symptom trends screen, and the tooltip of the icon button on the symptoms list that opens it. Same word in both places."
+  },
+  "symptomTypeAcne": "Acne",
+  "@symptomTypeAcne": {
+    "description": "Symptom name (other category): breakouts/pimples. Short - renders in chips and chart labels."
+  },
+  "symptomTypeAnxiety": "Anxiety",
+  "@symptomTypeAnxiety": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — symptom type label."
+  },
+  "symptomTypeBackache": "Backache",
+  "@symptomTypeBackache": {
+    "description": "Symptom name (pain category): lower-back pain. Short - renders in chips and chart labels."
+  },
+  "symptomTypeBloating": "Bloating",
+  "@symptomTypeBloating": {
+    "description": "Symptom name (other category): abdominal bloating. Kept short for chips; the abdomen is implied by context."
+  },
+  "symptomTypeChestPain": "Chest pain",
+  "@symptomTypeChestPain": {
+    "description": "Symptom name (pain category). Translate the English as written; the source literal says 'Chest pain' and the ru/uz keep the same breast/chest ambiguity. See notes - product should confirm whether this means breast tenderness before translators are asked to disambiguate."
+  },
+  "symptomTypeCramps": "Cramps",
+  "@symptomTypeCramps": {
+    "description": "Symptom name (pain category): period cramps. Renders inside selection chips, list titles and bar-chart labels - must stay short or it truncates."
+  },
+  "symptomTypeEnergy": "Energy",
+  "@symptomTypeEnergy": {
+    "description": "Symptom name (physical category): feeling energetic - the positive counterpart of Fatigue, not 'energy' as a substance. Short - renders in chips and chart labels."
+  },
+  "symptomTypeFatigue": "Fatigue",
+  "@symptomTypeFatigue": {
+    "description": "Symptom name (physical category). Short - renders in chips and chart labels."
+  },
+  "symptomTypeHeadache": "Headache",
+  "@symptomTypeHeadache": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — symptom type label."
+  },
+  "symptomTypeHighLibido": "High libido",
+  "@symptomTypeHighLibido": {
+    "description": "Symptom name (other category): increased sex drive. Pairs with symptomTypeLowLibido - keep the two parallel."
+  },
+  "symptomTypeInsomnia": "Insomnia",
+  "@symptomTypeInsomnia": {
+    "description": "Symptom name (physical category). Short - renders in chips and chart labels."
+  },
+  "symptomTypeIrritability": "Irritability",
+  "@symptomTypeIrritability": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — symptom type label."
+  },
+  "symptomTypeLowLibido": "Low libido",
+  "@symptomTypeLowLibido": {
+    "description": "Symptom name (other category): reduced sex drive. Pairs with symptomTypeHighLibido - keep the two parallel."
+  },
+  "symptomTypeMoodSwings": "Mood swings",
+  "@symptomTypeMoodSwings": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — symptom type label."
+  },
+  "symptomTypeMucusDischarge": "Mucus",
+  "@symptomTypeMucusDischarge": {
+    "description": "Symptom name (discharge category): mucus discharge. Adjective alone; the noun comes from the section header. ru agrees with plural «выделения»."
+  },
+  "symptomTypeNausea": "Nausea",
+  "@symptomTypeNausea": {
+    "description": "Symptom name (other category). Short - renders in chips and chart labels."
+  },
+  "symptomTypeSadness": "Sadness",
+  "@symptomTypeSadness": {
+    "description": "OUT OF MY ASSIGNED DIRS (utils/symptom_labels.dart) — symptom type label."
+  },
+  "symptomTypeSpottingDischarge": "Spotting",
+  "@symptomTypeSpottingDischarge": {
+    "description": "Symptom name (discharge category): light spotting between periods. ru «Мажущие» agrees with plural «выделения» from the section header."
+  },
+  "symptomTypeWateryDischarge": "Watery",
+  "@symptomTypeWateryDischarge": {
+    "description": "Symptom name (discharge category): watery discharge. The noun ('выделения'/'ajralmalar') is supplied by the section header symptomCategoryDischarge, so keep the adjective alone. ru form agrees with plural «выделения»."
+  },
+  "symptomWhenSectionLabel": "When",
+  "@symptomWhenSectionLabel": {
+    "description": "Section heading above the date/time buttons in the symptom log sheet."
+  },
+  "symptomsEmptyBody": "Tap Log to record how you feel.",
+  "@symptomsEmptyBody": {
+    "description": "Body copy of the symptoms-list empty state. It quotes the FAB label by name: the quoted word MUST match this language's symptomLogFab value exactly."
+  },
+  "symptomsEmptyTitle": "No symptoms logged yet",
+  "@symptomsEmptyTitle": {
+    "description": "Headline of the empty state on the symptoms list when the user has never logged anything."
+  },
+  "symptomsTitle": "Symptoms",
+  "@symptomsTitle": {
+    "description": "Section heading for the day's symptom entries. Same literal as the symptoms page app-bar title (owned by another agent) — one key for both."
+  }
+}

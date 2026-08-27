@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/router/app_router.dart';
 import 'package:sheknows/core/theme/app_theme.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
@@ -56,7 +58,21 @@ class _SupabaseAppState extends State<SupabaseApp> {
             current is AuthUnauthenticated && previous is! AuthUnauthenticated,
         listener: (_, __) => _profileCubit.reset(),
         child: MaterialApp.router(
-          title: 'sheknows',
+          onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          // uz first: it is the primary market. Flutter falls back down this
+          // list, then to the template locale, so an unsupported device
+          // language lands on English rather than failing.
+          supportedLocales: const [
+            Locale('uz'),
+            Locale('ru'),
+            Locale('en'),
+          ],
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,

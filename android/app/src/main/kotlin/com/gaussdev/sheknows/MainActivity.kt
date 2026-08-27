@@ -1,4 +1,4 @@
-package com.example.flutter_supabase_starter
+package com.gaussdev.sheknows
 
 import io.flutter.embedding.android.FlutterActivity
 
