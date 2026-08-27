@@ -47,10 +47,7 @@ class _PhaseView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('By cycle phase'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/symptoms'),
-        ),
+        leading: BackButton(onPressed: () => context.go('/symptoms')),
       ),
       body: BlocBuilder<SymptomPhaseCubit, SymptomPhaseState>(
         builder: (context, state) {

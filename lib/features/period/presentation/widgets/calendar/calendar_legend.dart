@@ -46,7 +46,8 @@ class CalendarLegend extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: scheme.outline, width: 1.5),
+              // Matches the today ring in DayCell.
+              border: Border.all(color: scheme.primary, width: 1.5),
             ),
           ),
           label: 'Today',

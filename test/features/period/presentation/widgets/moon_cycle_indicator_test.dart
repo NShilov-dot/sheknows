@@ -25,8 +25,44 @@ void main() {
       _wrap(MoonCycleIndicator(stats: _stats(cycleDay: 14, averageCycleLength: 28))),
     );
 
-    expect(find.textContaining('Day 14', findRichText: true), findsOneWidget);
-    expect(find.textContaining('of 28', findRichText: true), findsOneWidget);
+    expect(find.textContaining('Day 14'), findsOneWidget);
+    expect(find.textContaining('of 28'), findsOneWidget);
+  });
+
+  testWidgets('day counter honours the system text scaler', (tester) async {
+    Future<Size> counterSize(double scale) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          child: _wrap(
+            MoonCycleIndicator(
+              stats: _stats(cycleDay: 14, averageCycleLength: 28),
+            ),
+          ),
+        ),
+      );
+      return tester.getSize(find.textContaining('Day 14'));
+    }
+
+    final small = await counterSize(1);
+    final large = await counterSize(2);
+
+    expect(large.height, greaterThan(small.height));
+  });
+
+  testWidgets('reads as a single semantics node', (tester) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      _wrap(MoonCycleIndicator(stats: _stats(cycleDay: 14, averageCycleLength: 28))),
+    );
+
+    expect(
+      find.bySemanticsLabel(
+        'Cycle day 14 of 28. Waxing gibbous. Ovulation is approaching',
+      ),
+      findsOneWidget,
+    );
+    handle.dispose();
   });
 
   testWidgets('hides day counter without logged periods', (tester) async {

@@ -45,10 +45,7 @@ class _TrendsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trends'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/symptoms'),
-        ),
+        leading: BackButton(onPressed: () => context.go('/symptoms')),
         actions: [
           IconButton(
             icon: const Icon(Icons.pie_chart_outline),

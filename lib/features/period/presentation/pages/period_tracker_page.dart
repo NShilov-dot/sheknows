@@ -46,10 +46,7 @@ class _PeriodTrackerView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cycle'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
-        ),
+        leading: BackButton(onPressed: () => context.go('/home')),
       ),
       body: BlocConsumer<PeriodCubit, PeriodState>(
         listenWhen: (previous, current) {

@@ -56,37 +56,50 @@ class MoonCycleIndicator extends StatelessWidget {
     final scheme = theme.colorScheme;
     final day = stats.currentCycleDay;
 
-    return Column(
-      children: [
-        _GlowingMoon(phase: _phase, size: size),
-        if (day != null) ...[
-          const SizedBox(height: 12),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: scheme.onSurface,
-              ),
-              children: [
-                TextSpan(text: 'Day $day'),
+    // The moon is painted, so it carries no semantics of its own. Read the
+    // whole indicator as one node instead of two disconnected text fragments.
+    return Semantics(
+      container: true,
+      label: day == null
+          ? _phaseName
+          : 'Cycle day $day of $_cycleLength. $_phaseName. $_phaseHint',
+      child: Column(
+        children: [
+          _GlowingMoon(phase: _phase, size: size),
+          if (day != null) ...[
+            const SizedBox(height: 12),
+            // Text.rich, not RichText: it applies the ambient TextScaler.
+            ExcludeSemantics(
+              child: Text.rich(
                 TextSpan(
-                  text: ' of $_cycleLength',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: scheme.onSurface,
                   ),
+                  children: [
+                    TextSpan(text: 'Day $day'),
+                    TextSpan(
+                      text: ' of $_cycleLength',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '$_phaseName · ${_phaseHint.toLowerCase()}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
+            const SizedBox(height: 4),
+            ExcludeSemantics(
+              child: Text(
+                '$_phaseName · ${_phaseHint.toLowerCase()}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
             ),
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

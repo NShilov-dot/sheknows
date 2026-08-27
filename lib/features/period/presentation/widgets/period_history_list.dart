@@ -73,6 +73,9 @@ class PeriodHistoryTile extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : PopupMenuButton<String>(
+              // Defaults to MaterialLocalizations' generic "Show menu";
+              // name what it actually opens.
+              tooltip: 'Period options',
               itemBuilder: (menuContext) => [
                 if (!log.isOngoing)
                   const PopupMenuItem(

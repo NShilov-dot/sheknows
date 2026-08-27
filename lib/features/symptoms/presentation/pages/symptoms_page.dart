@@ -58,10 +58,7 @@ class _SymptomsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Symptoms'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
-        ),
+        leading: BackButton(onPressed: () => context.go('/home')),
         actions: [
           IconButton(
             icon: const Icon(Icons.insights),

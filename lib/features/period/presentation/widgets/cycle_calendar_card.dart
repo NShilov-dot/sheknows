@@ -41,12 +41,9 @@ class CycleCalendarCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.sm,
-          AppSpacing.xs,
-          AppSpacing.sm,
-          AppSpacing.md,
-        ),
+        // No horizontal padding: the grid needs the full card width to keep
+        // the day cells as close to a 48dp tap target as 7 columns allow.
+        padding: const EdgeInsets.fromLTRB(0, AppSpacing.xs, 0, AppSpacing.md),
         child: BlocBuilder<PeriodCubit, PeriodState>(
           // The calendar only reads these four fields. Without this, a
           // mutation's isLoading flip or a mutationFailure emit would rebuild
