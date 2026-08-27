@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
@@ -98,8 +99,10 @@ class PeriodHistoryTile extends StatelessWidget {
               onSelected: (value) {
                 switch (value) {
                   case 'reopen':
+                    HapticFeedback.selectionClick();
                     context.read<PeriodCubit>().reopenPeriod(log.id);
                   case 'delete':
+                    HapticFeedback.mediumImpact();
                     context.read<PeriodCubit>().removePeriod(log.id);
                 }
               },

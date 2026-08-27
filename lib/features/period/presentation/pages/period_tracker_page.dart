@@ -64,11 +64,19 @@ class _PeriodTrackerView extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return switch (state) {
-            PeriodInitial() || PeriodLoading() => const _PeriodSkeleton(),
-            PeriodError(:final failure) => _PeriodErrorView(failure: failure),
-            PeriodLoaded() => const _PeriodBody(),
-          };
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              PeriodInitial() || PeriodLoading() => const _PeriodSkeleton(
+                key: ValueKey('loading'),
+              ),
+              PeriodError(:final failure) => _PeriodErrorView(
+                key: const ValueKey('error'),
+                failure: failure,
+              ),
+              PeriodLoaded() => const _PeriodBody(key: ValueKey('loaded')),
+            },
+          );
         },
       ),
     );
@@ -76,7 +84,7 @@ class _PeriodTrackerView extends StatelessWidget {
 }
 
 class _PeriodBody extends StatelessWidget {
-  const _PeriodBody();
+  const _PeriodBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +122,7 @@ class _PeriodBody extends StatelessWidget {
 /// The error arm of the cycle screen. A bare centred string stranded the user:
 /// re-entering /cycle was the only way to re-run [PeriodCubit.load].
 class _PeriodErrorView extends StatelessWidget {
-  const _PeriodErrorView({required this.failure});
+  const _PeriodErrorView({super.key, required this.failure});
 
   final Failure failure;
 
@@ -163,7 +171,7 @@ class _PeriodErrorView extends StatelessWidget {
 /// placeholder of roughly the loaded shape beats a centred spinner and the
 /// layout does not jump when the data lands.
 class _PeriodSkeleton extends StatelessWidget {
-  const _PeriodSkeleton();
+  const _PeriodSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

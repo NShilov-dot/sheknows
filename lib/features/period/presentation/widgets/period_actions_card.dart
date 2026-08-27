@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
@@ -18,6 +19,7 @@ class PeriodActionsCard extends StatelessWidget {
       helpText: 'When did your period start?',
     );
     if (picked != null && context.mounted) {
+      HapticFeedback.mediumImpact();
       context.read<PeriodCubit>().startPeriod(picked);
     }
   }
@@ -57,9 +59,12 @@ class PeriodActionsCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: isLoading
                         ? null
-                        : () => context
-                            .read<PeriodCubit>()
-                            .endPeriod(DateTime.now()),
+                        : () {
+                            HapticFeedback.mediumImpact();
+                            context
+                                .read<PeriodCubit>()
+                                .endPeriod(DateTime.now());
+                          },
                     icon: isLoading
                         ? const _ButtonSpinner()
                         : const Icon(Icons.stop_circle_outlined),

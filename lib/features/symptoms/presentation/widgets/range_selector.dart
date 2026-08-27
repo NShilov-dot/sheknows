@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/analytics_range.dart';
 
@@ -24,7 +25,10 @@ class RangeSelector extends StatelessWidget {
           ChoiceChip(
             label: Text(option.label),
             selected: range == option,
-            onSelected: (_) => onChanged(option),
+            onSelected: (_) {
+              HapticFeedback.selectionClick();
+              onChanged(option);
+            },
           ),
       ],
     );

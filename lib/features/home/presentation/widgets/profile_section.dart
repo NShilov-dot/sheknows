@@ -24,37 +24,53 @@ class ProfileSection extends StatelessWidget {
           ),
       },
       builder: (context, data) {
-        if (data.isLoading) {
-          return const SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          );
-        }
-
-        if (data.errorMessage != null) {
-          return _ProfileErrorView(
-            message: data.errorMessage!,
-            userId: user.id,
-          );
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Name: ${data.displayName ?? 'Not set'}'),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              data.fromDatabase
-                  ? 'Loaded from the profiles table.'
-                  : 'No profile row found (showing auth metadata).',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
+        return AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          alignment: Alignment.topLeft,
+          child: _ProfileBody(data: data, userId: user.id),
         );
       },
+    );
+  }
+}
+
+class _ProfileBody extends StatelessWidget {
+  const _ProfileBody({required this.data, required this.userId});
+
+  final _ProfileViewData data;
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    if (data.isLoading) {
+      return const SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+
+    if (data.errorMessage != null) {
+      return _ProfileErrorView(
+        message: data.errorMessage!,
+        userId: userId,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Name: ${data.displayName ?? 'Not set'}'),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          data.fromDatabase
+              ? 'Loaded from the profiles table.'
+              : 'No profile row found (showing auth metadata).',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ],
     );
   }
 }

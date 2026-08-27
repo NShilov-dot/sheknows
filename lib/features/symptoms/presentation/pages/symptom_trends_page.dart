@@ -56,14 +56,23 @@ class _TrendsView extends StatelessWidget {
       ),
       body: BlocBuilder<SymptomsCubit, SymptomsState>(
         builder: (context, state) {
-          return switch (state) {
-            SymptomsInitial() || SymptomsLoading() => const _TrendsSkeleton(),
-            SymptomsError(:final failure) => SymptomsErrorView(
-                failure: failure,
-                onRetry: () => context.read<SymptomsCubit>().load(userId),
-              ),
-            SymptomsLoaded(:final logs) => SymptomTrendsBody(logs: logs),
-          };
+          // Keyed branches so the skeleton cross-fades into the trends body.
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              SymptomsInitial() || SymptomsLoading() =>
+                const _TrendsSkeleton(key: ValueKey('loading')),
+              SymptomsError(:final failure) => SymptomsErrorView(
+                  key: const ValueKey('error'),
+                  failure: failure,
+                  onRetry: () => context.read<SymptomsCubit>().load(userId),
+                ),
+              SymptomsLoaded(:final logs) => SymptomTrendsBody(
+                  key: const ValueKey('loaded'),
+                  logs: logs,
+                ),
+            },
+          );
         },
       ),
     );
@@ -73,7 +82,7 @@ class _TrendsView extends StatelessWidget {
 /// Rough outline of [SymptomTrendsBody] — range selector, summary card, two
 /// bar sections — so the first paint does not jump when the data lands.
 class _TrendsSkeleton extends StatelessWidget {
-  const _TrendsSkeleton();
+  const _TrendsSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

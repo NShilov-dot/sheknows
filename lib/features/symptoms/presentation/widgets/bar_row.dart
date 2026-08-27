@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 
 /// A labelled horizontal bar: label, a proportional fill over a track, and the
-/// value. Uses [FractionallySizedBox] — no chart dependency for a simple ranked
-/// bar. Shared by the trends and phase-attribution screens.
+/// value. Uses [AnimatedFractionallySizedBox] — no chart dependency for a
+/// simple ranked bar, and the fill grows into its new value when the range
+/// changes instead of snapping. Shared by the trends and phase screens.
 class BarRow extends StatelessWidget {
   const BarRow({
     super.key,
@@ -53,7 +54,9 @@ class BarRow extends StatelessWidget {
                   height: 18,
                   color: theme.colorScheme.surfaceContainerHighest,
                   alignment: Alignment.centerLeft,
-                  child: FractionallySizedBox(
+                  child: AnimatedFractionallySizedBox(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutCubic,
                     widthFactor: fraction.clamp(0.0, 1.0),
                     child: Container(color: color, height: 18),
                   ),

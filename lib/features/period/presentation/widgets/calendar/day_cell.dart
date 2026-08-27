@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/calendar_labels.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/month_page.dart';
@@ -57,7 +58,12 @@ class DayCell extends StatelessWidget {
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: onTap,
+        // A ripple is invisible under the period band, so the selection click
+        // is the only feedback this tap gives before the sheet animates in.
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
         child: Stack(
           alignment: Alignment.center,
           children: [

@@ -13,7 +13,8 @@ import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_shee
 /// This day's symptom entries, backed by its own page-scoped [SymptomsCubit]
 /// (a fresh instance loaded to just this day's window).
 class DaySymptomsSection extends StatelessWidget {
-  const DaySymptomsSection({super.key, required this.day, required this.userId});
+  const DaySymptomsSection(
+      {super.key, required this.day, required this.userId});
 
   final DateTime day;
   final String userId;
@@ -93,52 +94,59 @@ class _DaySymptomsBody extends StatelessWidget {
             ),
           ],
         ),
-        BlocBuilder<SymptomsCubit, SymptomsState>(
-          builder: (context, state) {
-            // Branch on the state: an in-flight or failed load must not read
-            // as "nothing logged".
-            if (state is SymptomsInitial || state is SymptomsLoading) {
-              return const _SymptomsPlaceholder();
-            }
-            if (state is SymptomsError) {
-              return _SymptomsErrorRow(
-                message: failureMessage(state.failure),
-                onRetry: () => context
-                    .read<SymptomsCubit>()
-                    .load(userId, from: from, to: to),
-              );
-            }
-            final logs = state is SymptomsLoaded
-                ? state.logs
-                : const <SymptomLogEntity>[];
-            if (logs.isEmpty) {
-              return Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'No symptoms logged for this day',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              );
-            }
-            return Column(
-              children: [
-                for (final log in logs)
-                  ListTile(
-                    key: ValueKey(log.id),
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                    title: Text(symptomTypeLabel(log.type)),
-                    subtitle: Text(
-                      '${symptomSeverityLabel(log.severity)} · '
-                      '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
+        // The placeholder matches the empty-state line, but a day with
+        // entries is 48px taller per ListTile — absorb that instead of
+        // shoving the notes field and Save button down in one frame.
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          alignment: Alignment.topCenter,
+          child: BlocBuilder<SymptomsCubit, SymptomsState>(
+            builder: (context, state) {
+              // Branch on the state: an in-flight or failed load must not read
+              // as "nothing logged".
+              if (state is SymptomsInitial || state is SymptomsLoading) {
+                return const _SymptomsPlaceholder();
+              }
+              if (state is SymptomsError) {
+                return _SymptomsErrorRow(
+                  message: failureMessage(state.failure),
+                  onRetry: () => context
+                      .read<SymptomsCubit>()
+                      .load(userId, from: from, to: to),
+                );
+              }
+              final logs = state is SymptomsLoaded
+                  ? state.logs
+                  : const <SymptomLogEntity>[];
+              if (logs.isEmpty) {
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'No symptoms logged for this day',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    onTap: () => _openSheet(context, existing: log),
                   ),
-              ],
-            );
-          },
+                );
+              }
+              return Column(
+                children: [
+                  for (final log in logs)
+                    ListTile(
+                      key: ValueKey(log.id),
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      title: Text(symptomTypeLabel(log.type)),
+                      subtitle: Text(
+                        '${symptomSeverityLabel(log.severity)} · '
+                        '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
+                      ),
+                      onTap: () => _openSheet(context, existing: log),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/constants/period.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
@@ -104,7 +105,11 @@ class DayDetailsSheet extends StatelessWidget {
   }
 }
 
+/// The single funnel for start / end / delete-period and clear-day: each one
+/// rewrites the log and then the sheet simply disappears, so the haptic fires
+/// first and is the only acknowledgement the user gets.
 void _runPeriodAction(BuildContext context, VoidCallback action) {
+  HapticFeedback.mediumImpact();
   action();
   Navigator.of(context).pop();
 }
@@ -154,6 +159,8 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
 
   void _save() {
     if (_saving) return;
+    // After the guard, so a rejected double-tap does not buzz twice.
+    HapticFeedback.lightImpact();
     setState(() => _saving = true);
     widget.cubit.saveDayLog(
       widget.day,
@@ -207,8 +214,7 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
         BlocBuilder<PeriodCubit, PeriodState>(
           bloc: widget.cubit,
           builder: (context, state) {
-            final busy =
-                _saving || state is! PeriodLoaded || state.isLoading;
+            final busy = _saving || state is! PeriodLoaded || state.isLoading;
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -271,6 +277,7 @@ class _IntimacyChipsState extends State<_IntimacyChips> {
             label: Text(_sexualActivityLabel(activity)),
             selected: _selected == activity,
             onSelected: (selected) {
+              HapticFeedback.selectionClick();
               setState(() => _selected = selected ? activity : null);
               widget.onChanged(_selected);
             },

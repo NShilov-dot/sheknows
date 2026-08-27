@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/constants/symptoms.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
@@ -72,6 +73,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
     if (type == null || _saving) {
       return;
     }
+    HapticFeedback.lightImpact();
     setState(() => _saving = true);
     if (widget.existing == null) {
       widget.cubit.logSymptom(
@@ -94,6 +96,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
 
   void _delete() {
     if (_saving) return;
+    HapticFeedback.mediumImpact();
     setState(() => _saving = true);
     widget.cubit.deleteSymptomLog(widget.existing!.id);
     Navigator.of(context).pop();
@@ -270,8 +273,10 @@ class _CategoryChips extends StatelessWidget {
               ChoiceChip(
                 label: Text(symptomTypeLabel(type)),
                 selected: selected == type,
-                onSelected: (isSelected) =>
-                    onSelected(isSelected ? type : null),
+                onSelected: (isSelected) {
+                  HapticFeedback.selectionClick();
+                  onSelected(isSelected ? type : null);
+                },
               ),
           ],
         ),
@@ -303,7 +308,10 @@ class _SeverityChips extends StatelessWidget {
           ChoiceChip(
             label: Text(symptomSeverityLabel(severity)),
             selected: selected == severity,
-            onSelected: (_) => onSelected(severity),
+            onSelected: (_) {
+              HapticFeedback.selectionClick();
+              onSelected(severity);
+            },
           ),
       ],
     );

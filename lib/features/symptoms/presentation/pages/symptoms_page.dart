@@ -88,19 +88,27 @@ class _SymptomsView extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return switch (state) {
-            SymptomsInitial() || SymptomsLoading() => const _SymptomsSkeleton(),
-            SymptomsError(:final failure) => SymptomsErrorView(
-                failure: failure,
-                onRetry: () => context.read<SymptomsCubit>().load(userId),
-              ),
-            SymptomsLoaded(:final logs) => logs.isEmpty
-                ? const _EmptyState()
-                : SymptomHistoryList(
-                    logs: logs,
-                    onTap: (log) => _openLogSheet(context, existing: log),
-                  ),
-          };
+          // Keyed branches so the skeleton cross-fades into the list instead
+          // of being replaced in a single frame.
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              SymptomsInitial() || SymptomsLoading() =>
+                const _SymptomsSkeleton(key: ValueKey('loading')),
+              SymptomsError(:final failure) => SymptomsErrorView(
+                  key: const ValueKey('error'),
+                  failure: failure,
+                  onRetry: () => context.read<SymptomsCubit>().load(userId),
+                ),
+              SymptomsLoaded(:final logs) => logs.isEmpty
+                  ? const _EmptyState(key: ValueKey('empty'))
+                  : SymptomHistoryList(
+                      key: const ValueKey('list'),
+                      logs: logs,
+                      onTap: (log) => _openLogSheet(context, existing: log),
+                    ),
+            },
+          );
         },
       ),
     );
@@ -111,7 +119,7 @@ class _SymptomsView extends StatelessWidget {
 /// and a few tile-shaped blocks, so the list does not appear from nowhere the
 /// way a centred spinner makes it.
 class _SymptomsSkeleton extends StatelessWidget {
-  const _SymptomsSkeleton();
+  const _SymptomsSkeleton({super.key});
 
   // Varied widths read as content rather than as a repeated pattern.
   static const _titleWidths = [140.0, 96.0, 168.0, 120.0, 108.0];
@@ -144,7 +152,7 @@ class _SymptomsSkeleton extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {

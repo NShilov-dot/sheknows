@@ -69,7 +69,9 @@ class AuthPageScaffold extends StatelessWidget {
                       const SizedBox(height: AppSpacing.xxl),
                       IgnorePointer(
                         ignoring: isLoading,
-                        child: Opacity(
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
                           opacity: isLoading ? AppAlpha.muted : 1,
                           child: builder(context, isLoading),
                         ),

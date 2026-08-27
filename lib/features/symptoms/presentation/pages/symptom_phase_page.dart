@@ -51,15 +51,24 @@ class _PhaseView extends StatelessWidget {
       ),
       body: BlocBuilder<SymptomPhaseCubit, SymptomPhaseState>(
         builder: (context, state) {
-          return switch (state) {
-            SymptomPhaseInitial() || SymptomPhaseLoading() =>
-              const Center(child: CircularProgressIndicator()),
-            SymptomPhaseError(:final failure) => SymptomsErrorView(
-                failure: failure,
-                onRetry: () => context.read<SymptomPhaseCubit>().load(userId),
-              ),
-            SymptomPhaseLoaded() => _Loaded(state: state),
-          };
+          // Keyed branches so the spinner cross-fades into the phase cards.
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              SymptomPhaseInitial() || SymptomPhaseLoading() =>
+                const Center(
+                  key: ValueKey('loading'),
+                  child: CircularProgressIndicator(),
+                ),
+              SymptomPhaseError(:final failure) => SymptomsErrorView(
+                  key: const ValueKey('error'),
+                  failure: failure,
+                  onRetry: () => context.read<SymptomPhaseCubit>().load(userId),
+                ),
+              SymptomPhaseLoaded() =>
+                _Loaded(key: const ValueKey('loaded'), state: state),
+            },
+          );
         },
       ),
     );
@@ -67,7 +76,7 @@ class _PhaseView extends StatelessWidget {
 }
 
 class _Loaded extends StatelessWidget {
-  const _Loaded({required this.state});
+  const _Loaded({super.key, required this.state});
 
   final SymptomPhaseLoaded state;
 
@@ -90,7 +99,14 @@ class _Loaded extends StatelessWidget {
     final visible = [...placed, ...unplaced];
     return Column(
       children: [
-        if (state.recomputing) const LinearProgressIndicator(),
+        // Always occupied: inserting/removing the bar shoved the list 4dp on
+        // every range change.
+        SizedBox(
+          height: 4,
+          child: state.recomputing
+              ? const LinearProgressIndicator(minHeight: 4)
+              : null,
+        ),
         Expanded(
           child: Center(
             child: ConstrainedBox(

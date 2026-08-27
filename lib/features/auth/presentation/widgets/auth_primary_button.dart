@@ -16,13 +16,17 @@ class AuthPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton(
       onPressed: isLoading ? null : onPressed,
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(label),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: isLoading
+            ? const SizedBox(
+                key: ValueKey('spinner'),
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Text(label, key: ValueKey(label)),
+      ),
     );
   }
 }

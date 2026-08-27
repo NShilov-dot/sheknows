@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/error/failure_messages.dart';
@@ -163,6 +164,7 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
     );
 
     if (confirmed == true && context.mounted) {
+      HapticFeedback.heavyImpact();
       context.read<AuthBloc>().add(const AuthDeleteAccountRequested());
     }
   }

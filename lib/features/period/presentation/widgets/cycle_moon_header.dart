@@ -11,17 +11,23 @@ class CycleMoonHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
-      selector: (state) => state is PeriodLoaded ? state.stats : null,
-      builder: (context, stats) {
-        if (stats == null || stats.currentCycleDay == null) {
-          return const SizedBox.shrink();
-        }
-        return Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-          child: MoonCycleIndicator(stats: stats),
-        );
-      },
+    // Stats arrive a beat after the page does: without this the ~190dp
+    // indicator appears in one frame and shoves the calendar down.
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      alignment: Alignment.topCenter,
+      child: BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
+        selector: (state) => state is PeriodLoaded ? state.stats : null,
+        builder: (context, stats) {
+          if (stats == null || stats.currentCycleDay == null) {
+            return const SizedBox.shrink();
+          }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+            child: MoonCycleIndicator(stats: stats),
+          );
+        },
+      ),
     );
   }
 }
