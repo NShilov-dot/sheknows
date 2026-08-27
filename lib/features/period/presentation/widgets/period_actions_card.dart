@@ -37,6 +37,14 @@ class PeriodActionsCard extends StatelessWidget {
         }
 
         final ongoing = stats.currentPeriod;
+        // startPeriod emits the optimistic log AND isLoading in ONE emit, so
+        // `ongoing` is already non-null while the write is still in flight —
+        // keying the spinner off `ongoing == null` put it on an "End period"
+        // button the user never pressed. The optimistic row is the one with a
+        // `pending-` id, which is what actually distinguishes the two.
+        final startInFlight =
+            isLoading && (ongoing == null || ongoing.id.startsWith('pending-'));
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -47,16 +55,20 @@ class PeriodActionsCard extends StatelessWidget {
                   onPressed: isLoading || ongoing != null
                       ? null
                       : () => _pickStartDate(context),
-                  // Only one of the two is ever actionable, so the in-flight
-                  // mutation belongs to whichever that is.
-                  icon: isLoading && ongoing == null
+                  icon: startInFlight
                       ? const _ButtonSpinner()
                       : const Icon(Icons.water_drop),
                   label: const Text('My period started today'),
                 ),
-                if (ongoing != null) ...[
+                // Held back until the start actually lands, so the two buttons
+                // do not swap under the user's thumb mid-write.
+                if (ongoing != null && !startInFlight) ...[
                   const SizedBox(height: AppSpacing.sm),
                   OutlinedButton.icon(
+                    // No spinner branch here: endPeriod never sets isLoading,
+                    // so a spinner on this button could only ever belong to an
+                    // unrelated mutation. Disabling is honest; showing progress
+                    // for someone else's work is not.
                     onPressed: isLoading
                         ? null
                         : () {
@@ -65,9 +77,7 @@ class PeriodActionsCard extends StatelessWidget {
                                 .read<PeriodCubit>()
                                 .endPeriod(DateTime.now());
                           },
-                    icon: isLoading
-                        ? const _ButtonSpinner()
-                        : const Icon(Icons.stop_circle_outlined),
+                    icon: const Icon(Icons.stop_circle_outlined),
                     label: const Text('End period today'),
                   ),
                 ],

@@ -198,9 +198,16 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                   final busy = _saving ||
                       state is! SymptomsLoaded ||
                       state.isLoading;
+                  // SymptomsError also satisfies `state is! SymptomsLoaded`,
+                  // so it folds into `busy` — but nothing can move the cubit
+                  // out of it while this sheet covers the retry button, so
+                  // "Just a moment…" would promise a resolution that cannot
+                  // arrive. Name that dead end instead.
                   final hint = _type == null
                       ? 'Pick a symptom to continue'
-                      : (busy ? 'Just a moment…' : null);
+                      : state is SymptomsError
+                          ? 'Could not load your symptoms — close and try again'
+                          : (busy ? 'Just a moment…' : null);
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -332,10 +339,14 @@ class _WhenRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final materialLocalizations = MaterialLocalizations.of(context);
+    // An even split, not 3:2. The 3:2 version starved the time button: after
+    // the theme's 20dp horizontal padding each side, the 18dp icon and its
+    // 8dp gap, a 12-hour label like "10:30 PM" was left ~56dp on a 360dp
+    // screen and soft-wrapped onto two lines beside a one-line date button.
+    // Both labels carry the same overflow guard now, rather than only one.
     return Row(
       children: [
         Expanded(
-          flex: 3,
           child: OutlinedButton.icon(
             onPressed: onPickDate,
             icon: const Icon(Icons.calendar_today, size: AppIconSize.md),
@@ -348,12 +359,13 @@ class _WhenRow extends StatelessWidget {
         ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
-          flex: 2,
           child: OutlinedButton.icon(
             onPressed: onPickTime,
             icon: const Icon(Icons.access_time, size: AppIconSize.md),
             label: Text(
               TimeOfDay.fromDateTime(dateTime).format(context),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),

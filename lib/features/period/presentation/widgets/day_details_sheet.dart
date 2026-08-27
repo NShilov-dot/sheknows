@@ -76,19 +76,26 @@ class DayDetailsSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              PeriodActions(
-                canStartHere: canStartHere,
-                canEndHere: canEndHere,
-                deletablePeriodId:
-                    covering != null && !covering.id.startsWith('pending-')
-                        ? covering.id
-                        : null,
-                onStart: () =>
-                    _runPeriodAction(context, () => cubit.startPeriod(day)),
-                onEnd: () =>
-                    _runPeriodAction(context, () => cubit.endPeriod(day)),
-                onDelete: (id) =>
-                    _runPeriodAction(context, () => cubit.removePeriod(id)),
+              BlocBuilder<PeriodCubit, PeriodState>(
+                bloc: cubit,
+                buildWhen: (p, c) =>
+                    (p is PeriodLoaded ? p.isLoading : false) !=
+                    (c is PeriodLoaded ? c.isLoading : false),
+                builder: (context, state) => PeriodActions(
+                  busy: state is! PeriodLoaded || state.isLoading,
+                  canStartHere: canStartHere,
+                  canEndHere: canEndHere,
+                  deletablePeriodId:
+                      covering != null && !covering.id.startsWith('pending-')
+                          ? covering.id
+                          : null,
+                  onStart: () =>
+                      _runPeriodAction(context, () => cubit.startPeriod(day)),
+                  onEnd: () =>
+                      _runPeriodAction(context, () => cubit.endPeriod(day)),
+                  onDelete: (id) =>
+                      _runPeriodAction(context, () => cubit.removePeriod(id)),
+                ),
               ),
               if (!isFuture)
                 _DayTrackingForm(

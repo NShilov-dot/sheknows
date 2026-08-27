@@ -13,6 +13,7 @@ class PeriodActions extends StatelessWidget {
     required this.onStart,
     required this.onEnd,
     required this.onDelete,
+    this.busy = false,
   });
 
   final bool canStartHere;
@@ -26,6 +27,11 @@ class PeriodActions extends StatelessWidget {
   final VoidCallback onEnd;
   final ValueChanged<String> onDelete;
 
+  /// True while a period mutation is already in flight. PeriodCubit drops a
+  /// second one silently, so leaving these live would buzz, close the sheet
+  /// and write nothing.
+  final bool busy;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -36,14 +42,14 @@ class PeriodActions extends StatelessWidget {
       children: [
         if (canStartHere)
           FilledButton.icon(
-            onPressed: onStart,
+            onPressed: busy ? null : onStart,
             icon: const Icon(Icons.water_drop),
             label: const Text('Period started on this day'),
           ),
         if (canEndHere) ...[
           if (canStartHere) const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
-            onPressed: onEnd,
+            onPressed: busy ? null : onEnd,
             icon: const Icon(Icons.stop_circle_outlined),
             label: const Text('End period on this day'),
           ),
@@ -51,7 +57,7 @@ class PeriodActions extends StatelessWidget {
         if (deletableId != null) ...[
           const SizedBox(height: AppSpacing.sm),
           TextButton.icon(
-            onPressed: () => onDelete(deletableId),
+            onPressed: busy ? null : () => onDelete(deletableId),
             icon: Icon(Icons.delete_outline, color: scheme.error),
             label: Text(
               'Delete this period',

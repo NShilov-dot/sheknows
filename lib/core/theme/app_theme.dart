@@ -143,9 +143,22 @@ abstract final class AppTheme {
         foregroundColor: scheme.onSurface,
         elevation: 0,
         centerTitle: false,
-        systemOverlayStyle: brightness == Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        // NOT the bare SystemUiOverlayStyle.light/.dark constants: those carry
+        // systemNavigationBarColor black/white, and when the AppBar is the only
+        // annotated region Flutter forwards that to Android — clobbering the
+        // AppTheme.night nav bar AppInitializer sets, so the bar flipped from
+        // indigo to black the moment you landed on a screen with an AppBar.
+        // Spelling it out keeps this in step with AppInitializer.
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: const Color(0x00000000),
+          statusBarIconBrightness:
+              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          statusBarBrightness:
+              brightness == Brightness.dark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: scaffoldBackground,
+          systemNavigationBarIconBrightness:
+              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        ),
         titleTextStyle: display.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.w600,

@@ -12,10 +12,12 @@ class PeriodHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, List<PeriodLogEntity>?>(
-      selector: (state) => state is PeriodLoaded ? state.logs : null,
-      builder: (context, logs) {
-        final items = logs ?? const <PeriodLogEntity>[];
+    return BlocSelector<PeriodCubit, PeriodState, (List<PeriodLogEntity>, bool)>(
+      selector: (state) => state is PeriodLoaded
+          ? (state.logs, state.isLoading)
+          : (const <PeriodLogEntity>[], false),
+      builder: (context, selected) {
+        final (items, isLoading) = selected;
         if (items.isEmpty) {
           return const _HistoryEmptyState();
         }
@@ -23,7 +25,11 @@ class PeriodHistoryList extends StatelessWidget {
         return Column(
           children: [
             for (final log in items)
-              PeriodHistoryTile(key: ValueKey(log.id), log: log),
+              PeriodHistoryTile(
+                key: ValueKey(log.id),
+                log: log,
+                busy: isLoading,
+              ),
           ],
         );
       },
@@ -32,9 +38,18 @@ class PeriodHistoryList extends StatelessWidget {
 }
 
 class PeriodHistoryTile extends StatelessWidget {
-  const PeriodHistoryTile({super.key, required this.log});
+  const PeriodHistoryTile({
+    super.key,
+    required this.log,
+    this.busy = false,
+  });
 
   final PeriodLogEntity log;
+
+  /// True while another period mutation is in flight. PeriodCubit drops
+  /// reopen/delete silently in that window, so the menu is disabled rather
+  /// than left live to buzz and do nothing.
+  final bool busy;
 
   String get _dateRange {
     final start = '${log.startDate.day}/${log.startDate.month}';
@@ -78,6 +93,7 @@ class PeriodHistoryTile extends StatelessWidget {
               // Defaults to MaterialLocalizations' generic "Show menu";
               // name what it actually opens.
               tooltip: 'Period options',
+              enabled: !busy,
               itemBuilder: (menuContext) => [
                 if (!log.isOngoing)
                   const PopupMenuItem(

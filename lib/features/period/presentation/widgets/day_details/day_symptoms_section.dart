@@ -25,25 +25,12 @@ class DaySymptomsSection extends StatelessWidget {
     final to = DateTime(day.year, day.month, day.day, 23, 59, 59, 999);
     return BlocProvider(
       create: (_) => sl<SymptomsCubit>()..load(userId, from: from, to: to),
-      // This cubit is a fresh page-scoped instance, so SymptomsPage's snack bar
-      // listener never sees its failures — mirror it here.
-      child: BlocListener<SymptomsCubit, SymptomsState>(
-        listenWhen: (previous, current) {
-          if (current is! SymptomsLoaded || current.mutationFailure == null) {
-            return false;
-          }
-          return previous is! SymptomsLoaded ||
-              previous.mutationFailure != current.mutationFailure;
-        },
-        listener: (context, state) {
-          if (state is SymptomsLoaded && state.mutationFailure != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failureMessage(state.mutationFailure!))),
-            );
-          }
-        },
-        child: _DaySymptomsBody(day: day, userId: userId, from: from, to: to),
-      ),
+      // Deliberately NOT a snack-bar listener. This section only ever renders
+      // inside a showModalBottomSheet route, and ScaffoldMessenger.of resolves
+      // to the app-level messenger, which paints into the page's Scaffold —
+      // underneath this sheet and its barrier. A mutation failure raised here
+      // is reported inline in _DaySymptomsBody instead, where it is visible.
+      child: _DaySymptomsBody(day: day, userId: userId, from: from, to: to),
     );
   }
 }
@@ -61,21 +48,6 @@ class _DaySymptomsBody extends StatelessWidget {
   final DateTime from;
   final DateTime to;
 
-  void _openSheet(BuildContext context, {SymptomLogEntity? existing}) {
-    final cubit = context.read<SymptomsCubit>();
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => SymptomLogSheet(
-        cubit: cubit,
-        existing: existing,
-        initialDate: existing == null ? day : null,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -88,7 +60,7 @@ class _DaySymptomsBody extends StatelessWidget {
               child: SectionLabel('Symptoms', icon: Icons.healing_outlined),
             ),
             TextButton.icon(
-              onPressed: () => _openSheet(context),
+              onPressed: () => _openSymptomSheet(context, day: day),
               icon: const Icon(Icons.add, size: AppIconSize.md),
               label: const Text('Log'),
             ),
@@ -115,9 +87,31 @@ class _DaySymptomsBody extends StatelessWidget {
                       .load(userId, from: from, to: to),
                 );
               }
+              final mutationFailure =
+                  state is SymptomsLoaded ? state.mutationFailure : null;
               final logs = state is SymptomsLoaded
                   ? state.logs
                   : const <SymptomLogEntity>[];
+              if (mutationFailure != null) {
+                // A failed add/edit/delete from this sheet. Inline, above
+                // whatever did survive, because a snack bar would land behind
+                // the sheet.
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _SymptomsErrorRow(
+                      message: failureMessage(mutationFailure),
+                      onRetry: () => context
+                          .read<SymptomsCubit>()
+                          .load(userId, from: from, to: to),
+                    ),
+                    if (logs.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      _SymptomLines(logs: logs, day: day),
+                    ],
+                  ],
+                );
+              }
               if (logs.isEmpty) {
                 return Align(
                   alignment: Alignment.centerLeft,
@@ -129,25 +123,59 @@ class _DaySymptomsBody extends StatelessWidget {
                   ),
                 );
               }
-              return Column(
-                children: [
-                  for (final log in logs)
-                    ListTile(
-                      key: ValueKey(log.id),
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                      title: Text(symptomTypeLabel(log.type)),
-                      subtitle: Text(
-                        '${symptomSeverityLabel(log.severity)} · '
-                        '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
-                      ),
-                      onTap: () => _openSheet(context, existing: log),
-                    ),
-                ],
-              );
+              return _SymptomLines(logs: logs, day: day);
             },
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Opens the symptom log sheet over the day sheet, seeded with this day.
+void _openSymptomSheet(
+  BuildContext context, {
+  required DateTime day,
+  SymptomLogEntity? existing,
+}) {
+  final cubit = context.read<SymptomsCubit>();
+  showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => SymptomLogSheet(
+      cubit: cubit,
+      existing: existing,
+      initialDate: existing == null ? day : null,
+    ),
+  );
+}
+
+/// This day's symptom entries, one tappable line each.
+class _SymptomLines extends StatelessWidget {
+  const _SymptomLines({required this.logs, required this.day});
+
+  final List<SymptomLogEntity> logs;
+  final DateTime day;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final log in logs)
+          ListTile(
+            key: ValueKey(log.id),
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text(symptomTypeLabel(log.type)),
+            subtitle: Text(
+              '${symptomSeverityLabel(log.severity)} · '
+              '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
+            ),
+            onTap: () =>
+                _openSymptomSheet(context, day: day, existing: log),
+          ),
       ],
     );
   }

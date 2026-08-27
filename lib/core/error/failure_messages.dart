@@ -28,8 +28,10 @@ String failureMessage(Failure failure) => switch (failure) {
 /// The untouched backend text, for logs and bug reports — never for the UI.
 String failureDebugMessage(Failure failure) => failure.message;
 
-const _authMessage =
-    'We could not sign you in. Check your details and try again.';
+// Flow-neutral on purpose: AuthPageScaffold is shared by login and register,
+// so naming the sign-in flow here would greet a failed sign-up with the wrong
+// verb.
+const _authMessage = "That didn't work. Check your details and try again.";
 
 const _networkMessage =
     "You're offline. Your changes are saved on this device and will sync when "

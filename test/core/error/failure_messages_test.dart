@@ -22,6 +22,14 @@ void main() {
     expect(failureMessage(v), 'Enter a valid email address');
   });
 
+  test('auth copy is flow-neutral — the scaffold is shared by sign-in and '
+      'sign-up, so it must not name one of them', () {
+    final copy = failureMessage(const AuthFailure()).toLowerCase();
+    expect(copy, isNot(contains('sign you in')));
+    expect(copy, isNot(contains('sign in')));
+    expect(copy, isNot(contains('sign up')));
+  });
+
   test('every Failure subtype maps to non-empty user copy', () {
     for (final f in const <Failure>[
       AuthFailure(),
