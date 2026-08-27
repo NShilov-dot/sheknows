@@ -132,9 +132,10 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
         padding: EdgeInsets.only(
           left: AppSpacing.xl,
           right: AppSpacing.xl,
-          bottom: AppSpacing.xl + MediaQuery.of(context).viewInsets.bottom,
+          bottom: AppSpacing.xl + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -286,16 +287,20 @@ class _WhenRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
+          flex: 3,
           child: OutlinedButton.icon(
             onPressed: onPickDate,
             icon: const Icon(Icons.calendar_today, size: AppIconSize.md),
             label: Text(
               materialLocalizations.formatMediumDate(dateTime),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
+          flex: 2,
           child: OutlinedButton.icon(
             onPressed: onPickTime,
             icon: const Icon(Icons.access_time, size: AppIconSize.md),

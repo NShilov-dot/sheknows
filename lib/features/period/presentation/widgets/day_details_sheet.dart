@@ -55,9 +55,10 @@ class DayDetailsSheet extends StatelessWidget {
         padding: EdgeInsets.only(
           left: AppSpacing.xl,
           right: AppSpacing.xl,
-          bottom: AppSpacing.xl + MediaQuery.of(context).viewInsets.bottom,
+          bottom: AppSpacing.xl + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -238,6 +239,7 @@ class _IntimacyChipsState extends State<_IntimacyChips> {
   Widget build(BuildContext context) {
     return Wrap(
       spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
       children: [
         for (final activity in SexualActivity.values)
           ChoiceChip(

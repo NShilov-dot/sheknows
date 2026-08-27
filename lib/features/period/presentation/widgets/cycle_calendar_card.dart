@@ -24,6 +24,7 @@ class CycleCalendarCard extends StatelessWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (_) => DayDetailsSheet(
         day: day,
         logs: state.logs,

@@ -17,22 +17,29 @@ class SymptomHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 96),
-      itemCount: logs.length,
-      itemBuilder: (context, index) {
-        final log = logs[index];
-        final showHeader =
-            index == 0 || !_sameDay(logs[index - 1].loggedAt, log.loggedAt);
-        return Column(
-          key: ValueKey(log.id),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (showHeader) SymptomDateHeader(date: log.loggedAt),
-            SymptomTile(log: log, onTap: () => onTap(log)),
-          ],
-        );
-      },
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 640),
+        child: ListView.builder(
+          padding: EdgeInsets.only(
+            bottom: 96 + MediaQuery.viewPaddingOf(context).bottom,
+          ),
+          itemCount: logs.length,
+          itemBuilder: (context, index) {
+            final log = logs[index];
+            final showHeader =
+                index == 0 || !_sameDay(logs[index - 1].loggedAt, log.loggedAt);
+            return Column(
+              key: ValueKey(log.id),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (showHeader) SymptomDateHeader(date: log.loggedAt),
+                SymptomTile(log: log, onTap: () => onTap(log)),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -81,6 +88,8 @@ class SymptomTile extends StatelessWidget {
           '${symptomSeverityLabel(log.severity)} · $time',
           if (notes != null && notes.isNotEmpty) notes,
         ].join('\n'),
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
       ),
       isThreeLine: notes != null && notes.isNotEmpty,
       trailing: Icon(

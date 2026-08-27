@@ -83,23 +83,33 @@ class _PeriodBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      children: [
-        const CycleMoonHeader(),
-        const CycleCalendarCard(),
-        const SizedBox(height: AppSpacing.lg),
-        const CycleInsightsCard(),
-        const SizedBox(height: AppSpacing.lg),
-        const PeriodActionsCard(),
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          'History',
-          style: Theme.of(context).textTheme.titleMedium,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.viewPaddingOf(context).bottom,
+          ),
+          children: [
+            const CycleMoonHeader(),
+            const CycleCalendarCard(),
+            const SizedBox(height: AppSpacing.lg),
+            const CycleInsightsCard(),
+            const SizedBox(height: AppSpacing.lg),
+            const PeriodActionsCard(),
+            const SizedBox(height: AppSpacing.xl),
+            Text(
+              'History',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const PeriodHistoryList(),
+          ],
         ),
-        const SizedBox(height: AppSpacing.sm),
-        const PeriodHistoryList(),
-      ],
+      ),
     );
   }
 }

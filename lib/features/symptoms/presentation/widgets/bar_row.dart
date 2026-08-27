@@ -25,11 +25,22 @@ class BarRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          SizedBox(
-            width: 110,
-            child: Text(label, style: theme.textTheme.bodyMedium),
-          ),
+          // Expanded, not Flexible: this is a ranked chart, so every bar has
+          // to start at the same x. Flexible is loose, letting a short label
+          // shrink-wrap and pull its bar left, which breaks the alignment the
+          // old fixed 110dp box guaranteed.
           Expanded(
+            flex: 4,
+            child: Text(
+              label,
+              style: theme.textTheme.bodyMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            flex: 6,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.swatch),
               child: Container(
@@ -44,8 +55,8 @@ class BarRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          SizedBox(
-            width: 28,
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 28),
             child: Text(
               '$value',
               textAlign: TextAlign.end,

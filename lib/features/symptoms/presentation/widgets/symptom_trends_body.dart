@@ -45,27 +45,37 @@ class _SymptomTrendsBodyState extends State<SymptomTrendsBody> {
   Widget build(BuildContext context) {
     final trends = _trends;
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      children: [
-        RangeSelector(
-          range: _range,
-          onChanged: (range) => setState(() {
-            _range = range;
-            _trends = _calculate();
-          }),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.viewPaddingOf(context).bottom,
+          ),
+          children: [
+            RangeSelector(
+              range: _range,
+              onChanged: (range) => setState(() {
+                _range = range;
+                _trends = _calculate();
+              }),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            if (trends.isEmpty)
+              const _EmptyTrends()
+            else ...[
+              _SummaryCard(total: trends.totalEntries),
+              const SizedBox(height: AppSpacing.xl),
+              _FrequencySection(trends: trends),
+              const SizedBox(height: AppSpacing.xl),
+              _SeveritySection(trends: trends),
+            ],
+          ],
         ),
-        const SizedBox(height: AppSpacing.lg),
-        if (trends.isEmpty)
-          const _EmptyTrends()
-        else ...[
-          _SummaryCard(total: trends.totalEntries),
-          const SizedBox(height: AppSpacing.xl),
-          _FrequencySection(trends: trends),
-          const SizedBox(height: AppSpacing.xl),
-          _SeveritySection(trends: trends),
-        ],
-      ],
+      ),
     );
   }
 }
@@ -85,9 +95,11 @@ class _SummaryCard extends StatelessWidget {
           children: [
             Icon(Icons.insights, color: theme.colorScheme.primary),
             const SizedBox(width: AppSpacing.md),
-            Text(
-              '$total ${total == 1 ? 'entry' : 'entries'} logged',
-              style: theme.textTheme.titleMedium,
+            Expanded(
+              child: Text(
+                '$total ${total == 1 ? 'entry' : 'entries'} logged',
+                style: theme.textTheme.titleMedium,
+              ),
             ),
           ],
         ),

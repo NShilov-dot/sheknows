@@ -18,6 +18,7 @@ class RangeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xs,
       children: [
         for (final option in AnalyticsRange.values)
           ChoiceChip(

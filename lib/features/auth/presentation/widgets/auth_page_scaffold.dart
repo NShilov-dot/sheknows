@@ -46,6 +46,7 @@ class AuthPageScaffold extends StatelessWidget {
             return Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.xl),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
                   child: Column(

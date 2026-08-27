@@ -34,8 +34,9 @@ class AuthAlternativeActions extends StatelessWidget {
           onPressed: onGooglePressed,
         ),
         const SizedBox(height: AppSpacing.xl),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(promptText),
             TextButton(

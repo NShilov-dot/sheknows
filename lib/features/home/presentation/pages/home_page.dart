@@ -68,56 +68,78 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Signed in',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text('Email: ${widget.user.email}'),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Email confirmed: ${widget.user.emailConfirmed ? 'Yes' : 'No'}',
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Text(
-            'Profile',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          ProfileSection(user: widget.user),
-          const SizedBox(height: AppSpacing.xxl),
-          FilledButton.icon(
-            onPressed: () => context.go('/cycle'),
-            icon: const Icon(Icons.calendar_month),
-            label: const Text('Track my cycle'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
-            onPressed: () => context.go('/symptoms'),
-            icon: const Icon(Icons.healing_outlined),
-            label: const Text('Log symptoms'),
-          ),
-          const Spacer(),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: () => _confirmDeleteAccount(context),
-              icon: Icon(
-                Icons.delete_forever,
-                color: Theme.of(context).colorScheme.error,
+    const padding = EdgeInsets.all(AppSpacing.xl);
+
+    return SafeArea(
+      top: false,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: padding,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - padding.vertical,
               ),
-              label: Text(
-                'Delete account',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              child: IntrinsicHeight(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Signed in',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Text('Email: ${widget.user.email}'),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Email confirmed: ${widget.user.emailConfirmed ? 'Yes' : 'No'}',
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+                        Text(
+                          'Profile',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        ProfileSection(user: widget.user),
+                        const SizedBox(height: AppSpacing.xxl),
+                        FilledButton.icon(
+                          onPressed: () => context.go('/cycle'),
+                          icon: const Icon(Icons.calendar_month),
+                          label: const Text('Track my cycle'),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        FilledButton.icon(
+                          onPressed: () => context.go('/symptoms'),
+                          icon: const Icon(Icons.healing_outlined),
+                          label: const Text('Log symptoms'),
+                        ),
+                        const Spacer(),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () => _confirmDeleteAccount(context),
+                            icon: Icon(
+                              Icons.delete_forever,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                            label: Text(
+                              'Delete account',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

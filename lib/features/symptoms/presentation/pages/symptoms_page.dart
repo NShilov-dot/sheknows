@@ -43,6 +43,7 @@ class _SymptomsView extends StatelessWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (_) => SymptomLogSheet(cubit: cubit, existing: existing),
     );
   }

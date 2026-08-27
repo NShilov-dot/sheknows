@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
@@ -114,10 +116,15 @@ class _CycleCalendarState extends State<CycleCalendar> {
               tooltip: 'Previous month',
               onPressed: _page > 0 ? () => _animateTo(_page - 1) : null,
             ),
-            Text(
-              '${kCalendarMonthNames[visibleMonth.month - 1]} '
-              '${visibleMonth.year}',
-              style: theme.textTheme.titleMedium,
+            Flexible(
+              child: Text(
+                '${kCalendarMonthNames[visibleMonth.month - 1]} '
+                '${visibleMonth.year}',
+                style: theme.textTheme.titleMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
             IconButton(
               icon: const Icon(Icons.chevron_right),
@@ -128,36 +135,42 @@ class _CycleCalendarState extends State<CycleCalendar> {
           ],
         ),
         // Height fits the worst case (6 week rows); cells are square because
-        // each row divides the full width by 7.
+        // each row divides the grid width by 7. The cell is capped so the grid
+        // stays phone-sized (and centred) on tablets and in landscape.
         LayoutBuilder(
           builder: (context, constraints) {
-            final cellSize = constraints.maxWidth / 7;
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 24,
-                  child: WeekdayHeader(),
-                ),
-                const SizedBox(height: 2),
-                SizedBox(
-                  height: cellSize * 6,
-                  child: PageView.builder(
-                    controller: _controller,
-                    itemCount: _totalPages,
-                    onPageChanged: (page) {
-                      setState(() => _page = page);
-                      widget.onMonthChanged(_monthAt(page));
-                    },
-                    itemBuilder: (context, index) => MonthPage(
-                      month: _monthAt(index),
-                      logs: widget.logs,
-                      dayLogs: widget.dayLogs,
-                      stats: widget.stats,
-                      onDaySelected: widget.onDaySelected,
+            final cellSize = math.min(constraints.maxWidth / 7, 56.0);
+            return Center(
+              child: SizedBox(
+                width: cellSize * 7,
+                child: Column(
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 24),
+                      child: const WeekdayHeader(),
                     ),
-                  ),
+                    const SizedBox(height: 2),
+                    SizedBox(
+                      height: cellSize * 6,
+                      child: PageView.builder(
+                        controller: _controller,
+                        itemCount: _totalPages,
+                        onPageChanged: (page) {
+                          setState(() => _page = page);
+                          widget.onMonthChanged(_monthAt(page));
+                        },
+                        itemBuilder: (context, index) => MonthPage(
+                          month: _monthAt(index),
+                          logs: widget.logs,
+                          dayLogs: widget.dayLogs,
+                          stats: widget.stats,
+                          onDaySelected: widget.onDaySelected,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         ),

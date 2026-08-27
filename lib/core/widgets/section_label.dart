@@ -22,7 +22,7 @@ class SectionLabel extends StatelessWidget {
           color: theme.colorScheme.onSurfaceVariant,
         ),
         const SizedBox(width: 6),
-        Text(text, style: theme.textTheme.titleSmall),
+        Expanded(child: Text(text, style: theme.textTheme.titleSmall)),
       ],
     );
   }

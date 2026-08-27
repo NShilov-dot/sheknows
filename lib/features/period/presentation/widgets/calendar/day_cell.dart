@@ -85,14 +85,16 @@ class DayCell extends StatelessWidget {
 
           // Today ring.
           if (isToday)
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isOnBand ? scheme.onSecondary : scheme.outline,
-                  width: 1.5,
+            FractionallySizedBox(
+              widthFactor: 0.78,
+              heightFactor: 0.78,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isOnBand ? scheme.onSecondary : scheme.outline,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),

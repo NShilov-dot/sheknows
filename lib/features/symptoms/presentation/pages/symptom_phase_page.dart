@@ -76,24 +76,34 @@ class _Loaded extends StatelessWidget {
       children: [
         if (state.recomputing) const LinearProgressIndicator(),
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            children: [
-              RangeSelector(
-                range: state.range,
-                onChanged: (range) =>
-                    context.read<SymptomPhaseCubit>().setRange(range),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              if (visible.isEmpty)
-                const _EmptyPhases()
-              else
-                for (final summary in visible)
-                  _PhaseCard(
-                    summary: summary,
-                    maxCount: trends.maxPhaseCount,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg + MediaQuery.viewPaddingOf(context).bottom,
+                ),
+                children: [
+                  RangeSelector(
+                    range: state.range,
+                    onChanged: (range) =>
+                        context.read<SymptomPhaseCubit>().setRange(range),
                   ),
-            ],
+                  const SizedBox(height: AppSpacing.lg),
+                  if (visible.isEmpty)
+                    const _EmptyPhases()
+                  else
+                    for (final summary in visible)
+                      _PhaseCard(
+                        summary: summary,
+                        maxCount: trends.maxPhaseCount,
+                      ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
