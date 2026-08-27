@@ -3,8 +3,6 @@ import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 
 DayLogEntity _log({
   SexualActivity? sexualActivity,
-  Set<Symptom> symptoms = const {},
-  Mood? mood,
   String? notes,
 }) {
   return DayLogEntity(
@@ -12,8 +10,6 @@ DayLogEntity _log({
     userId: 'user-1',
     date: DateTime(2026, 8, 20),
     sexualActivity: sexualActivity,
-    symptoms: symptoms,
-    mood: mood,
     notes: notes,
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
@@ -30,8 +26,6 @@ void main() {
 
     test('has data when any tracker is set', () {
       expect(_log(sexualActivity: SexualActivity.protected).hasData, isTrue);
-      expect(_log(symptoms: {Symptom.cramps}).hasData, isTrue);
-      expect(_log(mood: Mood.happy).hasData, isTrue);
       expect(_log(notes: 'note').hasData, isTrue);
     });
 
@@ -45,21 +39,8 @@ void main() {
       for (final value in SexualActivity.values) {
         expect(sexualActivityFromName(value.name), value);
       }
-      for (final value in Symptom.values) {
-        expect(symptomFromName(value.name), value);
-      }
-      for (final value in Mood.values) {
-        expect(moodFromName(value.name), value);
-      }
       expect(sexualActivityFromName(null), isNull);
-      expect(symptomFromName('nope'), isNull);
-      expect(moodFromName('nope'), isNull);
-    });
-
-    test('equality treats symptoms as an unordered set', () {
-      final a = _log(symptoms: {Symptom.cramps, Symptom.acne});
-      final b = _log(symptoms: {Symptom.acne, Symptom.cramps});
-      expect(a, equals(b));
+      expect(sexualActivityFromName('nope'), isNull);
     });
   });
 }

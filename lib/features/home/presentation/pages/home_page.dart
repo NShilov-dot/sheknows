@@ -87,6 +87,12 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
             icon: const Icon(Icons.calendar_month),
             label: const Text('Track my cycle'),
           ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: () => context.go('/symptoms'),
+            icon: const Icon(Icons.healing_outlined),
+            label: const Text('Log symptoms'),
+          ),
           const Spacer(),
           Align(
             alignment: Alignment.centerLeft,

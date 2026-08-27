@@ -31,8 +31,6 @@ abstract class PeriodRemoteDataSource {
     required String userId,
     required DateTime date,
     SexualActivity? sexualActivity,
-    Set<Symptom> symptoms,
-    Mood? mood,
     String? notes,
   });
 
@@ -157,8 +155,6 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
     required String userId,
     required DateTime date,
     SexualActivity? sexualActivity,
-    Set<Symptom> symptoms = const {},
-    Mood? mood,
     String? notes,
   }) async {
     try {
@@ -170,8 +166,6 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
               userId: userId,
               date: date,
               sexualActivity: sexualActivity,
-              symptoms: symptoms,
-              mood: mood,
               notes: notes,
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),

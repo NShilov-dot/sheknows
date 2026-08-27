@@ -24,7 +24,7 @@ abstract class PeriodRepository {
 
   Future<Either<Failure, void>> deletePeriodLog(String periodId);
 
-  /// All day logs (intimacy/symptoms/mood/notes) for [userId], newest first.
+  /// All day logs (intimacy/notes) for [userId], newest first.
   Future<Either<Failure, List<DayLogEntity>>> getDayLogs(String userId);
 
   /// Creates or updates the day log for [userId] on [date] (one row per day).
@@ -32,8 +32,6 @@ abstract class PeriodRepository {
     required String userId,
     required DateTime date,
     SexualActivity? sexualActivity,
-    Set<Symptom> symptoms,
-    Mood? mood,
     String? notes,
   });
 

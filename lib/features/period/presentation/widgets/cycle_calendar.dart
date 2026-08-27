@@ -273,9 +273,7 @@ class _MonthPage extends StatelessWidget {
       }
       return _DayMarks(
         intimacy: log.sexualActivity != null,
-        other: log.symptoms.isNotEmpty ||
-            log.mood != null ||
-            (log.notes != null && log.notes!.trim().isNotEmpty),
+        other: log.notes != null && log.notes!.trim().isNotEmpty,
       );
     }
     return const _DayMarks(intimacy: false, other: false);
@@ -506,7 +504,7 @@ class _CalendarLegend extends StatelessWidget {
         ),
         _legendItem(
           _Dot(color: scheme.tertiary),
-          'Symptoms/notes',
+          'Notes',
           theme,
         ),
       ],

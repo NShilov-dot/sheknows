@@ -6,8 +6,6 @@ class DayLogModel extends DayLogEntity {
     required super.userId,
     required super.date,
     super.sexualActivity,
-    super.symptoms,
-    super.mood,
     super.notes,
     required super.createdAt,
     required super.updatedAt,
@@ -20,8 +18,6 @@ class DayLogModel extends DayLogEntity {
       date: DateTime.parse(json['log_date'] as String),
       sexualActivity:
           sexualActivityFromName(json['sexual_activity'] as String?),
-      symptoms: _symptomsFrom(json['symptoms']),
-      mood: moodFromName(json['mood'] as String?),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -35,25 +31,9 @@ class DayLogModel extends DayLogEntity {
       'user_id': userId,
       'log_date': _dateString(date),
       'sexual_activity': sexualActivity?.name,
-      'symptoms': symptoms.map((s) => s.name).toList(),
-      'mood': mood?.name,
       'notes': (notes == null || notes!.trim().isEmpty) ? null : notes!.trim(),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     };
-  }
-
-  static Set<Symptom> _symptomsFrom(dynamic raw) {
-    if (raw is! List) {
-      return const {};
-    }
-    final result = <Symptom>{};
-    for (final item in raw) {
-      final symptom = symptomFromName(item as String?);
-      if (symptom != null) {
-        result.add(symptom);
-      }
-    }
-    return result;
   }
 
   static String _dateString(DateTime date) {

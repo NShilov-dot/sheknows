@@ -100,8 +100,6 @@ class PeriodRepositoryImpl implements PeriodRepository {
     required String userId,
     required DateTime date,
     SexualActivity? sexualActivity,
-    Set<Symptom> symptoms = const {},
-    Mood? mood,
     String? notes,
   }) async {
     try {
@@ -109,8 +107,6 @@ class PeriodRepositoryImpl implements PeriodRepository {
         userId: userId,
         date: date,
         sexualActivity: sexualActivity,
-        symptoms: symptoms,
-        mood: mood,
         notes: notes,
       );
       return Right(log);

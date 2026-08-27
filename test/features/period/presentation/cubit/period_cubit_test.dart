@@ -26,15 +26,13 @@ class _MockDeleteDayLog extends Mock implements DeleteDayLogUseCase {}
 
 DayLogEntity _dayLog({
   String id = 'day-1',
-  Mood? mood = Mood.happy,
-  Set<Symptom> symptoms = const {},
+  String? notes = 'note',
 }) {
   return DayLogEntity(
     id: id,
     userId: 'user-1',
     date: DateTime(2026, 8, 20),
-    mood: mood,
-    symptoms: symptoms,
+    notes: notes,
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
   );
@@ -132,7 +130,7 @@ void main() {
       },
       act: (cubit) async {
         await cubit.load(userId);
-        await cubit.saveDayLog(day, mood: Mood.happy);
+        await cubit.saveDayLog(day, notes: 'feeling ok');
       },
       expect: () => [
         isA<PeriodLoading>(),
@@ -156,7 +154,7 @@ void main() {
       },
       act: (cubit) async {
         await cubit.load(userId);
-        await cubit.saveDayLog(day, mood: Mood.happy);
+        await cubit.saveDayLog(day, notes: 'feeling ok');
       },
       verify: (cubit) {
         final state = cubit.state as PeriodLoaded;
@@ -180,8 +178,8 @@ void main() {
       },
       act: (cubit) async {
         await cubit.load(userId);
-        await cubit.saveDayLog(day, mood: Mood.sad); // fails
-        await cubit.saveDayLog(day, mood: Mood.happy); // succeeds
+        await cubit.saveDayLog(day, notes: 'bad day'); // fails
+        await cubit.saveDayLog(day, notes: 'good day'); // succeeds
       },
       verify: (cubit) {
         final state = cubit.state as PeriodLoaded;

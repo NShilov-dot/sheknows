@@ -8,6 +8,9 @@ import 'package:sheknows/features/auth/presentation/pages/login_page.dart';
 import 'package:sheknows/features/auth/presentation/pages/register_page.dart';
 import 'package:sheknows/features/home/presentation/pages/home_page.dart';
 import 'package:sheknows/features/period/presentation/pages/period_tracker_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptom_phase_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptom_trends_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptoms_page.dart';
 
 enum _AuthRouteStatus { pending, authenticated, unauthenticated }
 
@@ -65,6 +68,18 @@ class AppRouter {
       GoRoute(
         path: '/cycle',
         builder: (context, state) => const PeriodTrackerPage(),
+      ),
+      GoRoute(
+        path: '/symptoms',
+        builder: (context, state) => const SymptomsPage(),
+      ),
+      GoRoute(
+        path: '/symptom-trends',
+        builder: (context, state) => const SymptomTrendsPage(),
+      ),
+      GoRoute(
+        path: '/symptom-phases',
+        builder: (context, state) => const SymptomPhasePage(),
       ),
     ],
   );

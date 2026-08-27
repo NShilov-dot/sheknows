@@ -8,6 +8,7 @@ import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:sheknows/features/symptoms/data/services/symptom_sync_service.dart';
 
 class SupabaseApp extends StatefulWidget {
   const SupabaseApp({super.key});
@@ -19,16 +20,20 @@ class SupabaseApp extends StatefulWidget {
 class _SupabaseAppState extends State<SupabaseApp> {
   late final AuthBloc _authBloc;
   late final GoRouter _router;
+  late final SymptomSyncService _symptomSync;
 
   @override
   void initState() {
     super.initState();
     _authBloc = sl<AuthBloc>()..add(const AuthStarted());
     _router = AppRouter(_authBloc).router;
+    // Replay any queued offline symptom mutations whenever connectivity returns.
+    _symptomSync = sl<SymptomSyncService>()..start();
   }
 
   @override
   void dispose() {
+    _symptomSync.stop();
     _authBloc.close();
     super.dispose();
   }

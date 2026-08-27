@@ -214,8 +214,6 @@ class PeriodCubit extends Cubit<PeriodState> {
   Future<void> saveDayLog(
     DateTime date, {
     SexualActivity? sexualActivity,
-    Set<Symptom> symptoms = const {},
-    Mood? mood,
     String? notes,
   }) async {
     final userId = _userId;
@@ -232,8 +230,6 @@ class PeriodCubit extends Cubit<PeriodState> {
       userId: userId,
       date: day,
       sexualActivity: sexualActivity,
-      symptoms: symptoms,
-      mood: mood,
       notes: notes,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
@@ -255,8 +251,6 @@ class PeriodCubit extends Cubit<PeriodState> {
         userId: userId,
         date: day,
         sexualActivity: sexualActivity,
-        symptoms: symptoms,
-        mood: mood,
         notes: notes,
       ),
     );

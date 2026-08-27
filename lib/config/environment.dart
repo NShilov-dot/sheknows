@@ -3,6 +3,11 @@
 /// Values are supplied at build/run time via `--dart-define-from-file=env.json`.
 /// Copy `env.example.json` to `env.json` and fill in your Supabase credentials.
 class Environment {
+  /// Dev mode: boot without Supabase or auth, using in-memory sample data.
+  /// Enable with `--dart-define=DEV_MODE=true`. Lets you work on the app's
+  /// features and visuals before auth is wired back up.
+  static const bool devMode = bool.fromEnvironment('DEV_MODE');
+
   static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 
   static const String supabasePublishableKey =

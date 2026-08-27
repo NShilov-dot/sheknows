@@ -86,6 +86,8 @@ class _PeriodBody extends StatelessWidget {
     if (state is! PeriodLoaded) {
       return;
     }
+    final authState = context.read<AuthBloc>().state;
+    final userId = authState is AuthAuthenticated ? authState.user.id : null;
 
     showModalBottomSheet<void>(
       context: context,
@@ -97,6 +99,7 @@ class _PeriodBody extends StatelessWidget {
         stats: state.stats,
         dayLog: state.dayLogFor(day),
         cubit: cubit,
+        userId: userId,
       ),
     );
   }

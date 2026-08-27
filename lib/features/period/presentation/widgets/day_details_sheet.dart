@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/constants/period.dart';
+import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
+import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
+import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
+import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
+import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_sheet.dart';
 
 const _weekdayNames = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
@@ -26,6 +33,7 @@ class DayDetailsSheet extends StatefulWidget {
     required this.stats,
     required this.dayLog,
     required this.cubit,
+    required this.userId,
   });
 
   final DateTime day;
@@ -36,14 +44,16 @@ class DayDetailsSheet extends StatefulWidget {
   final DayLogEntity? dayLog;
   final PeriodCubit cubit;
 
+  /// Authenticated user, used to scope this day's symptom entries. Null only
+  /// in the unlikely window before auth resolves — the symptoms section hides.
+  final String? userId;
+
   @override
   State<DayDetailsSheet> createState() => _DayDetailsSheetState();
 }
 
 class _DayDetailsSheetState extends State<DayDetailsSheet> {
   SexualActivity? _sexualActivity;
-  late Set<Symptom> _symptoms;
-  Mood? _mood;
   late TextEditingController _notes;
 
   @override
@@ -51,8 +61,6 @@ class _DayDetailsSheetState extends State<DayDetailsSheet> {
     super.initState();
     final log = widget.dayLog;
     _sexualActivity = log?.sexualActivity;
-    _symptoms = {...?log?.symptoms};
-    _mood = log?.mood;
     _notes = TextEditingController(text: log?.notes ?? '');
   }
 
@@ -66,8 +74,6 @@ class _DayDetailsSheetState extends State<DayDetailsSheet> {
     widget.cubit.saveDayLog(
       widget.day,
       sexualActivity: _sexualActivity,
-      symptoms: _symptoms,
-      mood: _mood,
       notes: _notes.text,
     );
     Navigator.of(context).pop();
@@ -183,44 +189,10 @@ class _DayDetailsSheetState extends State<DayDetailsSheet> {
                 ),
                 const SizedBox(height: 16),
 
-                _SectionLabel('Symptoms', icon: Icons.healing_outlined),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    for (final symptom in Symptom.values)
-                      FilterChip(
-                        label: Text(_symptomLabel(symptom)),
-                        selected: _symptoms.contains(symptom),
-                        onSelected: (selected) => setState(() {
-                          if (selected) {
-                            _symptoms.add(symptom);
-                          } else {
-                            _symptoms.remove(symptom);
-                          }
-                        }),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                _SectionLabel('Mood', icon: Icons.mood),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    for (final mood in Mood.values)
-                      ChoiceChip(
-                        label: Text(_moodLabel(mood)),
-                        selected: _mood == mood,
-                        onSelected: (selected) =>
-                            setState(() => _mood = selected ? mood : null),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                if (widget.userId != null) ...[
+                  _DaySymptomsSection(day: day, userId: widget.userId!),
+                  const SizedBox(height: 16),
+                ],
 
                 _SectionLabel('Notes', icon: Icons.notes_outlined),
                 const SizedBox(height: 8),
@@ -324,25 +296,97 @@ String _sexualActivityLabel(SexualActivity activity) => switch (activity) {
       SexualActivity.unprotected => 'Unprotected',
     };
 
-String _symptomLabel(Symptom symptom) => switch (symptom) {
-      Symptom.cramps => 'Cramps',
-      Symptom.headache => 'Headache',
-      Symptom.bloating => 'Bloating',
-      Symptom.tenderBreasts => 'Tender breasts',
-      Symptom.backache => 'Backache',
-      Symptom.fatigue => 'Fatigue',
-      Symptom.acne => 'Acne',
-      Symptom.nausea => 'Nausea',
-      Symptom.cravings => 'Cravings',
-    };
+/// This day's symptom entries, backed by its own page-scoped [SymptomsCubit]
+/// (a fresh instance loaded to just this day's window).
+class _DaySymptomsSection extends StatelessWidget {
+  const _DaySymptomsSection({required this.day, required this.userId});
 
-String _moodLabel(Mood mood) => switch (mood) {
-      Mood.happy => 'Happy',
-      Mood.calm => 'Calm',
-      Mood.energetic => 'Energetic',
-      Mood.sensitive => 'Sensitive',
-      Mood.sad => 'Sad',
-      Mood.anxious => 'Anxious',
-      Mood.irritable => 'Irritable',
-      Mood.tired => 'Tired',
-    };
+  final DateTime day;
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    final from = DateTime(day.year, day.month, day.day);
+    final to = DateTime(day.year, day.month, day.day, 23, 59, 59, 999);
+    return BlocProvider(
+      create: (_) => sl<SymptomsCubit>()..load(userId, from: from, to: to),
+      child: _DaySymptomsBody(day: day),
+    );
+  }
+}
+
+class _DaySymptomsBody extends StatelessWidget {
+  const _DaySymptomsBody({required this.day});
+
+  final DateTime day;
+
+  void _openSheet(BuildContext context, {SymptomLogEntity? existing}) {
+    final cubit = context.read<SymptomsCubit>();
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => SymptomLogSheet(
+        cubit: cubit,
+        existing: existing,
+        initialDate: existing == null ? day : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: _SectionLabel('Symptoms', icon: Icons.healing_outlined),
+            ),
+            TextButton.icon(
+              onPressed: () => _openSheet(context),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Log'),
+            ),
+          ],
+        ),
+        BlocBuilder<SymptomsCubit, SymptomsState>(
+          builder: (context, state) {
+            final logs = state is SymptomsLoaded
+                ? state.logs
+                : const <SymptomLogEntity>[];
+            if (logs.isEmpty) {
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'No symptoms logged for this day',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                for (final log in logs)
+                  ListTile(
+                    key: ValueKey(log.id),
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(symptomTypeLabel(log.type)),
+                    subtitle: Text(
+                      '${symptomSeverityLabel(log.severity)} · '
+                      '${TimeOfDay.fromDateTime(log.loggedAt).format(context)}',
+                    ),
+                    onTap: () => _openSheet(context, existing: log),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

@@ -131,16 +131,12 @@ class UpsertDayLogParams {
     required this.userId,
     required this.date,
     this.sexualActivity,
-    this.symptoms = const {},
-    this.mood,
     this.notes,
   });
 
   final String userId;
   final DateTime date;
   final SexualActivity? sexualActivity;
-  final Set<Symptom> symptoms;
-  final Mood? mood;
   final String? notes;
 }
 
@@ -155,8 +151,6 @@ class UpsertDayLogUseCase implements UseCase<DayLogEntity, UpsertDayLogParams> {
       userId: params.userId,
       date: params.date,
       sexualActivity: params.sexualActivity,
-      symptoms: params.symptoms,
-      mood: params.mood,
       notes: params.notes,
     );
   }
