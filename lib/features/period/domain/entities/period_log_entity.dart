@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 
 enum FlowLevel { light, medium, heavy }
 
@@ -43,21 +44,21 @@ class PeriodLogEntity extends Equatable {
   /// up to today.
   int get durationInDays {
     final last = endDate ?? DateTime.now();
-    final start = DateTime(startDate.year, startDate.month, startDate.day);
-    final end = DateTime(last.year, last.month, last.day);
+    final start = startDate.dateOnly;
+    final end = last.dateOnly;
     return end.difference(start).inDays + 1;
   }
 
   /// Whether [day] falls within this period (start..end inclusive).
   bool coversDay(DateTime day) {
-    final d = DateTime(day.year, day.month, day.day);
-    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final d = day.dateOnly;
+    final start = startDate.dateOnly;
     if (d.isBefore(start)) {
       return false;
     }
     final end = endDate == null
         ? d
-        : DateTime(endDate!.year, endDate!.month, endDate!.day);
+        : endDate!.dateOnly;
     return !d.isAfter(end);
   }
 

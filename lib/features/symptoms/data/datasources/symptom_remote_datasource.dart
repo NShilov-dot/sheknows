@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/core/error/remote_call.dart';
 import 'package:sheknows/features/symptoms/data/models/symptom_log_model.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 
@@ -41,23 +41,21 @@ class SymptomRemoteDataSourceImpl implements SymptomRemoteDataSource {
     String userId, {
     DateTime? from,
     DateTime? to,
-  }) async {
-    try {
-      var query = _client.from(_table).select().eq('user_id', userId);
-      if (from != null) {
-        query = query.gte('logged_at', from.toUtc().toIso8601String());
-      }
-      if (to != null) {
-        query = query.lte('logged_at', to.toUtc().toIso8601String());
-      }
-      final rows = await query.order('logged_at', ascending: false);
-      return rows.map(SymptomLogModel.fromJson).toList();
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to load symptoms');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          var query = _client.from(_table).select().eq('user_id', userId);
+          if (from != null) {
+            query = query.gte('logged_at', from.toUtc().toIso8601String());
+          }
+          if (to != null) {
+            query = query.lte('logged_at', to.toUtc().toIso8601String());
+          }
+          final rows = await query.order('logged_at', ascending: false);
+          return rows.map(SymptomLogModel.fromJson).toList();
+        },
+        'Failed to load symptoms',
+      );
 
   @override
   Future<SymptomLogModel> logSymptom({
@@ -66,32 +64,30 @@ class SymptomRemoteDataSourceImpl implements SymptomRemoteDataSource {
     required SymptomSeverity severity,
     required DateTime loggedAt,
     String? notes,
-  }) async {
-    try {
-      final now = DateTime.now();
-      final row = await _client
-          .from(_table)
-          .insert(
-            SymptomLogModel(
-              id: '',
-              userId: userId,
-              type: type,
-              severity: severity,
-              loggedAt: loggedAt,
-              notes: notes,
-              createdAt: now,
-              updatedAt: now,
-            ).toInsertJson(),
-          )
-          .select()
-          .single();
-      return SymptomLogModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to log symptom');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          final now = DateTime.now();
+          final row = await _client
+              .from(_table)
+              .insert(
+                SymptomLogModel(
+                  id: '',
+                  userId: userId,
+                  type: type,
+                  severity: severity,
+                  loggedAt: loggedAt,
+                  notes: notes,
+                  createdAt: now,
+                  updatedAt: now,
+                ).toInsertJson(),
+              )
+              .select()
+              .single();
+          return SymptomLogModel.fromJson(row);
+        },
+        'Failed to log symptom',
+      );
 
   @override
   Future<SymptomLogModel> updateSymptomLog({
@@ -100,45 +96,36 @@ class SymptomRemoteDataSourceImpl implements SymptomRemoteDataSource {
     SymptomSeverity? severity,
     DateTime? loggedAt,
     String? notes,
-  }) async {
-    try {
-      final updates = <String, dynamic>{
-        if (type != null) 'symptom_type': type.name,
-        if (severity != null) 'severity': severity.name,
-        if (loggedAt != null) 'logged_at': loggedAt.toUtc().toIso8601String(),
-        if (notes != null) 'notes': _cleanNotes(notes),
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      };
-      final row = await _client
-          .from(_table)
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
-      return SymptomLogModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to update symptom');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          final updates = <String, dynamic>{
+            if (type != null) 'symptom_type': type.name,
+            if (severity != null) 'severity': severity.name,
+            if (loggedAt != null)
+              'logged_at': loggedAt.toUtc().toIso8601String(),
+            if (notes != null) 'notes': _cleanNotes(notes),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          };
+          final row = await _client
+              .from(_table)
+              .update(updates)
+              .eq('id', id)
+              .select()
+              .single();
+          return SymptomLogModel.fromJson(row);
+        },
+        'Failed to update symptom',
+      );
 
   @override
-  Future<void> deleteSymptomLog(String id) async {
-    try {
-      await _client.from(_table).delete().eq('id', id);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to delete symptom');
-    }
-  }
+  Future<void> deleteSymptomLog(String id) => supabaseCall(
+        () => _client.from(_table).delete().eq('id', id),
+        'Failed to delete symptom',
+      );
 
   static String? _cleanNotes(String? notes) {
-    if (notes == null) {
-      return null;
-    }
-    final trimmed = notes.trim();
-    return trimmed.isEmpty ? null : trimmed;
+    final trimmed = notes?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
   }
 }

@@ -126,8 +126,24 @@ class SymptomLocalDataSource {
     return ids;
   }
 
-  Future<void> enqueue(Map<String, dynamic> op) =>
-      _outbox.put(op['op_id'], op);
+  /// Queues one mutation. The key names here are the contract
+  /// [SymptomSyncService] replays against, so they are spelled out once.
+  Future<void> enqueueOp({
+    required String operation,
+    required String targetId,
+    Map<String, dynamic>? payload,
+    String? opId,
+  }) {
+    final now = DateTime.now().microsecondsSinceEpoch;
+    final id = opId ?? '$operation-$now';
+    return _outbox.put(id, {
+      'op_id': id,
+      'operation': operation,
+      'target_id': targetId,
+      'enqueued_at': now,
+      'payload': payload,
+    });
+  }
 
   Future<void> dequeue(String opId) => _outbox.delete(opId);
 

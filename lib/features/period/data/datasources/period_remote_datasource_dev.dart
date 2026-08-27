@@ -4,6 +4,7 @@ import 'package:sheknows/features/period/data/models/day_log_model.dart';
 import 'package:sheknows/features/period/data/models/period_log_model.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 
 /// DEV_MODE period store: in-memory, no Supabase. Seeded with a few cycles so
 /// the calendar, stats, and predictions have something to render. Data resets
@@ -21,7 +22,7 @@ class DevPeriodRemoteDataSource implements PeriodRemoteDataSource {
 
   void _seed() {
     final now = DateTime.now();
-    final anchor = DateTime(now.year, now.month, now.day);
+    final anchor = now.dateOnly;
     // Three ~28-day cycles of 5 bleeding days each (need >=2 for predictions).
     for (var i = 3; i >= 1; i--) {
       final start = anchor.subtract(Duration(days: 28 * i));
@@ -55,7 +56,7 @@ class DevPeriodRemoteDataSource implements PeriodRemoteDataSource {
     final log = PeriodLogModel(
       id: _id(),
       userId: userId,
-      startDate: DateTime(startDate.year, startDate.month, startDate.day),
+      startDate: startDate.dateOnly,
       flow: flow,
       notes: notes,
       createdAt: now,
@@ -111,7 +112,7 @@ class DevPeriodRemoteDataSource implements PeriodRemoteDataSource {
     SexualActivity? sexualActivity,
     String? notes,
   }) async {
-    final day = DateTime(date.year, date.month, date.day);
+    final day = date.dateOnly;
     final index = _days.indexWhere((d) => d.userId == userId && d.isOnDay(day));
     final now = DateTime.now();
     final model = DayLogModel(

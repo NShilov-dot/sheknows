@@ -1,4 +1,5 @@
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 
 /// A phase of the menstrual cycle. [unknown] covers dates we can't place —
 /// before any tracking, or without enough history to know the cycle length.
@@ -22,7 +23,7 @@ class CyclePhaseCalculator {
     int? averageCycleLength,
     int? averagePeriodLength,
   }) {
-    final d = _dateOnly(day);
+    final d = day.dateOnly;
 
     // 1. Actual logged bleeding always wins.
     for (final period in periods) {
@@ -35,7 +36,7 @@ class CyclePhaseCalculator {
     //    on or before it.
     DateTime? cycleStart;
     for (final period in periods) {
-      final start = _dateOnly(period.startDate);
+      final start = period.startDate.dateOnly;
       if (!start.isAfter(d) && (cycleStart == null || start.isAfter(cycleStart))) {
         cycleStart = start;
       }
@@ -70,6 +71,4 @@ class CyclePhaseCalculator {
     return CyclePhase.unknown; // late / irregular cycle
   }
 
-  static DateTime _dateOnly(DateTime value) =>
-      DateTime(value.year, value.month, value.day);
 }

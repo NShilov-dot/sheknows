@@ -1,6 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sheknows/config/environment.dart';
+import 'package:sheknows/core/error/error_logger.dart';
 import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/core/error/remote_call.dart';
 import 'package:sheknows/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -34,10 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges {
     return _client.auth.onAuthStateChange.map((data) {
       final user = data.session?.user;
-      if (user == null) {
-        return null;
-      }
-      return UserModel.fromSupabase(user);
+      return user == null ? null : UserModel.fromSupabase(user);
     });
   }
 
@@ -45,77 +44,60 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> signInWithEmail({
     required String email,
     required String password,
-  }) async {
-    try {
-      final response = await _client.auth.signInWithPassword(
-        email: email,
-        password: password,
+  }) =>
+      supabaseAuthCall(
+        () async {
+          final response = await _client.auth.signInWithPassword(
+            email: email,
+            password: password,
+          );
+          return _requireUser(response.user, 'Sign in failed');
+        },
+        'Sign in failed',
       );
-      final user = response.user;
-      if (user == null) {
-        throw const app_exceptions.AuthException('Sign in failed');
-      }
-      return UserModel.fromSupabase(user);
-    } on AuthException catch (error) {
-      throw app_exceptions.AuthException(error.message);
-    } catch (_) {
-      throw const app_exceptions.AuthException('Sign in failed');
-    }
-  }
 
   @override
   Future<UserModel> signUpWithEmail({
     required String email,
     required String password,
-  }) async {
-    try {
-      final response = await _client.auth.signUp(
-        email: email,
-        password: password,
+  }) =>
+      supabaseAuthCall(
+        () async {
+          final response = await _client.auth.signUp(
+            email: email,
+            password: password,
+          );
+          return _requireUser(response.user, 'Sign up failed');
+        },
+        'Sign up failed',
       );
-      final user = response.user;
-      if (user == null) {
-        throw const app_exceptions.AuthException('Sign up failed');
-      }
-      return UserModel.fromSupabase(user);
-    } on AuthException catch (error) {
-      throw app_exceptions.AuthException(error.message);
-    } catch (_) {
-      throw const app_exceptions.AuthException('Sign up failed');
-    }
-  }
 
   @override
-  Future<void> signInWithGoogle() async {
-    try {
-      final launched = await _client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: Environment.oauthRedirectUrl,
-        authScreenLaunchMode: LaunchMode.externalApplication,
+  Future<void> signInWithGoogle() => supabaseAuthCall(
+        () async {
+          final launched = await _client.auth.signInWithOAuth(
+            OAuthProvider.google,
+            redirectTo: Environment.oauthRedirectUrl,
+            authScreenLaunchMode: LaunchMode.externalApplication,
+          );
+          if (!launched) {
+            throw const app_exceptions.AuthException(
+              'Could not open Google sign in',
+            );
+          }
+        },
+        'Google sign in failed',
       );
-      if (!launched) {
-        throw const app_exceptions.AuthException('Could not open Google sign in');
-      }
-    } on AuthException catch (error) {
-      throw app_exceptions.AuthException(error.message);
-    } catch (_) {
-      throw const app_exceptions.AuthException('Google sign in failed');
-    }
-  }
 
   @override
-  Future<void> signOut() async {
-    try {
-      await _client.auth.signOut();
-    } on AuthException catch (error) {
-      throw app_exceptions.AuthException(error.message);
-    } catch (_) {
-      throw const app_exceptions.AuthException('Sign out failed');
-    }
-  }
+  Future<void> signOut() =>
+      supabaseAuthCall(() => _client.auth.signOut(), 'Sign out failed');
 
   @override
   Future<void> deleteAccount() async {
+    // The only call with a two-way map: the RPC raises PostgrestException,
+    // the local sign-out that follows raises AuthException. Both are real and
+    // mean different things to the user, so this one stays spelled out.
     try {
       // Server-side security-definer RPC deletes the caller's own account
       // (see migration 20250619400000_delete_own_account.sql).
@@ -127,7 +109,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw app_exceptions.ServerException(error.message);
     } on AuthException catch (error) {
       throw app_exceptions.AuthException(error.message);
-    } catch (_) {
+    } catch (error, stackTrace) {
+      logError(error, stackTrace, context: 'Failed to delete account');
       throw const app_exceptions.ServerException('Failed to delete account');
     }
   }
@@ -135,8 +118,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   UserModel? getCurrentUser() {
     final user = _client.auth.currentUser;
+    return user == null ? null : UserModel.fromSupabase(user);
+  }
+
+  static UserModel _requireUser(User? user, String failureMessage) {
     if (user == null) {
-      return null;
+      throw app_exceptions.AuthException(failureMessage);
     }
     return UserModel.fromSupabase(user);
   }

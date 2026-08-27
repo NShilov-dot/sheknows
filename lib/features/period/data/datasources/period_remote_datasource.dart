@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/core/error/remote_call.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 import 'package:sheknows/features/period/data/models/day_log_model.dart';
 import 'package:sheknows/features/period/data/models/period_log_model.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
@@ -46,20 +47,17 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
   static const _dayTable = 'day_logs';
 
   @override
-  Future<List<PeriodLogModel>> getPeriodLogs(String userId) async {
-    try {
-      final rows = await _client
-          .from(_table)
-          .select()
-          .eq('user_id', userId)
-          .order('start_date', ascending: false);
-      return rows.map(PeriodLogModel.fromJson).toList();
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to load period logs');
-    }
-  }
+  Future<List<PeriodLogModel>> getPeriodLogs(String userId) => supabaseCall(
+        () async {
+          final rows = await _client
+              .from(_table)
+              .select()
+              .eq('user_id', userId)
+              .order('start_date', ascending: false);
+          return rows.map(PeriodLogModel.fromJson).toList();
+        },
+        'Failed to load period logs',
+      );
 
   @override
   Future<PeriodLogModel> logPeriodStart({
@@ -67,30 +65,28 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
     required DateTime startDate,
     FlowLevel? flow,
     String? notes,
-  }) async {
-    try {
-      final row = await _client
-          .from(_table)
-          .insert(
-            PeriodLogModel(
-              id: '',
-              userId: userId,
-              startDate: startDate,
-              flow: flow,
-              notes: notes,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            ).toInsertJson(),
-          )
-          .select()
-          .single();
-      return PeriodLogModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to log period');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          final row = await _client
+              .from(_table)
+              .insert(
+                PeriodLogModel(
+                  id: '',
+                  userId: userId,
+                  startDate: startDate,
+                  flow: flow,
+                  notes: notes,
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ).toInsertJson(),
+              )
+              .select()
+              .single();
+          return PeriodLogModel.fromJson(row);
+        },
+        'Failed to log period',
+      );
 
   @override
   Future<PeriodLogModel> updatePeriodLog({
@@ -99,56 +95,46 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
     DateTime? endDate,
     FlowLevel? flow,
     String? notes,
-  }) async {
-    try {
-      final updates = <String, dynamic>{
-        if (startDate != null) 'start_date': _dateString(startDate),
-        // An explicit null clears the end date (reopens the period).
-        'end_date': endDate == null ? null : _dateString(endDate),
-        if (flow != null) 'flow': flow.name,
-        if (notes != null) 'notes': _cleanNotes(notes),
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      };
-      final row = await _client
-          .from(_table)
-          .update(updates)
-          .eq('id', periodId)
-          .select()
-          .single();
-      return PeriodLogModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to update period');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          final updates = <String, dynamic>{
+            if (startDate != null) 'start_date': _dateString(startDate),
+            // An explicit null clears the end date (reopens the period).
+            'end_date': endDate == null ? null : _dateString(endDate),
+            if (flow != null) 'flow': flow.name,
+            if (notes != null) 'notes': _cleanNotes(notes),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          };
+          final row = await _client
+              .from(_table)
+              .update(updates)
+              .eq('id', periodId)
+              .select()
+              .single();
+          return PeriodLogModel.fromJson(row);
+        },
+        'Failed to update period',
+      );
 
   @override
-  Future<void> deletePeriodLog(String periodId) async {
-    try {
-      await _client.from(_table).delete().eq('id', periodId);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to delete period');
-    }
-  }
+  Future<void> deletePeriodLog(String periodId) => supabaseCall(
+        () => _client.from(_table).delete().eq('id', periodId),
+        'Failed to delete period',
+      );
 
   @override
-  Future<List<DayLogModel>> getDayLogs(String userId) async {
-    try {
-      final rows = await _client
-          .from(_dayTable)
-          .select()
-          .eq('user_id', userId)
-          .order('log_date', ascending: false);
-      return rows.map(DayLogModel.fromJson).toList();
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to load day logs');
-    }
-  }
+  Future<List<DayLogModel>> getDayLogs(String userId) => supabaseCall(
+        () async {
+          final rows = await _client
+              .from(_dayTable)
+              .select()
+              .eq('user_id', userId)
+              .order('log_date', ascending: false);
+          return rows.map(DayLogModel.fromJson).toList();
+        },
+        'Failed to load day logs',
+      );
 
   @override
   Future<DayLogModel> upsertDayLog({
@@ -156,53 +142,43 @@ class PeriodRemoteDataSourceImpl implements PeriodRemoteDataSource {
     required DateTime date,
     SexualActivity? sexualActivity,
     String? notes,
-  }) async {
-    try {
-      final row = await _client
-          .from(_dayTable)
-          .upsert(
-            DayLogModel(
-              id: '',
-              userId: userId,
-              date: date,
-              sexualActivity: sexualActivity,
-              notes: notes,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            ).toUpsertJson(),
-            onConflict: 'user_id,log_date',
-          )
-          .select()
-          .single();
-      return DayLogModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to save day log');
-    }
-  }
+  }) =>
+      supabaseCall(
+        () async {
+          final row = await _client
+              .from(_dayTable)
+              .upsert(
+                DayLogModel(
+                  id: '',
+                  userId: userId,
+                  date: date,
+                  sexualActivity: sexualActivity,
+                  notes: notes,
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ).toUpsertJson(),
+                onConflict: 'user_id,log_date',
+              )
+              .select()
+              .single();
+          return DayLogModel.fromJson(row);
+        },
+        'Failed to save day log',
+      );
 
   @override
-  Future<void> deleteDayLog(String dayLogId) async {
-    try {
-      await _client.from(_dayTable).delete().eq('id', dayLogId);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to delete day log');
-    }
-  }
+  Future<void> deleteDayLog(String dayLogId) => supabaseCall(
+        () => _client.from(_dayTable).delete().eq('id', dayLogId),
+        'Failed to delete day log',
+      );
 
   static String? _cleanNotes(String? notes) {
-    if (notes == null) {
-      return null;
-    }
-    final trimmed = notes.trim();
-    return trimmed.isEmpty ? null : trimmed;
+    final trimmed = notes?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
   }
 
   static String _dateString(DateTime date) {
-    final local = date.toLocal();
+    final local = date.toLocal().dateOnly;
     return '${local.year.toString().padLeft(4, '0')}-'
         '${local.month.toString().padLeft(2, '0')}-'
         '${local.day.toString().padLeft(2, '0')}';

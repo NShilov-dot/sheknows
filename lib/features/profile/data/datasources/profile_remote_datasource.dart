@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sheknows/core/error/exceptions.dart' as app_exceptions;
+import 'package:sheknows/core/error/remote_call.dart';
 import 'package:sheknows/features/profile/data/models/profile_model.dart';
 
 abstract class ProfileRemoteDataSource {
@@ -12,21 +12,15 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   final SupabaseClient _client;
 
   @override
-  Future<ProfileModel?> getProfile(String userId) async {
-    try {
-      final row = await _client
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .maybeSingle();
-      if (row == null) {
-        return null;
-      }
-      return ProfileModel.fromJson(row);
-    } on PostgrestException catch (error) {
-      throw app_exceptions.ServerException(error.message);
-    } catch (_) {
-      throw const app_exceptions.ServerException('Failed to load profile');
-    }
-  }
+  Future<ProfileModel?> getProfile(String userId) => supabaseCall(
+        () async {
+          final row = await _client
+              .from('profiles')
+              .select()
+              .eq('id', userId)
+              .maybeSingle();
+          return row == null ? null : ProfileModel.fromJson(row);
+        },
+        'Failed to load profile',
+      );
 }
