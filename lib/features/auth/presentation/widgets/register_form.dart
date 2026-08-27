@@ -12,6 +12,7 @@ class RegisterForm extends StatelessWidget {
     required this.emailController,
     required this.passwordController,
     required this.confirmPasswordController,
+    required this.confirmFieldKey,
     required this.emailFocusNode,
     required this.passwordFocusNode,
     required this.confirmPasswordFocusNode,
@@ -26,6 +27,7 @@ class RegisterForm extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
+  final GlobalKey<FormFieldState<String>> confirmFieldKey;
   final FocusNode emailFocusNode;
   final FocusNode passwordFocusNode;
   final FocusNode confirmPasswordFocusNode;
@@ -36,57 +38,60 @@ class RegisterForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      autovalidateMode: autovalidateMode,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AuthTextField(
-            controller: emailController,
-            label: 'Email',
-            focusNode: emailFocusNode,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            autofillHints: const [AutofillHints.email],
-            validator: AuthValidators.email,
-            onFieldSubmitted: (_) =>
-                FocusScope.of(context).requestFocus(passwordFocusNode),
-          ),
-          const SizedBox(height: 16),
-          AuthPasswordField(
-            controller: passwordController,
-            label: 'Password',
-            focusNode: passwordFocusNode,
-            textInputAction: TextInputAction.next,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (value) =>
-                AuthValidators.password(value, forRegistration: true),
-            onChanged: onPasswordChanged,
-            onFieldSubmitted: (_) =>
-                FocusScope.of(context).requestFocus(confirmPasswordFocusNode),
-          ),
-          const SizedBox(height: 8),
-          const _PasswordRulesHint(),
-          const SizedBox(height: 8),
-          AuthPasswordField(
-            controller: confirmPasswordController,
-            label: 'Confirm password',
-            focusNode: confirmPasswordFocusNode,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (value) => AuthValidators.confirmPassword(
-              value,
-              passwordController.text,
+    return AutofillGroup(
+      child: Form(
+        key: formKey,
+        autovalidateMode: autovalidateMode,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthTextField(
+              controller: emailController,
+              label: 'Email',
+              focusNode: emailFocusNode,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.email],
+              validator: AuthValidators.email,
+              onFieldSubmitted: (_) =>
+                  FocusScope.of(context).requestFocus(passwordFocusNode),
             ),
-            onFieldSubmitted: (_) => onSubmit(),
-          ),
-          const SizedBox(height: 24),
-          AuthPrimaryButton(
-            label: 'Sign up',
-            isLoading: isLoading,
-            onPressed: onSubmit,
-          ),
-        ],
+            const SizedBox(height: 16),
+            AuthPasswordField(
+              controller: passwordController,
+              label: 'Password',
+              focusNode: passwordFocusNode,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (value) =>
+                  AuthValidators.password(value, forRegistration: true),
+              onChanged: onPasswordChanged,
+              onFieldSubmitted: (_) =>
+                  FocusScope.of(context).requestFocus(confirmPasswordFocusNode),
+            ),
+            const SizedBox(height: 8),
+            const _PasswordRulesHint(),
+            const SizedBox(height: 8),
+            AuthPasswordField(
+              fieldKey: confirmFieldKey,
+              controller: confirmPasswordController,
+              label: 'Confirm password',
+              focusNode: confirmPasswordFocusNode,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (value) => AuthValidators.confirmPassword(
+                value,
+                passwordController.text,
+              ),
+              onFieldSubmitted: (_) => onSubmit(),
+            ),
+            const SizedBox(height: 24),
+            AuthPrimaryButton(
+              label: 'Sign up',
+              isLoading: isLoading,
+              onPressed: onSubmit,
+            ),
+          ],
+        ),
       ),
     );
   }

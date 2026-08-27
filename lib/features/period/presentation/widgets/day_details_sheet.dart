@@ -125,6 +125,8 @@ class _DayTrackingForm extends StatefulWidget {
 }
 
 class _DayTrackingFormState extends State<_DayTrackingForm> {
+  /// Authoritative value used by [_save]; kept in sync by [_IntimacyChips]
+  /// without a setState here — nothing in this build reads it.
   SexualActivity? _sexualActivity;
   late TextEditingController _notes;
 
@@ -166,18 +168,9 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
 
         const SectionLabel('Intimacy', icon: Icons.favorite_border),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: [
-            for (final activity in SexualActivity.values)
-              ChoiceChip(
-                label: Text(_sexualActivityLabel(activity)),
-                selected: _sexualActivity == activity,
-                onSelected: (selected) => setState(
-                  () => _sexualActivity = selected ? activity : null,
-                ),
-              ),
-          ],
+        _IntimacyChips(
+          initial: _sexualActivity,
+          onChanged: (value) => _sexualActivity = value,
         ),
         const SizedBox(height: 16),
 
@@ -212,6 +205,48 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
             child: const Text('Clear this day'),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// The intimacy chip row. Holds its own selection so a tap rebuilds only the
+/// [Wrap] instead of the whole tracking form (notes field included).
+class _IntimacyChips extends StatefulWidget {
+  const _IntimacyChips({required this.initial, required this.onChanged});
+
+  final SexualActivity? initial;
+  final ValueChanged<SexualActivity?> onChanged;
+
+  @override
+  State<_IntimacyChips> createState() => _IntimacyChipsState();
+}
+
+class _IntimacyChipsState extends State<_IntimacyChips> {
+  late SexualActivity? _selected = widget.initial;
+
+  @override
+  void didUpdateWidget(_IntimacyChips oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initial != widget.initial) {
+      _selected = widget.initial;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      children: [
+        for (final activity in SexualActivity.values)
+          ChoiceChip(
+            label: Text(_sexualActivityLabel(activity)),
+            selected: _selected == activity,
+            onSelected: (selected) {
+              setState(() => _selected = selected ? activity : null);
+              widget.onChanged(_selected);
+            },
+          ),
       ],
     );
   }

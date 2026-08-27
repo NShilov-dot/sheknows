@@ -21,18 +21,38 @@ class SymptomTrendsBody extends StatefulWidget {
 class _SymptomTrendsBodyState extends State<SymptomTrendsBody> {
   static const _calculator = SymptomTrendsCalculator();
   AnalyticsRange _range = AnalyticsRange.days30;
+  late SymptomTrends _trends;
+
+  @override
+  void initState() {
+    super.initState();
+    _trends = _calculate();
+  }
+
+  @override
+  void didUpdateWidget(SymptomTrendsBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.logs != widget.logs) {
+      _trends = _calculate();
+    }
+  }
+
+  SymptomTrends _calculate() =>
+      _calculator.calculate(widget.logs, from: _range.fromDate(DateTime.now()));
 
   @override
   Widget build(BuildContext context) {
-    final from = _range.fromDate(DateTime.now());
-    final trends = _calculator.calculate(widget.logs, from: from);
+    final trends = _trends;
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         RangeSelector(
           range: _range,
-          onChanged: (range) => setState(() => _range = range),
+          onChanged: (range) => setState(() {
+            _range = range;
+            _trends = _calculate();
+          }),
         ),
         const SizedBox(height: 16),
         if (trends.isEmpty)

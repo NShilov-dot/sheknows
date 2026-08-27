@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
@@ -43,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     FocusScope.of(context).unfocus();
+    TextInput.finishAutofillContext();
     context.read<AuthBloc>().add(
           AuthSignInWithEmailRequested(
             email: _emailController.text.trim(),
@@ -58,53 +59,51 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<AuthBloc, bool>(
-      (bloc) => bloc.state is AuthLoading,
-    );
-
     return AuthPageScaffold(
       title: 'Welcome back',
       subtitle: 'Sign in to continue',
-      child: Form(
-        key: _formKey,
-        autovalidateMode: _autovalidateMode,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AuthTextField(
-              controller: _emailController,
-              label: 'Email',
-              focusNode: _emailFocusNode,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              validator: AuthValidators.email,
-              onFieldSubmitted: (_) =>
-                  FocusScope.of(context).requestFocus(_passwordFocusNode),
-            ),
-            const SizedBox(height: 16),
-            AuthPasswordField(
-              controller: _passwordController,
-              label: 'Password',
-              focusNode: _passwordFocusNode,
-              autofillHints: const [AutofillHints.password],
-              validator: AuthValidators.password,
-              onFieldSubmitted: (_) => _submit(),
-            ),
-            const SizedBox(height: 24),
-            AuthPrimaryButton(
-              label: 'Sign in',
-              isLoading: isLoading,
-              onPressed: _submit,
-            ),
-            AuthAlternativeActions(
-              isLoading: isLoading,
-              onGooglePressed: _signInWithGoogle,
-              promptText: "Don't have an account?",
-              actionLabel: 'Sign up',
-              onActionPressed: () => context.go('/register'),
-            ),
-          ],
+      builder: (context, isLoading) => AutofillGroup(
+        child: Form(
+          key: _formKey,
+          autovalidateMode: _autovalidateMode,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AuthTextField(
+                controller: _emailController,
+                label: 'Email',
+                focusNode: _emailFocusNode,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
+                validator: AuthValidators.email,
+                onFieldSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_passwordFocusNode),
+              ),
+              const SizedBox(height: 16),
+              AuthPasswordField(
+                controller: _passwordController,
+                label: 'Password',
+                focusNode: _passwordFocusNode,
+                autofillHints: const [AutofillHints.password],
+                validator: AuthValidators.password,
+                onFieldSubmitted: (_) => _submit(),
+              ),
+              const SizedBox(height: 24),
+              AuthPrimaryButton(
+                label: 'Sign in',
+                isLoading: isLoading,
+                onPressed: _submit,
+              ),
+              AuthAlternativeActions(
+                isLoading: isLoading,
+                onGooglePressed: _signInWithGoogle,
+                promptText: "Don't have an account?",
+                actionLabel: 'Sign up',
+                onActionPressed: () => context.go('/register'),
+              ),
+            ],
+          ),
         ),
       ),
     );

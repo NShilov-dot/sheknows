@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
 import 'package:sheknows/features/auth/presentation/widgets/register_form.dart';
@@ -17,6 +17,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _confirmFieldKey = GlobalKey<FormFieldState<String>>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -45,6 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     FocusScope.of(context).unfocus();
+    TextInput.finishAutofillContext();
     context.read<AuthBloc>().add(
           AuthSignUpWithEmailRequested(
             email: _emailController.text.trim(),
@@ -60,16 +62,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onPasswordChanged(String _) {
     if (_confirmPasswordController.text.isNotEmpty) {
-      _formKey.currentState?.validate();
+      _confirmFieldKey.currentState?.validate();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<AuthBloc, bool>(
-      (bloc) => bloc.state is AuthLoading,
-    );
-
     return AuthPageScaffold(
       title: 'Create account',
       subtitle: 'Sign up with email or Google',
@@ -79,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
         );
         context.go('/login');
       },
-      child: Column(
+      builder: (context, isLoading) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           RegisterForm(
@@ -87,6 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
             emailController: _emailController,
             passwordController: _passwordController,
             confirmPasswordController: _confirmPasswordController,
+            confirmFieldKey: _confirmFieldKey,
             emailFocusNode: _emailFocusNode,
             passwordFocusNode: _passwordFocusNode,
             confirmPasswordFocusNode: _confirmPasswordFocusNode,

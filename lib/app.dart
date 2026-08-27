@@ -19,14 +19,18 @@ class SupabaseApp extends StatefulWidget {
 
 class _SupabaseAppState extends State<SupabaseApp> {
   late final AuthBloc _authBloc;
+  late final AppRouter _appRouter;
   late final GoRouter _router;
+  late final ProfileCubit _profileCubit;
   late final SymptomSyncService _symptomSync;
 
   @override
   void initState() {
     super.initState();
     _authBloc = sl<AuthBloc>()..add(const AuthStarted());
-    _router = AppRouter(_authBloc).router;
+    _appRouter = AppRouter(_authBloc);
+    _router = _appRouter.router;
+    _profileCubit = sl<ProfileCubit>();
     // Replay any queued offline symptom mutations whenever connectivity returns.
     _symptomSync = sl<SymptomSyncService>()..start();
   }
@@ -34,6 +38,8 @@ class _SupabaseAppState extends State<SupabaseApp> {
   @override
   void dispose() {
     _symptomSync.stop();
+    // Dispose the router first: its refresh listenable subscribes to _authBloc.
+    _appRouter.dispose();
     _authBloc.close();
     super.dispose();
   }
@@ -43,12 +49,12 @@ class _SupabaseAppState extends State<SupabaseApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>.value(value: _authBloc),
-        BlocProvider<ProfileCubit>.value(value: sl<ProfileCubit>()),
+        BlocProvider<ProfileCubit>.value(value: _profileCubit),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (previous, current) =>
-            current is AuthUnauthenticated && previous is AuthAuthenticated,
-        listener: (_, __) => sl<ProfileCubit>().reset(),
+            current is AuthUnauthenticated && previous is! AuthUnauthenticated,
+        listener: (_, __) => _profileCubit.reset(),
         child: MaterialApp.router(
           title: 'sheknows',
           debugShowCheckedModeBanner: false,

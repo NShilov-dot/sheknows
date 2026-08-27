@@ -50,6 +50,7 @@ class AuthPasswordField extends StatefulWidget {
   const AuthPasswordField({
     required this.controller,
     required this.label,
+    this.fieldKey,
     this.validator,
     this.textInputAction = TextInputAction.done,
     this.autofillHints,
@@ -61,6 +62,10 @@ class AuthPasswordField extends StatefulWidget {
 
   final TextEditingController controller;
   final String label;
+
+  /// Key of the underlying [TextFormField], so a single field can be
+  /// re-validated on its own without validating the whole form.
+  final Key? fieldKey;
   final FormFieldValidator<String>? validator;
   final TextInputAction textInputAction;
   final Iterable<String>? autofillHints;
@@ -82,6 +87,7 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: widget.fieldKey,
       controller: widget.controller,
       focusNode: widget.focusNode,
       validator: widget.validator,

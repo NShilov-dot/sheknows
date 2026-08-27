@@ -58,6 +58,14 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
   }
 
   @override
+  void didUpdateWidget(covariant _AuthenticatedHome oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.user.id != widget.user.id) {
+      context.read<ProfileCubit>().loadProfile(widget.user.id);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),

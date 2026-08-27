@@ -8,14 +8,16 @@ class AuthPageScaffold extends StatelessWidget {
   const AuthPageScaffold({
     required this.title,
     required this.subtitle,
-    required this.child,
+    required this.builder,
     this.onUnauthenticatedMessage,
     super.key,
   });
 
   final String title;
   final String subtitle;
-  final Widget child;
+  /// Builds the page body with the loading flag already derived from
+  /// [AuthBloc] by this scaffold, so pages do not watch the bloc themselves.
+  final Widget Function(BuildContext context, bool isLoading) builder;
   final void Function(BuildContext context, String message)? onUnauthenticatedMessage;
 
   @override
@@ -66,7 +68,7 @@ class AuthPageScaffold extends StatelessWidget {
                         ignoring: isLoading,
                         child: Opacity(
                           opacity: isLoading ? 0.6 : 1,
-                          child: child,
+                          child: builder(context, isLoading),
                         ),
                       ),
                     ],

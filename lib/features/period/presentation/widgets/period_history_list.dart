@@ -23,7 +23,7 @@ class PeriodHistoryList extends StatelessWidget {
         return Column(
           children: [
             for (final log in items)
-              PeriodHistoryTile(log: log),
+              PeriodHistoryTile(key: ValueKey(log.id), log: log),
           ],
         );
       },

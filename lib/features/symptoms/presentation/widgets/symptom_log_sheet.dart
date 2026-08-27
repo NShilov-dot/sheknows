@@ -96,15 +96,14 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
-      setState(() => _dateTime = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            _dateTime.hour,
-            _dateTime.minute,
-          ));
-    }
+    if (picked == null || !mounted) return;
+    setState(() => _dateTime = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          _dateTime.hour,
+          _dateTime.minute,
+        ));
   }
 
   Future<void> _pickTime() async {
@@ -112,15 +111,14 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
       context: context,
       initialTime: TimeOfDay.fromDateTime(_dateTime),
     );
-    if (picked != null) {
-      setState(() => _dateTime = DateTime(
-            _dateTime.year,
-            _dateTime.month,
-            _dateTime.day,
-            picked.hour,
-            picked.minute,
-          ));
-    }
+    if (picked == null || !mounted) return;
+    setState(() => _dateTime = DateTime(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          picked.hour,
+          picked.minute,
+        ));
   }
 
   @override

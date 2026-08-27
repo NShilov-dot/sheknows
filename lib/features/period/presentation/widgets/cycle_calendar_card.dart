@@ -41,6 +41,16 @@ class CycleCalendarCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
         child: BlocBuilder<PeriodCubit, PeriodState>(
+          // The calendar only reads these four fields. Without this, a
+          // mutation's isLoading flip or a mutationFailure emit would rebuild
+          // the whole 60-page calendar for nothing.
+          buildWhen: (previous, current) =>
+              previous is! PeriodLoaded ||
+              current is! PeriodLoaded ||
+              previous.displayedMonth != current.displayedMonth ||
+              previous.logs != current.logs ||
+              previous.dayLogs != current.dayLogs ||
+              previous.stats != current.stats,
           builder: (context, state) {
             final loaded = state is PeriodLoaded ? state : null;
             return CycleCalendar(

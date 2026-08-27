@@ -44,14 +44,16 @@ class _CycleCalendarState extends State<CycleCalendar> {
   late PageController _controller;
   late int _page;
 
-  DateTime get _baseMonth {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month - _pastMonths);
-  }
+  /// Frozen at construction: recomputing it would shift the page<->month
+  /// mapping under the PageView if the app is left open across a month change.
+  late final DateTime _baseMonth;
 
+  /// Page index for [month], clamped to the available window: a stale or
+  /// restored month outside it must not produce an out-of-range page.
   int _indexOf(DateTime month) {
     final base = _baseMonth;
-    return (month.year - base.year) * 12 + month.month - base.month;
+    final index = (month.year - base.year) * 12 + month.month - base.month;
+    return index.clamp(0, _totalPages - 1);
   }
 
   DateTime _monthAt(int page) {
@@ -62,6 +64,8 @@ class _CycleCalendarState extends State<CycleCalendar> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    _baseMonth = DateTime(now.year, now.month - _pastMonths);
     _page = _indexOf(widget.month);
     _controller = PageController(initialPage: _page);
   }
@@ -141,7 +145,7 @@ class _CycleCalendarState extends State<CycleCalendar> {
                     controller: _controller,
                     itemCount: _totalPages,
                     onPageChanged: (page) {
-                      _page = page;
+                      setState(() => _page = page);
                       widget.onMonthChanged(_monthAt(page));
                     },
                     itemBuilder: (context, index) => MonthPage(

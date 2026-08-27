@@ -43,9 +43,11 @@ class AppRouter {
 
   final AuthBloc _authBloc;
 
+  late final AuthRefreshListenable _refresh = AuthRefreshListenable(_authBloc);
+
   late final GoRouter router = GoRouter(
     initialLocation: '/splash',
-    refreshListenable: AuthRefreshListenable(_authBloc),
+    refreshListenable: _refresh,
     redirect: (context, state) =>
         resolveAuthRedirect(_authBloc.state, state.matchedLocation),
     routes: [
@@ -83,4 +85,9 @@ class AppRouter {
       ),
     ],
   );
+
+  void dispose() {
+    router.dispose();
+    _refresh.dispose();
+  }
 }
