@@ -5,6 +5,7 @@ import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/features/period/presentation/utils/period_labels.dart';
 
 class PeriodHistoryList extends StatelessWidget {
   const PeriodHistoryList({super.key});
@@ -61,7 +62,7 @@ class PeriodHistoryTile extends StatelessWidget {
       title: Text(_dateRange),
       subtitle: Text(
         '${log.durationInDays} day${log.durationInDays == 1 ? '' : 's'}'
-        '${log.flow == null ? '' : ' · ${log.flow!.name} flow'}'
+        '${log.flow == null ? '' : ' · ${flowLevelLabel(log.flow!)} flow'}'
         '${isPending ? ' · saving…' : ''}',
       ),
       // A 'pending-' row has no server id yet, so PeriodCubit.removePeriod

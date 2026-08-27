@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_theme.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 
 /// The Lunar Bloom signature element: a moon that waxes and wanes with the
@@ -122,7 +123,10 @@ class _GlowingMoon extends StatelessWidget {
           colors: [
             scheme.primary.withValues(alpha: 0.18),
             scheme.primary.withValues(alpha: 0.02),
-            Colors.transparent,
+            // Not Colors.transparent: that is transparent BLACK, so the
+            // gradient lerps the halo through grey on its way out. Holding the
+            // hue and dropping only alpha keeps the fade clean.
+            scheme.primary.withValues(alpha: 0),
           ],
           stops: const [0.55, 0.8, 1],
         ),
@@ -133,8 +137,11 @@ class _GlowingMoon extends StatelessWidget {
           painter: _MoonPainter(
             phase: phase,
             litColor: scheme.secondary,
-            shadowColor:
-                scheme.onSurface.withValues(alpha: 0.12),
+            // Explicitly a night shade, not derived from onSurface: onSurface
+            // is near-white in dark and near-black in light, so deriving from
+            // it renders the moon's "unlit" side LIGHTER than the sky in dark
+            // mode and darker in light mode — the meaning flips with the theme.
+            shadowColor: AppTheme.moonShadowOf(context),
             glowColor: scheme.primary.withValues(alpha: 0.25),
           ),
         ),
