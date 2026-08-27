@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
-import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
-import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:sheknows/features/auth/presentation/widgets/register_form.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -17,6 +18,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _confirmFieldKey = GlobalKey<FormFieldState<String>>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -45,6 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     FocusScope.of(context).unfocus();
+    TextInput.finishAutofillContext();
     context.read<AuthBloc>().add(
           AuthSignUpWithEmailRequested(
             email: _emailController.text.trim(),
@@ -60,101 +63,47 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onPasswordChanged(String _) {
     if (_confirmPasswordController.text.isNotEmpty) {
-      _formKey.currentState?.validate();
+      _confirmFieldKey.currentState?.validate();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<AuthBloc, bool>(
-      (bloc) => bloc.state is AuthLoading,
-    );
-
+    final l10n = AppLocalizations.of(context);
     return AuthPageScaffold(
-      title: 'Create account',
-      subtitle: 'Sign up with email or Google',
+      title: l10n.authRegisterTitle,
+      subtitle: l10n.authRegisterSubtitle,
       onUnauthenticatedMessage: (context, message) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
         );
         context.go('/login');
       },
-      child: Form(
-        key: _formKey,
-        autovalidateMode: _autovalidateMode,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AuthTextField(
-              controller: _emailController,
-              label: 'Email',
-              focusNode: _emailFocusNode,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              validator: AuthValidators.email,
-              onFieldSubmitted: (_) =>
-                  FocusScope.of(context).requestFocus(_passwordFocusNode),
-            ),
-            const SizedBox(height: 16),
-            AuthPasswordField(
-              controller: _passwordController,
-              label: 'Password',
-              focusNode: _passwordFocusNode,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.newPassword],
-              validator: (value) =>
-                  AuthValidators.password(value, forRegistration: true),
-              onChanged: _onPasswordChanged,
-              onFieldSubmitted: (_) => FocusScope.of(context)
-                  .requestFocus(_confirmPasswordFocusNode),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'At least ${AuthValidators.minPasswordLength} characters, '
-              'with a letter and a number',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            AuthPasswordField(
-              controller: _confirmPasswordController,
-              label: 'Confirm password',
-              focusNode: _confirmPasswordFocusNode,
-              autofillHints: const [AutofillHints.newPassword],
-              validator: (value) => AuthValidators.confirmPassword(
-                value,
-                _passwordController.text,
-              ),
-              onFieldSubmitted: (_) => _submit(),
-            ),
-            const SizedBox(height: 24),
-            AuthPrimaryButton(
-              label: 'Sign up',
-              isLoading: isLoading,
-              onPressed: _submit,
-            ),
-            const SizedBox(height: 16),
-            const AuthFormDivider(),
-            const SizedBox(height: 16),
-            AuthGoogleButton(
-              isLoading: isLoading,
-              onPressed: _signInWithGoogle,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Already have an account?'),
-                TextButton(
-                  onPressed: isLoading ? null : () => context.go('/login'),
-                  child: const Text('Sign in'),
-                ),
-              ],
-            ),
-          ],
-        ),
+      builder: (context, isLoading) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          RegisterForm(
+            formKey: _formKey,
+            emailController: _emailController,
+            passwordController: _passwordController,
+            confirmPasswordController: _confirmPasswordController,
+            confirmFieldKey: _confirmFieldKey,
+            emailFocusNode: _emailFocusNode,
+            passwordFocusNode: _passwordFocusNode,
+            confirmPasswordFocusNode: _confirmPasswordFocusNode,
+            autovalidateMode: _autovalidateMode,
+            isLoading: isLoading,
+            onPasswordChanged: _onPasswordChanged,
+            onSubmit: _submit,
+          ),
+          AuthAlternativeActions(
+            isLoading: isLoading,
+            onGooglePressed: _signInWithGoogle,
+            promptText: l10n.authHasAccountPrompt,
+            actionLabel: l10n.authSignIn,
+            onActionPressed: () => context.go('/login'),
+          ),
+        ],
       ),
     );
   }

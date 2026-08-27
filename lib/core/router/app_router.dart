@@ -1,54 +1,81 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/router/auth_refresh_listenable.dart';
+import 'package:sheknows/core/router/route_not_found_page.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/pages/login_page.dart';
 import 'package:sheknows/features/auth/presentation/pages/register_page.dart';
 import 'package:sheknows/features/home/presentation/pages/home_page.dart';
+import 'package:sheknows/features/onboarding/data/onboarding_prefs.dart';
+import 'package:sheknows/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:sheknows/features/period/presentation/pages/period_tracker_page.dart';
+import 'package:sheknows/features/splash/presentation/pages/splash_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptom_phase_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptom_trends_page.dart';
+import 'package:sheknows/features/symptoms/presentation/pages/symptoms_page.dart';
 
-enum _AuthRouteStatus { pending, authenticated, unauthenticated }
+@visibleForTesting
+String? resolveAuthRedirect(
+  AuthState authState,
+  String location, {
+  bool hasSeenOnboarding = true,
+}) {
+  final isOnAuthPage = location == '/login' || location == '/register';
+  final isOnSplash = location == '/splash';
+  final isOnOnboarding = location == '/onboarding';
+
+  // Session restore in progress — keep users on splash.
+  if (authState is AuthInitial) {
+    return isOnSplash ? null : '/splash';
+  }
+
+  // In-progress sign-in / sign-out: do not yank the current screen away.
+  if (authState is AuthLoading) {
+    return null;
+  }
+
+  if (authState is AuthAuthenticated) {
+    // A returning/restored session skips onboarding entirely.
+    return isOnAuthPage || isOnSplash || isOnOnboarding ? '/home' : null;
+  }
+
+  // Unauthenticated, AuthError, etc. A first-time visitor sees the value
+  // pitch before any auth screen — from any entry point, including a direct
+  // link to /login or /register.
+  if (!hasSeenOnboarding) {
+    return isOnOnboarding ? null : '/onboarding';
+  }
+  if (isOnSplash || isOnOnboarding) {
+    return '/login';
+  }
+  return isOnAuthPage ? null : '/login';
+}
 
 class AppRouter {
   AppRouter(this._authBloc);
 
   final AuthBloc _authBloc;
 
+  late final AuthRefreshListenable _refresh = AuthRefreshListenable(_authBloc);
+
   late final GoRouter router = GoRouter(
     initialLocation: '/splash',
-    refreshListenable: _AuthRefreshListenable(_authBloc),
-    redirect: (context, state) {
-      final authState = _authBloc.state;
-      final location = state.matchedLocation;
-      final isOnAuthPage = location == '/login' || location == '/register';
-      final isOnSplash = location == '/splash';
-
-      // Session restore in progress — keep users on splash.
-      if (authState is AuthInitial) {
-        return isOnSplash ? null : '/splash';
-      }
-
-      // In-progress sign-in / sign-out: do not yank the current screen away.
-      if (authState is AuthLoading) {
-        return null;
-      }
-
-      if (authState is AuthAuthenticated) {
-        return isOnAuthPage || isOnSplash ? '/home' : null;
-      }
-
-      // Unauthenticated, AuthError, etc.
-      if (isOnSplash) {
-        return '/login';
-      }
-      return isOnAuthPage ? null : '/login';
-    },
+    refreshListenable: _refresh,
+    redirect: (context, state) => resolveAuthRedirect(
+      _authBloc.state,
+      state.matchedLocation,
+      hasSeenOnboarding: OnboardingPrefs.hasSeenOnboarding(),
+    ),
+    errorBuilder: (context, state) => const RouteNotFoundPage(),
     routes: [
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const _SplashPage(),
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingPage(),
       ),
       GoRoute(
         path: '/login',
@@ -66,50 +93,23 @@ class AppRouter {
         path: '/cycle',
         builder: (context, state) => const PeriodTrackerPage(),
       ),
+      GoRoute(
+        path: '/symptoms',
+        builder: (context, state) => const SymptomsPage(),
+      ),
+      GoRoute(
+        path: '/symptom-trends',
+        builder: (context, state) => const SymptomTrendsPage(),
+      ),
+      GoRoute(
+        path: '/symptom-phases',
+        builder: (context, state) => const SymptomPhasePage(),
+      ),
     ],
   );
-}
 
-class _SplashPage extends StatelessWidget {
-  const _SplashPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
-  }
-}
-
-class _AuthRefreshListenable extends ChangeNotifier {
-  _AuthRefreshListenable(this._authBloc) {
-    _subscription = _authBloc.stream.listen(_onAuthStateChanged);
-  }
-
-  final AuthBloc _authBloc;
-  late final StreamSubscription<AuthState> _subscription;
-  _AuthRouteStatus _status = _AuthRouteStatus.pending;
-
-  void _onAuthStateChanged(AuthState state) {
-    if (state is AuthInitial || state is AuthLoading) {
-      return;
-    }
-
-    final nextStatus = state is AuthAuthenticated
-        ? _AuthRouteStatus.authenticated
-        : _AuthRouteStatus.unauthenticated;
-
-    if (_status == nextStatus) {
-      return;
-    }
-
-    _status = nextStatus;
-    notifyListeners();
-  }
-
-  @override
   void dispose() {
-    _subscription.cancel();
-    super.dispose();
+    router.dispose();
+    _refresh.dispose();
   }
 }

@@ -3,54 +3,57 @@ import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 
 void main() {
   group('AuthValidators.email', () {
-    test('returns error when empty', () {
-      expect(AuthValidators.email(''), 'Email is required');
+    test('rejects an empty value', () {
+      expect(AuthValidators.email(''), AuthValidationError.emailRequired);
     });
 
-    test('returns error for malformed address', () {
-      expect(AuthValidators.email('not-an-email'), 'Enter a valid email address');
+    test('rejects a malformed address', () {
+      expect(
+        AuthValidators.email('not-an-email'),
+        AuthValidationError.emailInvalid,
+      );
     });
 
-    test('returns null for a valid address', () {
+    test('accepts a well-formed address', () {
       expect(AuthValidators.email('user@example.com'), isNull);
     });
   });
 
   group('AuthValidators.password', () {
-    test('returns error when empty', () {
-      expect(AuthValidators.password(''), 'Password is required');
+    test('rejects an empty value', () {
+      expect(AuthValidators.password(''), AuthValidationError.passwordRequired);
     });
 
-    test('allows any non-empty password for sign-in', () {
+    test('sign-in only needs a non-empty value', () {
       expect(AuthValidators.password('123'), isNull);
     });
 
-    test('rejects surrounding whitespace during registration', () {
+    test('registration rejects surrounding whitespace', () {
       expect(
         AuthValidators.password(' secret123 ', forRegistration: true),
-        'Password cannot start or end with spaces',
+        AuthValidationError.passwordWhitespace,
       );
     });
 
-    test('returns error when shorter than the minimum length on registration', () {
+    test('registration rejects a short password', () {
       expect(
         AuthValidators.password('Ab1', forRegistration: true),
-        'Password must be at least ${AuthValidators.minPasswordLength} characters',
+        AuthValidationError.passwordTooShort,
       );
     });
 
-    test('returns error when registration password lacks a letter or number', () {
+    test('registration requires a letter and a digit', () {
       expect(
         AuthValidators.password('abcdefgh', forRegistration: true),
-        'Password must include at least one letter and one number',
+        AuthValidationError.passwordWeak,
       );
       expect(
         AuthValidators.password('12345678', forRegistration: true),
-        'Password must include at least one letter and one number',
+        AuthValidationError.passwordWeak,
       );
     });
 
-    test('returns null for a valid registration password', () {
+    test('registration accepts a compliant password', () {
       expect(
         AuthValidators.password('secret123', forRegistration: true),
         isNull,
@@ -59,18 +62,21 @@ void main() {
   });
 
   group('AuthValidators.confirmPassword', () {
-    test('returns error when confirmation is empty', () {
-      expect(AuthValidators.confirmPassword('', 'secret123'), 'Confirm your password');
-    });
-
-    test('returns error when passwords differ', () {
+    test('rejects an empty confirmation', () {
       expect(
-        AuthValidators.confirmPassword('other', 'secret123'),
-        'Passwords do not match',
+        AuthValidators.confirmPassword('', 'secret123'),
+        AuthValidationError.confirmRequired,
       );
     });
 
-    test('returns null when passwords match', () {
+    test('rejects a mismatch', () {
+      expect(
+        AuthValidators.confirmPassword('other', 'secret123'),
+        AuthValidationError.confirmMismatch,
+      );
+    });
+
+    test('accepts a match', () {
       expect(AuthValidators.confirmPassword('secret123', 'secret123'), isNull);
     });
   });

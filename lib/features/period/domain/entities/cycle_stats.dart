@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/core/utils/date_only.dart';
 
 /// Number of past cycles used to compute averages and predictions.
 const int kCycleAveragingWindow = 6;
@@ -44,7 +45,7 @@ class CycleStatsCalculator {
 
   /// [logs] may be in any order; they are sorted internally.
   CycleStats calculate(List<PeriodLogEntity> logs, {DateTime? now}) {
-    final today = _dateOnly(now ?? DateTime.now());
+    final today = (now ?? DateTime.now()).dateOnly;
     final sorted = [...logs]..sort((a, b) => a.startDate.compareTo(b.startDate));
 
     if (sorted.isEmpty) {
@@ -55,7 +56,7 @@ class CycleStatsCalculator {
     final cycleLengths = <int>[];
     for (var i = 1; i < sorted.length; i++) {
       final length =
-          _dateOnly(sorted[i].startDate).difference(_dateOnly(sorted[i - 1].startDate)).inDays;
+          sorted[i].startDate.dateOnly.difference(sorted[i - 1].startDate.dateOnly).inDays;
       if (length > 0) {
         cycleLengths.add(length);
       }
@@ -84,7 +85,7 @@ class CycleStatsCalculator {
 
     DateTime? nextPredictedStart;
     if (averageCycleLength != null) {
-      var predicted = _addDays(_dateOnly(last.startDate), averageCycleLength);
+      var predicted = _addDays(last.startDate.dateOnly, averageCycleLength);
       // If the prediction already passed (late period), roll forward until it
       // is in the future so the calendar always shows a meaningful marker.
       while (!predicted.isAfter(today)) {
@@ -94,7 +95,7 @@ class CycleStatsCalculator {
     }
 
     final currentCycleDay =
-        today.difference(_dateOnly(last.startDate)).inDays + 1;
+        today.difference(last.startDate.dateOnly).inDays + 1;
 
     return CycleStats(
       periodCount: sorted.length,
@@ -105,9 +106,6 @@ class CycleStatsCalculator {
       currentCycleDay: currentCycleDay,
     );
   }
-
-  DateTime _dateOnly(DateTime value) =>
-      DateTime(value.year, value.month, value.day);
 
   DateTime _addDays(DateTime value, int days) =>
       DateTime(value.year, value.month, value.day + days);

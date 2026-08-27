@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 
 /// "Lunar Bloom" — sheknows' visual identity.
 ///
@@ -12,6 +14,10 @@ abstract final class AppTheme {
 
   /// Night sky — app background in dark mode.
   static const _night = Color(0xFF16142B);
+
+  /// The night sky, for the platform chrome that sits outside the widget tree
+  /// (the Android system navigation bar) and cannot read the [ColorScheme].
+  static const night = _night;
 
   /// Elevated surfaces (cards, sheets) in dark mode.
   static const _nightSurface = Color(0xFF211D3E);
@@ -29,6 +35,19 @@ abstract final class AppTheme {
 
   /// Sage — success / fertile-window accents later on.
   static const _sage = Color(0xFFA8C5BA);
+
+  /// The moon's unlit side. Deliberately NOT derived from `onSurface`, which
+  /// is near-white in dark and near-black in light — deriving from it would
+  /// render the shadow lighter than the sky in dark mode and darker in light,
+  /// flipping the moon's meaning with the theme.
+  static const _moonShadowDark = Color(0xFF2C2750);
+  static const _moonShadowLight = Color(0xFFD8D2E4);
+
+  /// The unlit-disc shade for the current theme.
+  static Color moonShadowOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? _moonShadowDark
+          : _moonShadowLight;
 
   // -- Fonts -----------------------------------------------------------------
 
@@ -78,7 +97,10 @@ abstract final class AppTheme {
           onSurface: const Color(0xFF241F3D),
           surfaceContainerHighest: const Color(0xFFEFEAF6),
           onSurfaceVariant: const Color(0xFF6B6486),
-          outline: const Color(0xFFB0AAC4),
+          // #B0AAC4 topped out at 2.12:1 on the light scaffold — unusable at
+          // any alpha. Same hue, dark enough to clear WCAG 1.4.11's 3:1 on
+          // both card (3.46:1) and scaffold (3.29:1).
+          outline: const Color(0xFF8C879C),
           error: const Color(0xFFB3261E),
           onError: Colors.white,
         ),
@@ -119,6 +141,19 @@ abstract final class AppTheme {
         foregroundColor: scheme.onSurface,
         elevation: 0,
         centerTitle: false,
+        // NOT the bare SystemUiOverlayStyle.light/.dark constants: they carry
+        // systemNavigationBarColor black/white, which Flutter forwards to
+        // Android and which clobbers the nav bar AppInitializer sets.
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: const Color(0x00000000),
+          statusBarIconBrightness:
+              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          statusBarBrightness:
+              brightness == Brightness.dark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: scaffoldBackground,
+          systemNavigationBarIconBrightness:
+              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        ),
         titleTextStyle: display.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.w600,
@@ -127,21 +162,29 @@ abstract final class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: scheme.surface.withValues(alpha: brightness == Brightness.dark ? 0.75 : 1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        color: scheme.surface.withValues(alpha: brightness == Brightness.dark ? AppAlpha.surface : 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          // Light mode puts a white card on a near-white scaffold — 1.02:1,
+          // an invisible rectangle at elevation 0. Dark mode separates on
+          // its own, so it keeps the borderless look.
+          side: brightness == Brightness.light
+              ? BorderSide(color: scheme.outline.withValues(alpha: AppAlpha.muted))
+              : BorderSide.none,
+        ),
         margin: EdgeInsets.zero,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
           textStyle: body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
           side: BorderSide(color: scheme.outline),
           textStyle: body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
         ),
@@ -153,36 +196,50 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        // 35% reads on the dark surface; over a white one it composites to
+        // roughly the background, leaving the field with no affordance at all
+        // until it is tapped. Light mode takes the tint at full strength.
+        fillColor: scheme.surfaceContainerHighest.withValues(
+          alpha: brightness == Brightness.dark ? AppAlpha.wash : 1,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(AppRadius.field),
+          // Dark mode separates on the fill alone. Light mode does not — the
+          // tint sits at ~1.2:1 on a white card — so the field gets a real
+          // edge there, which is what WCAG 1.4.11 asks of a form control.
+          borderSide: brightness == Brightness.dark
+              ? BorderSide.none
+              : BorderSide(color: scheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.field),
           borderSide: BorderSide(color: scheme.primary, width: 1.5),
         ),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 14),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: scheme.surface,
         modalBackgroundColor: scheme.surface,
         showDragHandle: true,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
         ),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: scheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        // No border here, unlike cardTheme: a dialog floats over a scrim with
+        // its own elevation, so it separates from the page without one.
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.snackBar)),
       ),
       listTileTheme: ListTileThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.field)),
       ),
     );
   }

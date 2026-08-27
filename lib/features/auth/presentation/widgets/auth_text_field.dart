@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class AuthTextField extends StatelessWidget {
   const AuthTextField({
@@ -10,7 +11,6 @@ class AuthTextField extends StatelessWidget {
     this.textInputAction,
     this.autofillHints,
     this.focusNode,
-    this.enabled = true,
     this.onFieldSubmitted,
     this.onChanged,
     super.key,
@@ -23,7 +23,6 @@ class AuthTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
   final FocusNode? focusNode;
-  final bool enabled;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
 
@@ -32,7 +31,6 @@ class AuthTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
-      enabled: enabled,
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
@@ -43,7 +41,6 @@ class AuthTextField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
       ),
     );
   }
@@ -53,11 +50,11 @@ class AuthPasswordField extends StatefulWidget {
   const AuthPasswordField({
     required this.controller,
     required this.label,
+    this.fieldKey,
     this.validator,
     this.textInputAction = TextInputAction.done,
     this.autofillHints,
     this.focusNode,
-    this.enabled = true,
     this.onFieldSubmitted,
     this.onChanged,
     super.key,
@@ -65,11 +62,14 @@ class AuthPasswordField extends StatefulWidget {
 
   final TextEditingController controller;
   final String label;
+
+  /// Key of the underlying [TextFormField], so a single field can be
+  /// re-validated on its own without validating the whole form.
+  final Key? fieldKey;
   final FormFieldValidator<String>? validator;
   final TextInputAction textInputAction;
   final Iterable<String>? autofillHints;
   final FocusNode? focusNode;
-  final bool enabled;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
 
@@ -86,10 +86,11 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return TextFormField(
+      key: widget.fieldKey,
       controller: widget.controller,
       focusNode: widget.focusNode,
-      enabled: widget.enabled,
       validator: widget.validator,
       obscureText: _obscurePassword,
       keyboardType: TextInputType.visiblePassword,
@@ -104,13 +105,13 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
       ],
       decoration: InputDecoration(
         labelText: widget.label,
-        border: const OutlineInputBorder(),
         suffixIcon: IconButton(
-          onPressed: widget.enabled ? _toggleVisibility : null,
+          onPressed: _toggleVisibility,
           icon: Icon(
             _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),
-          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+          tooltip:
+              _obscurePassword ? l10n.authShowPassword : l10n.authHidePassword,
         ),
       ),
     );

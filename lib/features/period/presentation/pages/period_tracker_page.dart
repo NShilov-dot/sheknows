@@ -2,35 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
+import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
-import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
-import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
-import 'package:sheknows/features/period/presentation/widgets/cycle_calendar.dart';
-import 'package:sheknows/features/period/presentation/widgets/day_details_sheet.dart';
-import 'package:sheknows/features/period/presentation/widgets/moon_cycle_indicator.dart';
+import 'package:sheknows/features/period/presentation/widgets/cycle_calendar_card.dart';
+import 'package:sheknows/features/period/presentation/widgets/cycle_insights_card.dart';
+import 'package:sheknows/features/period/presentation/widgets/cycle_moon_header.dart';
+import 'package:sheknows/features/period/presentation/widgets/period_actions_card.dart';
+import 'package:sheknows/features/period/presentation/widgets/period_history_list.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class PeriodTrackerPage extends StatelessWidget {
   const PeriodTrackerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthBloc, AuthState, String?>(
-      selector: (state) => state is AuthAuthenticated ? state.user.id : null,
-      builder: (context, userId) {
-        if (userId == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return BlocProvider(
-          create: (_) => sl<PeriodCubit>()..load(userId),
-          child: const _PeriodTrackerView(),
-        );
-      },
+    return AuthGate(
+      builder: (context, userId) => BlocProvider(
+        create: (_) => sl<PeriodCubit>()..load(userId),
+        child: const _PeriodTrackerView(),
+      ),
     );
   }
 }
@@ -42,11 +38,8 @@ class _PeriodTrackerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cycle'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
-        ),
+        title: Text(AppLocalizations.of(context).cycleTitle),
+        leading: BackButton(onPressed: () => context.go('/home')),
       ),
       body: BlocConsumer<PeriodCubit, PeriodState>(
         listenWhen: (previous, current) {
@@ -59,18 +52,31 @@ class _PeriodTrackerView extends StatelessWidget {
         listener: (context, state) {
           if (state is PeriodLoaded && state.mutationFailure != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.mutationFailure!.message)),
+              SnackBar(
+                content: Text(
+                  failureMessage(
+                    AppLocalizations.of(context),
+                    state.mutationFailure!,
+                  ),
+                ),
+              ),
             );
           }
         },
         builder: (context, state) {
-          return switch (state) {
-            PeriodInitial() || PeriodLoading() => const Center(
-                child: CircularProgressIndicator(),
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              PeriodInitial() || PeriodLoading() => const _PeriodSkeleton(
+                key: ValueKey('loading'),
               ),
-            PeriodError(:final failure) => Center(child: Text(failure.message)),
-            PeriodLoaded() => const _PeriodBody(),
-          };
+              PeriodError(:final failure) => _PeriodErrorView(
+                key: const ValueKey('error'),
+                failure: failure,
+              ),
+              PeriodLoaded() => const _PeriodBody(key: ValueKey('loaded')),
+            },
+          );
         },
       ),
     );
@@ -78,317 +84,137 @@ class _PeriodTrackerView extends StatelessWidget {
 }
 
 class _PeriodBody extends StatelessWidget {
-  const _PeriodBody();
+  const _PeriodBody({super.key});
 
-  void _onDaySelected(
-    BuildContext context,
-    DateTime day,
-    PeriodLoaded state,
-    String userId,
-  ) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => DayDetailsSheet(
-        day: day,
-        userId: userId,
-        logs: state.logs,
-        stats: state.stats,
-        periodCubit: context.read<PeriodCubit>(),
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.viewPaddingOf(context).bottom,
+          ),
+          children: [
+            const CycleMoonHeader(),
+            const CycleCalendarCard(),
+            const SizedBox(height: AppSpacing.lg),
+            const CycleInsightsCard(),
+            const SizedBox(height: AppSpacing.lg),
+            const PeriodActionsCard(),
+            const SizedBox(height: AppSpacing.xl),
+            Text(
+              AppLocalizations.of(context).cycleHistoryTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const PeriodHistoryList(),
+          ],
+        ),
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
-          selector: (state) => state is PeriodLoaded ? state.stats : null,
-          builder: (context, stats) {
-            if (stats == null || stats.currentCycleDay == null) {
-              return const SizedBox.shrink();
-            }
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: MoonCycleIndicator(stats: stats),
-            );
-          },
-        ),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
-            child: BlocBuilder<PeriodCubit, PeriodState>(
-              builder: (context, state) {
-                final loaded = state is PeriodLoaded ? state : null;
-                final userId = loaded?.logs.firstOrNull?.userId;
-                return CycleCalendar(
-                  month:
-                      loaded?.displayedMonth ?? DateTime.now(),
-                  logs: loaded?.logs ?? const [],
-                  stats: loaded?.stats,
-                  onDaySelected: (day) {
-                    if (loaded == null || userId == null) {
-                      return;
-                    }
-                    _onDaySelected(context, day, loaded, userId);
-                  },
-                  onMonthChanged: (month) =>
-                      context.read<PeriodCubit>().goToMonth(month),
-                );
-              },
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const _StatsCard(),
-        const SizedBox(height: 16),
-        const _ActionsCard(),
-        const SizedBox(height: 24),
-        Text(
-          'History',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        const _HistoryList(),
-      ],
-    );
-  }
 }
 
-// -- Stats -------------------------------------------------------------------
+/// The error arm of the cycle screen. A bare centred string stranded the user:
+/// re-entering /cycle was the only way to re-run [PeriodCubit.load].
+class _PeriodErrorView extends StatelessWidget {
+  const _PeriodErrorView({super.key, required this.failure});
 
-class _StatsCard extends StatelessWidget {
-  const _StatsCard();
-
-  static String _formatDate(DateTime date) =>
-      '${date.day} ${_statsMonthNames[date.month - 1]} ${date.year}';
-
-  static const _statsMonthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
-      selector: (state) => state is PeriodLoaded ? state.stats : null,
-      builder: (context, stats) {
-        if (stats == null) {
-          return const SizedBox.shrink();
-        }
-
-        final items = <(String, String)>[
-          ('Logged periods', '${stats.periodCount}'),
-          if (stats.averageCycleLength != null)
-            ('Avg cycle length', '${stats.averageCycleLength} days'),
-          if (stats.averagePeriodLength != null)
-            ('Avg period length', '${stats.averagePeriodLength} days'),
-          if (stats.currentPeriod != null)
-            (
-              'Current period',
-              'Day ${stats.currentPeriod!.durationInDays} of bleeding',
-            ),
-          if (stats.hasPrediction)
-            ('Next period expected', _formatDate(stats.nextPredictedStart!)),
-        ];
-
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Insights', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
-                for (final item in items)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(item.$1),
-                        Text(
-                          item.$2,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                if (!stats.hasPrediction && stats.periodCount < 2)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Log at least two periods to see cycle predictions.',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// -- Quick actions -----------------------------------------------------------
-
-class _ActionsCard extends StatelessWidget {
-  const _ActionsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
-      selector: (state) => state is PeriodLoaded ? state.stats : null,
-      builder: (context, stats) {
-        if (stats == null) {
-          return const SizedBox.shrink();
-        }
-
-        final ongoing = stats.currentPeriod;
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                FilledButton.icon(
-                  onPressed: ongoing == null
-                      ? () async {
-                          final now = DateTime.now();
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: now,
-                            firstDate: now.subtract(const Duration(days: 365 * 2)),
-                            lastDate: now,
-                            helpText: 'When did your period start?',
-                          );
-                          if (picked != null && context.mounted) {
-                            context.read<PeriodCubit>().startPeriod(picked);
-                          }
-                        }
-                      : null,
-                  icon: const Icon(Icons.water_drop),
-                  label: const Text('My period started today'),
-                ),
-                if (ongoing != null) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () =>
-                        context.read<PeriodCubit>().endPeriod(DateTime.now()),
-                    icon: const Icon(Icons.stop_circle_outlined),
-                    label: const Text('End period today'),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// -- History -----------------------------------------------------------------
-
-class _HistoryList extends StatelessWidget {
-  const _HistoryList();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, List<PeriodLogEntity>?>(
-      selector: (state) => state is PeriodLoaded ? state.logs : null,
-      builder: (context, logs) {
-        final items = logs ?? const <PeriodLogEntity>[];
-        if (items.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: Text('No periods logged yet.')),
-          );
-        }
-
-        return Column(
-          children: [
-            for (final log in items)
-              _HistoryTile(log: log),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _HistoryTile extends StatelessWidget {
-  const _HistoryTile({required this.log});
-
-  final PeriodLogEntity log;
-
-  String get _dateRange {
-    final start =
-        '${log.startDate.day}/${log.startDate.month}';
-    if (log.isOngoing) {
-      return '$start – ongoing';
-    }
-    return '$start – ${log.endDate!.day}/${log.endDate!.month}';
-  }
+  final Failure failure;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final isPending = log.id.startsWith('pending-');
-
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      enabled: !isPending,
-      leading: Icon(
-        Icons.water_drop,
-        color: log.isOngoing ? scheme.primary : scheme.primary.withValues(alpha: 0.6),
-      ),
-      title: Text(_dateRange),
-      subtitle: Text(
-        '${log.durationInDays()} day${log.durationInDays() == 1 ? '' : 's'}'
-        '${log.flow == null ? '' : ' · ${log.flow!.name} flow'}'
-        '${isPending ? ' · saving…' : ''}',
-      ),
-      trailing: PopupMenuButton<String>(
-        itemBuilder: (menuContext) => [
-          if (!log.isOngoing)
-            const PopupMenuItem(
-              value: 'reopen',
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.undo),
-                title: Text('Reopen (ongoing)'),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xxl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.cloud_off_outlined,
+              size: AppIconSize.empty,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              failureMessage(AppLocalizations.of(context), failure),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-          const PopupMenuItem(
-            value: 'delete',
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.delete_outline),
-              title: Text('Delete'),
+            const SizedBox(height: AppSpacing.lg),
+            FilledButton.icon(
+              onPressed: () {
+                final authState = context.read<AuthBloc>().state;
+                if (authState is! AuthAuthenticated) {
+                  return;
+                }
+                context.read<PeriodCubit>().load(authState.user.id);
+              },
+              icon: const Icon(Icons.refresh),
+              label: Text(AppLocalizations.of(context).commonTryAgain),
             ),
-          ),
-        ],
-        onSelected: (value) {
-          switch (value) {
-            case 'reopen':
-              context.read<PeriodCubit>().reopenPeriod(log.id);
-            case 'delete':
-              context.read<PeriodCubit>().removePeriod(log.id);
-          }
-        },
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The loading arm. The page structure is known before the data is, so a
+/// placeholder of roughly the loaded shape beats a centred spinner and the
+/// layout does not jump when the data lands.
+class _PeriodSkeleton extends StatelessWidget {
+  const _PeriodSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final fill = Theme.of(context).colorScheme.surfaceContainerHighest;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          children: [
+            Center(
+              child: Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _SkeletonBlock(height: 320, color: fill),
+            const SizedBox(height: AppSpacing.lg),
+            _SkeletonBlock(height: 160, color: fill),
+            const SizedBox(height: AppSpacing.lg),
+            _SkeletonBlock(height: 120, color: fill),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SkeletonBlock extends StatelessWidget {
+  const _SkeletonBlock({required this.height, required this.color});
+
+  final double height;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(AppRadius.card),
       ),
     );
   }

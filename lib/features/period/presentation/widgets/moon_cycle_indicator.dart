@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_theme.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 /// The Lunar Bloom signature element: a moon that waxes and wanes with the
 /// user's cycle.
@@ -31,73 +33,79 @@ class MoonCycleIndicator extends StatelessWidget {
     return ((day - 1) / _cycleLength).clamp(0.0, 0.999);
   }
 
-  String get _phaseName {
-    const names = [
-      ('New moon', 'Your period is arriving or has just started'),
-      ('Waxing crescent', 'Follicular phase — energy is building'),
-      ('First quarter', 'Follicular phase — momentum'),
-      ('Waxing gibbous', 'Approaching ovulation'),
-      ('Full moon', 'Ovulation window'),
-      ('Waning gibbous', 'Luteal phase — wind down'),
-      ('Last quarter', 'Luteal phase'),
-      ('Waning crescent', 'Late luteal — be gentle with yourself'),
-    ];
-    final index = (_phase * names.length).floor().clamp(0, names.length - 1);
-    return names[index].$1;
-  }
+  /// The cycle is mapped onto the moon's eight phases.
+  static const _phaseCount = 8;
 
-  String get _phaseHint {
-    const hints = [
-      'Your period is here or about to arrive',
-      'Energy is building',
-      'Steady momentum',
-      'Ovulation is approaching',
-      'Peak of your cycle',
-      'Wind-down begins',
-      'Reflect and rest',
-      'Be gentle with yourself',
-    ];
-    final index = (_phase * hints.length).floor().clamp(0, hints.length - 1);
-    return hints[index];
-  }
+  int get _phaseIndex =>
+      (_phase * _phaseCount).floor().clamp(0, _phaseCount - 1);
+
+  /// (name, hint) for the current eighth of the cycle.
+  (String, String) _phaseOf(AppLocalizations l10n) => switch (_phaseIndex) {
+        0 => (l10n.cycleMoonPhaseNewMoon, l10n.cycleMoonHintNewMoon),
+        1 => (
+            l10n.cycleMoonPhaseWaxingCrescent,
+            l10n.cycleMoonHintWaxingCrescent
+          ),
+        2 => (l10n.cycleMoonPhaseFirstQuarter, l10n.cycleMoonHintFirstQuarter),
+        3 => (
+            l10n.cycleMoonPhaseWaxingGibbous,
+            l10n.cycleMoonHintWaxingGibbous
+          ),
+        4 => (l10n.cycleMoonPhaseFullMoon, l10n.cycleMoonHintFullMoon),
+        5 => (
+            l10n.cycleMoonPhaseWaningGibbous,
+            l10n.cycleMoonHintWaningGibbous
+          ),
+        6 => (l10n.cycleMoonPhaseLastQuarter, l10n.cycleMoonHintLastQuarter),
+        _ => (
+            l10n.cycleMoonPhaseWaningCrescent,
+            l10n.cycleMoonHintWaningCrescent
+          ),
+      };
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final day = stats.currentCycleDay;
+    final l10n = AppLocalizations.of(context);
+    final (phaseName, phaseHint) = _phaseOf(l10n);
 
-    return Column(
-      children: [
-        _GlowingMoon(phase: _phase, size: size),
-        if (day != null) ...[
-          const SizedBox(height: 12),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: scheme.onSurface,
-              ),
-              children: [
-                TextSpan(text: 'Day $day'),
-                TextSpan(
-                  text: ' of $_cycleLength',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
+    // The moon is painted, so it carries no semantics of its own. Read the
+    // whole indicator as one node instead of two disconnected text fragments.
+    return Semantics(
+      container: true,
+      label: day == null
+          ? phaseName
+          : l10n.cycleMoonSemantics(day, _cycleLength, phaseName, phaseHint),
+      child: Column(
+        children: [
+          _GlowingMoon(phase: _phase, size: size),
+          if (day != null) ...[
+            const SizedBox(height: 12),
+            // One message, not two spans: ru/uz reorder the day and the
+            // total, so the two-tone styling cannot survive translation.
+            ExcludeSemantics(
+              child: Text(
+                l10n.cycleMoonDayOfTotal(day, _cycleLength),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: scheme.onSurface,
                 ),
-              ],
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '$_phaseName · ${_phaseHint.toLowerCase()}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
+            const SizedBox(height: 4),
+            ExcludeSemantics(
+              child: Text(
+                l10n.cycleMoonPhaseLine(phaseName, phaseHint),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
             ),
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -120,7 +128,10 @@ class _GlowingMoon extends StatelessWidget {
           colors: [
             scheme.primary.withValues(alpha: 0.18),
             scheme.primary.withValues(alpha: 0.02),
-            Colors.transparent,
+            // Not Colors.transparent: that is transparent BLACK, so the
+            // gradient lerps the halo through grey on its way out. Holding the
+            // hue and dropping only alpha keeps the fade clean.
+            scheme.primary.withValues(alpha: 0),
           ],
           stops: const [0.55, 0.8, 1],
         ),
@@ -131,8 +142,11 @@ class _GlowingMoon extends StatelessWidget {
           painter: _MoonPainter(
             phase: phase,
             litColor: scheme.secondary,
-            shadowColor:
-                scheme.onSurface.withValues(alpha: 0.12),
+            // Explicitly a night shade, not derived from onSurface: onSurface
+            // is near-white in dark and near-black in light, so deriving from
+            // it renders the moon's "unlit" side LIGHTER than the sky in dark
+            // mode and darker in light mode — the meaning flips with the theme.
+            shadowColor: AppTheme.moonShadowOf(context),
             glowColor: scheme.primary.withValues(alpha: 0.25),
           ),
         ),
@@ -149,7 +163,7 @@ class _GlowingMoon extends StatelessWidget {
 /// `cos(2π·phase) > 0`, away from it when negative — producing crescent,
 /// quarter, and gibbous shapes automatically.
 class _MoonPainter extends CustomPainter {
-  _MoonPainter({
+  const _MoonPainter({
     required this.phase,
     required this.litColor,
     required this.shadowColor,
@@ -195,7 +209,7 @@ class _MoonPainter extends CustomPainter {
       return;
     }
     // New moon shortcut — only the base disc.
-    if (k.abs() < 0.01 && (p < 0.005 || p > 0.995)) {
+    if (p < 0.005 || p > 0.995) {
       return;
     }
 

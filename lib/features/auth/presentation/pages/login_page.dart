@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_alternative_actions.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_page_scaffold.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:sheknows/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -41,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     FocusScope.of(context).unfocus();
+    TextInput.finishAutofillContext();
     context.read<AuthBloc>().add(
           AuthSignInWithEmailRequested(
             email: _emailController.text.trim(),
@@ -56,64 +62,62 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<AuthBloc, bool>(
-      (bloc) => bloc.state is AuthLoading,
-    );
-
+    final l10n = AppLocalizations.of(context);
     return AuthPageScaffold(
-      title: 'Welcome back',
-      subtitle: 'Sign in to continue',
-      child: Form(
-        key: _formKey,
-        autovalidateMode: _autovalidateMode,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AuthTextField(
-              controller: _emailController,
-              label: 'Email',
-              focusNode: _emailFocusNode,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              validator: AuthValidators.email,
-              onFieldSubmitted: (_) =>
-                  FocusScope.of(context).requestFocus(_passwordFocusNode),
-            ),
-            const SizedBox(height: 16),
-            AuthPasswordField(
-              controller: _passwordController,
-              label: 'Password',
-              focusNode: _passwordFocusNode,
-              autofillHints: const [AutofillHints.password],
-              validator: AuthValidators.password,
-              onFieldSubmitted: (_) => _submit(),
-            ),
-            const SizedBox(height: 24),
-            AuthPrimaryButton(
-              label: 'Sign in',
-              isLoading: isLoading,
-              onPressed: _submit,
-            ),
-            const SizedBox(height: 16),
-            const AuthFormDivider(),
-            const SizedBox(height: 16),
-            AuthGoogleButton(
-              isLoading: isLoading,
-              onPressed: _signInWithGoogle,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account?"),
-                TextButton(
-                  onPressed: isLoading ? null : () => context.go('/register'),
-                  child: const Text('Sign up'),
-                ),
-              ],
-            ),
-          ],
+      title: l10n.authLoginTitle,
+      subtitle: l10n.authLoginSubtitle,
+      builder: (context, isLoading) => AutofillGroup(
+        child: Form(
+          key: _formKey,
+          autovalidateMode: _autovalidateMode,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AuthTextField(
+                controller: _emailController,
+                label: l10n.authEmailLabel,
+                focusNode: _emailFocusNode,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
+                validator: (value) {
+                  final error = AuthValidators.email(value);
+                  return error == null
+                      ? null
+                      : authValidationMessage(l10n, error);
+                },
+                onFieldSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_passwordFocusNode),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AuthPasswordField(
+                controller: _passwordController,
+                label: l10n.authPasswordLabel,
+                focusNode: _passwordFocusNode,
+                autofillHints: const [AutofillHints.password],
+                validator: (value) {
+                  final error = AuthValidators.password(value);
+                  return error == null
+                      ? null
+                      : authValidationMessage(l10n, error);
+                },
+                onFieldSubmitted: (_) => _submit(),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              AuthPrimaryButton(
+                label: l10n.authSignIn,
+                isLoading: isLoading,
+                onPressed: _submit,
+              ),
+              AuthAlternativeActions(
+                isLoading: isLoading,
+                onGooglePressed: _signInWithGoogle,
+                promptText: l10n.authNoAccountPrompt,
+                actionLabel: l10n.authSignUp,
+                onActionPressed: () => context.go('/register'),
+              ),
+            ],
+          ),
         ),
       ),
     );

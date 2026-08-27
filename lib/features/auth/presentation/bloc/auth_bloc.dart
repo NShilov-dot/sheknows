@@ -125,9 +125,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthAuthenticated(user));
         } else {
           emit(
-            const AuthUnauthenticated(
-              message: 'Check your email to confirm your account.',
-            ),
+            const AuthUnauthenticated(notice: AuthNotice.confirmEmail),
           );
         }
       },
@@ -181,7 +179,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) {
     final emailError = AuthValidators.email(email);
     if (emailError != null) {
-      return ValidationFailure(emailError);
+      return ValidationFailure(emailError.name);
     }
 
     final passwordError = AuthValidators.password(
@@ -189,7 +187,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       forRegistration: forRegistration,
     );
     if (passwordError != null) {
-      return ValidationFailure(passwordError);
+      return ValidationFailure(passwordError.name);
     }
 
     return null;

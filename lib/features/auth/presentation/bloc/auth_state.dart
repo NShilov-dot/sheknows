@@ -26,13 +26,17 @@ final class AuthAuthenticated extends AuthState {
   List<Object?> get props => [user];
 }
 
-final class AuthUnauthenticated extends AuthState {
-  const AuthUnauthenticated({this.message});
+/// A user-facing note the auth flow wants shown once, as a code — the copy is
+/// picked at the presentation edge, which has a BuildContext.
+enum AuthNotice { confirmEmail }
 
-  final String? message;
+final class AuthUnauthenticated extends AuthState {
+  const AuthUnauthenticated({this.notice});
+
+  final AuthNotice? notice;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [notice];
 }
 
 final class AuthError extends AuthState {

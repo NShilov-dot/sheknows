@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sheknows/config/environment.dart';
 import 'package:sheknows/features/period/data/datasources/period_remote_datasource.dart';
+import 'package:sheknows/features/period/data/datasources/period_remote_datasource_dev.dart';
 import 'package:sheknows/features/period/data/repositories/period_repository_impl.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/repositories/period_repository.dart';
@@ -10,7 +12,9 @@ import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 void registerPeriodDependencies(GetIt sl) {
   sl
     ..registerLazySingleton<PeriodRemoteDataSource>(
-      () => PeriodRemoteDataSourceImpl(sl<SupabaseClient>()),
+      () => Environment.devMode
+          ? DevPeriodRemoteDataSource()
+          : PeriodRemoteDataSourceImpl(sl<SupabaseClient>()),
     )
     ..registerLazySingleton<PeriodRepository>(
       () => PeriodRepositoryImpl(sl<PeriodRemoteDataSource>()),
@@ -21,6 +25,9 @@ void registerPeriodDependencies(GetIt sl) {
       () => UpdatePeriodLogUseCase(sl<PeriodRepository>()),
     )
     ..registerLazySingleton(() => DeletePeriodLogUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => GetDayLogsUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => UpsertDayLogUseCase(sl<PeriodRepository>()))
+    ..registerLazySingleton(() => DeleteDayLogUseCase(sl<PeriodRepository>()))
     ..registerLazySingleton<CycleStatsCalculator>(
       () => const CycleStatsCalculator(),
     )
@@ -30,6 +37,9 @@ void registerPeriodDependencies(GetIt sl) {
         logPeriodStart: sl<LogPeriodStartUseCase>(),
         updatePeriodLog: sl<UpdatePeriodLogUseCase>(),
         deletePeriodLog: sl<DeletePeriodLogUseCase>(),
+        getDayLogs: sl<GetDayLogsUseCase>(),
+        upsertDayLog: sl<UpsertDayLogUseCase>(),
+        deleteDayLog: sl<DeleteDayLogUseCase>(),
         statsCalculator: sl<CycleStatsCalculator>(),
       ),
     );
