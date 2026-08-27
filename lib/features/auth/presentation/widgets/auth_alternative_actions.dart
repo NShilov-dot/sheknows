@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_form_divider.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_google_button.dart';
 
@@ -25,14 +26,14 @@ class AuthAlternativeActions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         const AuthFormDivider(),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         AuthGoogleButton(
           isLoading: isLoading,
           onPressed: onGooglePressed,
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

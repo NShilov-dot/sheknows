@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_trends.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/analytics_range.dart';
@@ -45,7 +46,7 @@ class _SymptomTrendsBodyState extends State<SymptomTrendsBody> {
     final trends = _trends;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         RangeSelector(
           range: _range,
@@ -54,14 +55,14 @@ class _SymptomTrendsBodyState extends State<SymptomTrendsBody> {
             _trends = _calculate();
           }),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         if (trends.isEmpty)
           const _EmptyTrends()
         else ...[
           _SummaryCard(total: trends.totalEntries),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           _FrequencySection(trends: trends),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           _SeveritySection(trends: trends),
         ],
       ],
@@ -79,11 +80,11 @@ class _SummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           children: [
             Icon(Icons.insights, color: theme.colorScheme.primary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Text(
               '$total ${total == 1 ? 'entry' : 'entries'} logged',
               style: theme.textTheme.titleMedium,
@@ -107,7 +108,7 @@ class _FrequencySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Most frequent', style: theme.textTheme.titleSmall),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         for (final entry in trends.byType)
           BarRow(
             label: symptomTypeLabel(entry.type),
@@ -134,7 +135,7 @@ class _SeveritySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('By severity', style: theme.textTheme.titleSmall),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         for (final severity in SymptomSeverity.values)
           BarRow(
             label: symptomSeverityLabel(severity),
@@ -158,10 +159,10 @@ class _EmptyTrends extends StatelessWidget {
       child: Column(
         children: [
           Icon(Icons.insights_outlined,
-              size: 48, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 12),
+              size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(height: AppSpacing.md),
           Text('No symptoms in this window', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             'Log symptoms to see your trends.',
             style: theme.textTheme.bodyMedium?.copyWith(

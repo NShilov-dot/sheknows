@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
@@ -68,7 +69,7 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -76,26 +77,26 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
             'Signed in',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Text('Email: ${widget.user.email}'),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             'Email confirmed: ${widget.user.emailConfirmed ? 'Yes' : 'No'}',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           Text(
             'Profile',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           ProfileSection(user: widget.user),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xxl),
           FilledButton.icon(
             onPressed: () => context.go('/cycle'),
             icon: const Icon(Icons.calendar_month),
             label: const Text('Track my cycle'),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           FilledButton.icon(
             onPressed: () => context.go('/symptoms'),
             icon: const Icon(Icons.healing_outlined),

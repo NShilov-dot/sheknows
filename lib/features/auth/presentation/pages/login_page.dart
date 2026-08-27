@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
@@ -80,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 onFieldSubmitted: (_) =>
                     FocusScope.of(context).requestFocus(_passwordFocusNode),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               AuthPasswordField(
                 controller: _passwordController,
                 label: 'Password',
@@ -89,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 validator: AuthValidators.password,
                 onFieldSubmitted: (_) => _submit(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
               AuthPrimaryButton(
                 label: 'Sign in',
                 isLoading: isLoading,

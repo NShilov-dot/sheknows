@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
@@ -83,20 +84,20 @@ class _PeriodBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         const CycleMoonHeader(),
         const CycleCalendarCard(),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         const CycleInsightsCard(),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         const PeriodActionsCard(),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
         Text(
           'History',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         const PeriodHistoryList(),
       ],
     );

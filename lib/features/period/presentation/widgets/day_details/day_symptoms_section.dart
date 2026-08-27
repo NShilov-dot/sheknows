@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
@@ -59,7 +60,7 @@ class _DaySymptomsBody extends StatelessWidget {
             ),
             TextButton.icon(
               onPressed: () => _openSheet(context),
-              icon: const Icon(Icons.add, size: 18),
+              icon: const Icon(Icons.add, size: AppIconSize.md),
               label: const Text('Log'),
             ),
           ],

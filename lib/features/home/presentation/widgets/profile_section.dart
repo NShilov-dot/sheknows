@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 import 'package:sheknows/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:sheknows/features/profile/presentation/cubit/profile_state.dart';
@@ -41,7 +42,7 @@ class ProfileSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Name: ${data.displayName ?? 'Not set'}'),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               data.fromDatabase
                   ? 'Loaded from the profiles table.'

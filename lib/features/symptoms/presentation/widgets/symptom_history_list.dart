@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 
@@ -49,7 +50,7 @@ class SymptomDateHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xs),
       child: Text(
         MaterialLocalizations.of(context).formatFullDate(date),
         style: theme.textTheme.titleSmall?.copyWith(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/month_page.dart';
 
 /// A single day square of the calendar grid.
@@ -31,7 +32,7 @@ class DayCell extends StatelessWidget {
     final isOnBand = hasBand && !isFuture;
 
     var labelColor = isFuture
-        ? scheme.onSurface.withValues(alpha: 0.35)
+        ? scheme.onSurface.withValues(alpha: AppAlpha.wash)
         : scheme.onSurface;
     if (isOnBand) {
       labelColor = scheme.onSecondary;
@@ -53,15 +54,15 @@ class DayCell extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: scheme.secondary.withValues(
-                      alpha: isFuture ? 0.25 : 0.9,
+                      alpha: isFuture ? AppAlpha.future : AppAlpha.solid,
                     ),
                     borderRadius: BorderRadius.horizontal(
                       left: band!.extendsLeft
                           ? Radius.zero
-                          : const Radius.circular(20),
+                          : const Radius.circular(AppRadius.band),
                       right: band!.extendsRight
                           ? Radius.zero
-                          : const Radius.circular(20),
+                          : const Radius.circular(AppRadius.band),
                     ),
                   ),
                 ),
@@ -76,7 +77,7 @@ class DayCell extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: scheme.secondary.withValues(alpha: 0.15),
+                    color: scheme.secondary.withValues(alpha: AppAlpha.faint),
                   ),
                 ),
               ),

@@ -40,7 +40,6 @@ class AuthTextField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
       ),
     );
   }
@@ -104,7 +103,6 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
       ],
       decoration: InputDecoration(
         labelText: widget.label,
-        border: const OutlineInputBorder(),
         suffixIcon: IconButton(
           onPressed: _toggleVisibility,
           icon: Icon(

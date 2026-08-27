@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 
 const _weekdayNames = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
@@ -29,10 +30,14 @@ class DayHeader extends StatelessWidget {
           '${day.day} ${_monthNames[day.month - 1]} ${day.year}',
           style: theme.textTheme.titleMedium,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Row(
           children: [
-            Icon(Icons.info_outline, size: 16, color: scheme.onSurfaceVariant),
+            Icon(
+              Icons.info_outline,
+              size: AppIconSize.sm,
+              color: scheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 6),
             Expanded(
               child: Text(

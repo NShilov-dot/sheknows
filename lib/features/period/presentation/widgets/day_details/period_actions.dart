@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 
 /// The period start / end / delete buttons that make sense for the tapped day.
 ///
@@ -40,7 +41,7 @@ class PeriodActions extends StatelessWidget {
             label: const Text('Period started on this day'),
           ),
         if (canEndHere) ...[
-          if (canStartHere) const SizedBox(height: 8),
+          if (canStartHere) const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             onPressed: onEnd,
             icon: const Icon(Icons.stop_circle_outlined),
@@ -48,7 +49,7 @@ class PeriodActions extends StatelessWidget {
           ),
         ],
         if (deletableId != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           TextButton.icon(
             onPressed: () => onDelete(deletableId),
             icon: Icon(Icons.delete_outline, color: scheme.error),

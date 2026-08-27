@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_phase_trends.dart';
@@ -76,14 +77,14 @@ class _Loaded extends StatelessWidget {
         if (state.recomputing) const LinearProgressIndicator(),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               RangeSelector(
                 range: state.range,
                 onChanged: (range) =>
                     context.read<SymptomPhaseCubit>().setRange(range),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               if (visible.isEmpty)
                 const _EmptyPhases()
               else
@@ -110,9 +111,9 @@ class _PhaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -120,7 +121,7 @@ class _PhaseCard extends StatelessWidget {
               cyclePhaseLabel(summary.phase),
               style: theme.textTheme.titleSmall,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             BarRow(
               label: 'Entries',
               value: summary.count,
@@ -128,7 +129,7 @@ class _PhaseCard extends StatelessWidget {
               color: theme.colorScheme.primary,
             ),
             if (summary.topTypes.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
@@ -161,10 +162,10 @@ class _EmptyPhases extends StatelessWidget {
       child: Column(
         children: [
           Icon(Icons.pie_chart_outline,
-              size: 48, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 12),
+              size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(height: AppSpacing.md),
           Text('No symptoms in this window', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             'Log symptoms and periods to see phase patterns.',
             style: theme.textTheme.bodyMedium?.copyWith(

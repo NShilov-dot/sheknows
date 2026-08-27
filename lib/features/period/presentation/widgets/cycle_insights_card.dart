@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
@@ -41,17 +42,17 @@ class CycleInsightsCard extends StatelessWidget {
 
         return Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Insights', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 for (final item in _itemsFor(stats))
                   InsightRow(label: item.$1, value: item.$2),
                 if (!stats.hasPrediction && stats.periodCount < 2)
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: AppSpacing.sm),
                     child: Text(
                       'Log at least two periods to see cycle predictions.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -78,17 +79,14 @@ class InsightRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
           Text(
             value,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ],
       ),

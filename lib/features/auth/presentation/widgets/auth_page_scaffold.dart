@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
@@ -44,7 +45,7 @@ class AuthPageScaffold extends StatelessWidget {
 
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
                   child: Column(
@@ -55,7 +56,7 @@ class AuthPageScaffold extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         subtitle,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -63,11 +64,11 @@ class AuthPageScaffold extends StatelessWidget {
                             ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                       IgnorePointer(
                         ignoring: isLoading,
                         child: Opacity(
-                          opacity: isLoading ? 0.6 : 1,
+                          opacity: isLoading ? AppAlpha.muted : 1,
                           child: builder(context, isLoading),
                         ),
                       ),

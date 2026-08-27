@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
@@ -15,7 +16,7 @@ class PeriodHistoryList extends StatelessWidget {
         final items = logs ?? const <PeriodLogEntity>[];
         if (items.isEmpty) {
           return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
             child: Center(child: Text('No periods logged yet.')),
           );
         }
@@ -56,7 +57,7 @@ class PeriodHistoryTile extends StatelessWidget {
       enabled: !isPending,
       leading: Icon(
         Icons.water_drop,
-        color: log.isOngoing ? scheme.primary : scheme.primary.withValues(alpha: 0.6),
+        color: log.isOngoing ? scheme.primary : scheme.primary.withValues(alpha: AppAlpha.muted),
       ),
       title: Text(_dateRange),
       subtitle: Text(

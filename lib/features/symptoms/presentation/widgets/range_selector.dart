@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/analytics_range.dart';
 
 /// Chip row for picking the analytics window. Shared by the symptom trends and
@@ -16,7 +17,7 @@ class RangeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
+      spacing: AppSpacing.sm,
       children: [
         for (final option in AnalyticsRange.values)
           ChoiceChip(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_text_field.dart';
@@ -56,7 +57,7 @@ class RegisterForm extends StatelessWidget {
               onFieldSubmitted: (_) =>
                   FocusScope.of(context).requestFocus(passwordFocusNode),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             AuthPasswordField(
               controller: passwordController,
               label: 'Password',
@@ -69,9 +70,9 @@ class RegisterForm extends StatelessWidget {
               onFieldSubmitted: (_) =>
                   FocusScope.of(context).requestFocus(confirmPasswordFocusNode),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             const _PasswordRulesHint(),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             AuthPasswordField(
               fieldKey: confirmFieldKey,
               controller: confirmPasswordController,
@@ -84,7 +85,7 @@ class RegisterForm extends StatelessWidget {
               ),
               onFieldSubmitted: (_) => onSubmit(),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             AuthPrimaryButton(
               label: 'Sign up',
               isLoading: isLoading,

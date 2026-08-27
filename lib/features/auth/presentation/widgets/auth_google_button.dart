@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 
 class AuthGoogleButton extends StatelessWidget {
   const AuthGoogleButton({
@@ -14,7 +15,7 @@ class AuthGoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: isLoading ? null : onPressed,
-      icon: const Icon(Icons.g_mobiledata, size: 28),
+      icon: const Icon(Icons.g_mobiledata, size: AppIconSize.lg),
       label: const Text('Continue with Google'),
     );
   }

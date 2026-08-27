@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/constants/symptoms.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
@@ -129,9 +130,9 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+          left: AppSpacing.xl,
+          right: AppSpacing.xl,
+          bottom: AppSpacing.xl + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -142,7 +143,7 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                 isEditing ? 'Edit symptom' : 'Log a symptom',
                 style: theme.textTheme.titleMedium,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               for (final category in SymptomCategory.values) ...[
                 _CategoryChips(
@@ -150,38 +151,38 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
                   selected: _type,
                   onSelected: (type) => setState(() => _type = type),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
               ],
 
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               const SectionLabel('Severity', icon: Icons.thermostat),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               _SeverityChips(
                 selected: _severity,
                 onSelected: (severity) => setState(() => _severity = severity),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               const SectionLabel('When', icon: Icons.schedule),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               _WhenRow(
                 dateTime: _dateTime,
                 onPickDate: _pickDate,
                 onPickTime: _pickTime,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               const SectionLabel('Notes', icon: Icons.notes_outlined),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               _NotesField(controller: _notes),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               FilledButton.icon(
                 onPressed: _type == null ? null : _save,
                 icon: const Icon(Icons.check),
                 label: Text(isEditing ? 'Save changes' : 'Add symptom'),
               ),
               if (isEditing) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 TextButton.icon(
                   onPressed: _delete,
                   icon: Icon(Icons.delete_outline,
@@ -219,7 +220,7 @@ class _CategoryChips extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionLabel(symptomCategoryLabel(category), icon: _iconFor(category)),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Wrap(
           spacing: 8,
           runSpacing: 4,
@@ -287,17 +288,17 @@ class _WhenRow extends StatelessWidget {
         Expanded(
           child: OutlinedButton.icon(
             onPressed: onPickDate,
-            icon: const Icon(Icons.calendar_today, size: 18),
+            icon: const Icon(Icons.calendar_today, size: AppIconSize.md),
             label: Text(
               materialLocalizations.formatMediumDate(dateTime),
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: OutlinedButton.icon(
             onPressed: onPickTime,
-            icon: const Icon(Icons.access_time, size: 18),
+            icon: const Icon(Icons.access_time, size: AppIconSize.md),
             label: Text(
               TimeOfDay.fromDateTime(dateTime).format(context),
             ),

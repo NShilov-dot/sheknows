@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
@@ -39,7 +40,12 @@ class CycleCalendarCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.sm,
+          AppSpacing.xs,
+          AppSpacing.sm,
+          AppSpacing.md,
+        ),
         child: BlocBuilder<PeriodCubit, PeriodState>(
           // The calendar only reads these four fields. Without this, a
           // mutation's isLoading flip or a mutationFailure emit would rebuild

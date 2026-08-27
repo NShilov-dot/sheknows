@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 
 /// A labelled horizontal bar: label, a proportional fill over a track, and the
 /// value. Uses [FractionallySizedBox] — no chart dependency for a simple ranked
@@ -30,7 +31,7 @@ class BarRow extends StatelessWidget {
           ),
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppRadius.swatch),
               child: Container(
                 height: 18,
                 color: theme.colorScheme.surfaceContainerHighest,
@@ -42,7 +43,7 @@ class BarRow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           SizedBox(
             width: 28,
             child: Text(

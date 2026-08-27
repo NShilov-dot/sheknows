@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/constants/period.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
@@ -52,9 +53,9 @@ class DayDetailsSheet extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+          left: AppSpacing.xl,
+          right: AppSpacing.xl,
+          bottom: AppSpacing.xl + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -70,7 +71,7 @@ class DayDetailsSheet extends StatelessWidget {
                   stats: stats,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               PeriodActions(
                 canStartHere: canStartHere,
                 canEndHere: canEndHere,
@@ -162,25 +163,25 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
       children: [
         const SizedBox(height: 20),
         const Divider(height: 1),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         Text('How was your day?', style: theme.textTheme.titleMedium),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
 
         const SectionLabel('Intimacy', icon: Icons.favorite_border),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         _IntimacyChips(
           initial: _sexualActivity,
           onChanged: (value) => _sexualActivity = value,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
 
         if (widget.userId != null) ...[
           DaySymptomsSection(day: widget.day, userId: widget.userId!),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
         ],
 
         const SectionLabel('Notes', icon: Icons.notes_outlined),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         TextField(
           controller: _notes,
           minLines: 1,
@@ -191,14 +192,14 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
             hintText: 'Anything you want to remember about today',
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         FilledButton.icon(
           onPressed: _save,
           icon: const Icon(Icons.check),
           label: const Text('Save day'),
         ),
         if (widget.dayLog != null) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           TextButton(
             onPressed: () => _runPeriodAction(
                 context, () => widget.cubit.deleteDayLog(widget.dayLog!.id)),
@@ -236,7 +237,7 @@ class _IntimacyChipsState extends State<_IntimacyChips> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
+      spacing: AppSpacing.sm,
       children: [
         for (final activity in SexualActivity.values)
           ChoiceChip(

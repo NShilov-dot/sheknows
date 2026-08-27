@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/period/presentation/widgets/calendar/day_cell.dart';
 
 /// Key to the calendar's bands, circles and dots.
@@ -11,17 +12,17 @@ class CalendarLegend extends StatelessWidget {
 
     return Wrap(
       alignment: WrapAlignment.center,
-      spacing: 16,
-      runSpacing: 4,
+      spacing: AppSpacing.lg,
+      runSpacing: AppSpacing.xs,
       children: [
         _LegendItem(
           marker: Container(
             width: 18,
             height: 10,
             decoration: BoxDecoration(
-              color: scheme.secondary.withValues(alpha: 0.9),
+              color: scheme.secondary.withValues(alpha: AppAlpha.solid),
               borderRadius: BorderRadius.horizontal(
-                left: const Radius.circular(6),
+                left: const Radius.circular(AppRadius.band),
                 right: Radius.zero,
               ),
             ),
@@ -34,7 +35,7 @@ class CalendarLegend extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: scheme.secondary.withValues(alpha: 0.15),
+              color: scheme.secondary.withValues(alpha: AppAlpha.faint),
             ),
           ),
           label: 'Predicted',
