@@ -24,9 +24,12 @@ class PeriodActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<PeriodCubit, PeriodState, CycleStats?>(
-      selector: (state) => state is PeriodLoaded ? state.stats : null,
-      builder: (context, stats) {
+    return BlocSelector<PeriodCubit, PeriodState, (CycleStats?, bool)>(
+      selector: (state) => state is PeriodLoaded
+          ? (state.stats, state.isLoading)
+          : (null, false),
+      builder: (context, selected) {
+        final (stats, isLoading) = selected;
         if (stats == null) {
           return const SizedBox.shrink();
         }
@@ -39,17 +42,27 @@ class PeriodActionsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 FilledButton.icon(
-                  onPressed:
-                      ongoing == null ? () => _pickStartDate(context) : null,
-                  icon: const Icon(Icons.water_drop),
+                  onPressed: isLoading || ongoing != null
+                      ? null
+                      : () => _pickStartDate(context),
+                  // Only one of the two is ever actionable, so the in-flight
+                  // mutation belongs to whichever that is.
+                  icon: isLoading && ongoing == null
+                      ? const _ButtonSpinner()
+                      : const Icon(Icons.water_drop),
                   label: const Text('My period started today'),
                 ),
                 if (ongoing != null) ...[
                   const SizedBox(height: AppSpacing.sm),
                   OutlinedButton.icon(
-                    onPressed: () =>
-                        context.read<PeriodCubit>().endPeriod(DateTime.now()),
-                    icon: const Icon(Icons.stop_circle_outlined),
+                    onPressed: isLoading
+                        ? null
+                        : () => context
+                            .read<PeriodCubit>()
+                            .endPeriod(DateTime.now()),
+                    icon: isLoading
+                        ? const _ButtonSpinner()
+                        : const Icon(Icons.stop_circle_outlined),
                     label: const Text('End period today'),
                   ),
                 ],
@@ -58,6 +71,21 @@ class PeriodActionsCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// A spinner sized to sit where a button's leading icon does, so swapping one
+/// for the other does not resize the button.
+class _ButtonSpinner extends StatelessWidget {
+  const _ButtonSpinner();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: AppIconSize.md,
+      height: AppIconSize.md,
+      child: CircularProgressIndicator(strokeWidth: 2),
     );
   }
 }

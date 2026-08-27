@@ -5,12 +5,14 @@ import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_phase.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_phase_trends.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_state.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/range_selector.dart';
+import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
 
 class SymptomPhasePage extends StatelessWidget {
   const SymptomPhasePage({super.key});
@@ -27,7 +29,8 @@ class SymptomPhasePage extends StatelessWidget {
         }
         return BlocProvider(
           create: (_) => sl<SymptomPhaseCubit>()..load(userId),
-          child: const _PhaseView(),
+          // The id the error state's retry re-runs the load with.
+          child: _PhaseView(userId: userId),
         );
       },
     );
@@ -35,7 +38,9 @@ class SymptomPhasePage extends StatelessWidget {
 }
 
 class _PhaseView extends StatelessWidget {
-  const _PhaseView();
+  const _PhaseView({required this.userId});
+
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +57,10 @@ class _PhaseView extends StatelessWidget {
           return switch (state) {
             SymptomPhaseInitial() || SymptomPhaseLoading() =>
               const Center(child: CircularProgressIndicator()),
-            SymptomPhaseError(:final failure) =>
-              Center(child: Text(failure.message)),
+            SymptomPhaseError(:final failure) => SymptomsErrorView(
+                failure: failure,
+                onRetry: () => context.read<SymptomPhaseCubit>().load(userId),
+              ),
             SymptomPhaseLoaded() => _Loaded(state: state),
           };
         },
@@ -70,8 +77,20 @@ class _Loaded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trends = state.trends;
-    final visible =
+    final logged =
         trends.phases.where((summary) => summary.count > 0).toList();
+    // CyclePhase.unknown is the calculator's "could not place this day" bucket,
+    // not a phase. On its own it means the user has symptoms but no period
+    // dates to attribute them to, which is guidance, not a chart.
+    final placed = [
+      for (final summary in logged)
+        if (summary.phase != CyclePhase.unknown) summary,
+    ];
+    final unplaced = [
+      for (final summary in logged)
+        if (summary.phase == CyclePhase.unknown) summary,
+    ];
+    final visible = [...placed, ...unplaced];
     return Column(
       children: [
         if (state.recomputing) const LinearProgressIndicator(),
@@ -93,8 +112,8 @@ class _Loaded extends StatelessWidget {
                         context.read<SymptomPhaseCubit>().setRange(range),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  if (visible.isEmpty)
-                    const _EmptyPhases()
+                  if (placed.isEmpty)
+                    _EmptyPhases(hasUnplaced: unplaced.isNotEmpty)
                   else
                     for (final summary in visible)
                       _PhaseCard(
@@ -128,7 +147,9 @@ class _PhaseCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              cyclePhaseLabel(summary.phase),
+              summary.phase == CyclePhase.unknown
+                  ? 'Not enough cycle data'
+                  : cyclePhaseLabel(summary.phase),
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.md),
@@ -162,7 +183,11 @@ class _PhaseCard extends StatelessWidget {
 }
 
 class _EmptyPhases extends StatelessWidget {
-  const _EmptyPhases();
+  const _EmptyPhases({required this.hasUnplaced});
+
+  /// True when symptoms were logged in this window but no period dates place
+  /// them in a phase — the fix is logging periods, not logging more symptoms.
+  final bool hasUnplaced;
 
   @override
   Widget build(BuildContext context) {
@@ -174,10 +199,17 @@ class _EmptyPhases extends StatelessWidget {
           Icon(Icons.pie_chart_outline,
               size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(height: AppSpacing.md),
-          Text('No symptoms in this window', style: theme.textTheme.titleMedium),
+          Text(
+            hasUnplaced
+                ? 'No cycle data for this window'
+                : 'No symptoms in this window',
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Log symptoms and periods to see phase patterns.',
+            hasUnplaced
+                ? 'Log your period dates to see phase patterns.'
+                : 'Log symptoms and periods to see phase patterns.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

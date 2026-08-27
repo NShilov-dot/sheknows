@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/constants/period.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
@@ -6,6 +7,7 @@ import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
 import 'package:sheknows/features/period/domain/entities/day_log_entity.dart';
 import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
 import 'package:sheknows/features/period/presentation/utils/day_status.dart';
 import 'package:sheknows/features/period/presentation/widgets/day_details/day_header.dart';
 import 'package:sheknows/features/period/presentation/widgets/day_details/day_symptoms_section.dart';
@@ -132,6 +134,10 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
   SexualActivity? _sexualActivity;
   late TextEditingController _notes;
 
+  /// Set the moment a save is dispatched so a double-tap in the same frame
+  /// cannot fire the mutation twice before the sheet finishes popping.
+  bool _saving = false;
+
   @override
   void initState() {
     super.initState();
@@ -147,6 +153,8 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
   }
 
   void _save() {
+    if (_saving) return;
+    setState(() => _saving = true);
     widget.cubit.saveDayLog(
       widget.day,
       sexualActivity: _sexualActivity,
@@ -194,19 +202,36 @@ class _DayTrackingFormState extends State<_DayTrackingForm> {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        FilledButton.icon(
-          onPressed: _save,
-          icon: const Icon(Icons.check),
-          label: const Text('Save day'),
+        // The cubit drops a save while another mutation is in flight, so the
+        // buttons follow its own guard instead of failing silently.
+        BlocBuilder<PeriodCubit, PeriodState>(
+          bloc: widget.cubit,
+          builder: (context, state) {
+            final busy =
+                _saving || state is! PeriodLoaded || state.isLoading;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton.icon(
+                  onPressed: busy ? null : _save,
+                  icon: const Icon(Icons.check),
+                  label: const Text('Save day'),
+                ),
+                if (widget.dayLog != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  TextButton(
+                    onPressed: busy
+                        ? null
+                        : () => _runPeriodAction(context,
+                            () => widget.cubit.deleteDayLog(widget.dayLog!.id)),
+                    child: const Text('Clear this day'),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
-        if (widget.dayLog != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          TextButton(
-            onPressed: () => _runPeriodAction(
-                context, () => widget.cubit.deleteDayLog(widget.dayLog!.id)),
-            child: const Text('Clear this day'),
-          ),
-        ],
       ],
     );
   }

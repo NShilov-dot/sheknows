@@ -3,20 +3,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sheknows/app.dart';
 import 'package:sheknows/config/environment.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/startup_failure_app.dart';
 import 'package:sheknows/features/symptoms/data/datasources/symptom_local_datasource.dart';
 import 'package:sheknows/utils/app_initializer.dart';
 
 void main() async {
-  await AppInitializer.initialize();
-  if (!Environment.devMode) {
-    Environment.validate();
-    await Supabase.initialize(
-      url: Environment.supabaseUrl,
-      publishableKey: Environment.supabasePublishableKey,
-    );
+  // runApp needs the binding whichever way start-up goes, so it stays outside
+  // the guard. AppInitializer calls it again — that is idempotent.
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await AppInitializer.initialize();
+    if (!Environment.devMode) {
+      Environment.validate();
+      await Supabase.initialize(
+        url: Environment.supabaseUrl,
+        publishableKey: Environment.supabasePublishableKey,
+      );
+    }
+    // Open the symptoms feature's local-store boxes before DI resolves them.
+    await SymptomsHive.openBoxes();
+    await initDependencies();
+  } catch (error) {
+    // A corrupt box or bad env would otherwise leave a blank screen forever.
+    runApp(StartupFailureApp(error: error));
+    return;
   }
-  // Open the symptoms feature's local-store boxes before DI resolves them.
-  await SymptomsHive.openBoxes();
-  await initDependencies();
   runApp(const SupabaseApp());
 }

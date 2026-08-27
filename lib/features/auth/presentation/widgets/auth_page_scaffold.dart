@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
@@ -32,7 +33,7 @@ class AuthPageScaffold extends StatelessWidget {
           listener: (context, state) {
             if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.failure.message)),
+                SnackBar(content: Text(failureMessage(state.failure))),
               );
               context.read<AuthBloc>().add(const AuthErrorCleared());
             }

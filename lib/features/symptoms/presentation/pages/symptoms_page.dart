@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/di/injection.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
@@ -10,6 +11,7 @@ import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dar
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_history_list.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_sheet.dart';
+import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
 
 class SymptomsPage extends StatelessWidget {
   const SymptomsPage({super.key});
@@ -27,7 +29,8 @@ class SymptomsPage extends StatelessWidget {
 
         return BlocProvider(
           create: (_) => sl<SymptomsCubit>()..load(userId),
-          child: const _SymptomsView(),
+          // The id the error state's retry re-runs the load with.
+          child: _SymptomsView(userId: userId),
         );
       },
     );
@@ -35,7 +38,9 @@ class SymptomsPage extends StatelessWidget {
 }
 
 class _SymptomsView extends StatelessWidget {
-  const _SymptomsView();
+  const _SymptomsView({required this.userId});
+
+  final String userId;
 
   void _openLogSheet(BuildContext context, {SymptomLogEntity? existing}) {
     final cubit = context.read<SymptomsCubit>();
@@ -81,17 +86,17 @@ class _SymptomsView extends StatelessWidget {
         listener: (context, state) {
           if (state is SymptomsLoaded && state.mutationFailure != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.mutationFailure!.message)),
+              SnackBar(content: Text(failureMessage(state.mutationFailure!))),
             );
           }
         },
         builder: (context, state) {
           return switch (state) {
-            SymptomsInitial() || SymptomsLoading() => const Center(
-                child: CircularProgressIndicator(),
+            SymptomsInitial() || SymptomsLoading() => const _SymptomsSkeleton(),
+            SymptomsError(:final failure) => SymptomsErrorView(
+                failure: failure,
+                onRetry: () => context.read<SymptomsCubit>().load(userId),
               ),
-            SymptomsError(:final failure) =>
-              Center(child: Text(failure.message)),
             SymptomsLoaded(:final logs) => logs.isEmpty
                 ? const _EmptyState()
                 : SymptomHistoryList(
@@ -100,6 +105,42 @@ class _SymptomsView extends StatelessWidget {
                   ),
           };
         },
+      ),
+    );
+  }
+}
+
+/// Stand-in for [SymptomHistoryList] while the first load runs: a date header
+/// and a few tile-shaped blocks, so the list does not appear from nowhere the
+/// way a centred spinner makes it.
+class _SymptomsSkeleton extends StatelessWidget {
+  const _SymptomsSkeleton();
+
+  // Varied widths read as content rather than as a repeated pattern.
+  static const _titleWidths = [140.0, 96.0, 168.0, 120.0, 108.0];
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 640),
+        child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: AppSpacing.lg),
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
+              child: SkeletonBox(width: 200, height: 16),
+            ),
+            for (final width in _titleWidths)
+              SymptomTileSkeleton(titleWidth: width),
+          ],
+        ),
       ),
     );
   }

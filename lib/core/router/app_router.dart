@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sheknows/core/router/auth_refresh_listenable.dart';
+import 'package:sheknows/core/router/route_not_found_page.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sheknows/features/auth/presentation/pages/login_page.dart';
@@ -50,6 +51,7 @@ class AppRouter {
     refreshListenable: _refresh,
     redirect: (context, state) =>
         resolveAuthRedirect(_authBloc.state, state.matchedLocation),
+    errorBuilder: (context, state) => const RouteNotFoundPage(),
     routes: [
       GoRoute(
         path: '/splash',

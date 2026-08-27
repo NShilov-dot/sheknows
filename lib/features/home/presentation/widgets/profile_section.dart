@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 import 'package:sheknows/features/profile/presentation/cubit/profile_cubit.dart';
@@ -16,7 +17,7 @@ class ProfileSection extends StatelessWidget {
     return BlocSelector<ProfileCubit, ProfileState, _ProfileViewData>(
       selector: (state) => switch (state) {
         ProfileInitial() || ProfileLoading() => _ProfileViewData.loading,
-        ProfileError(:final failure) => _ProfileViewData.error(failure.message),
+        ProfileError(:final failure) => _ProfileViewData.error(failureMessage(failure)),
         ProfileLoaded(:final profile) => _ProfileViewData.loaded(
             displayName: profile?.displayName ?? user.displayName,
             fromDatabase: profile != null,
@@ -32,9 +33,9 @@ class ProfileSection extends StatelessWidget {
         }
 
         if (data.errorMessage != null) {
-          return Text(
-            data.errorMessage!,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          return _ProfileErrorView(
+            message: data.errorMessage!,
+            userId: user.id,
           );
         }
 
@@ -54,6 +55,49 @@ class ProfileSection extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _ProfileErrorView extends StatelessWidget {
+  const _ProfileErrorView({required this.message, required this.userId});
+
+  final String message;
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: AppIconSize.sm,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                message,
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: theme.colorScheme.error),
+              ),
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(
+            onPressed: () => context.read<ProfileCubit>().loadProfile(userId),
+            child: const Text('Try again'),
+          ),
+        ),
+      ],
     );
   }
 }

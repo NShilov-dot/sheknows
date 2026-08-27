@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/constants/symptoms.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
+import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 
 /// Bottom sheet for adding or editing a single symptom entry. Shared between
@@ -35,6 +37,10 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
   late DateTime _dateTime;
   late TextEditingController _notes;
 
+  /// Set the moment a write is dispatched so a double-tap in the same frame
+  /// cannot fire the mutation twice before the sheet finishes popping.
+  bool _saving = false;
+
   @override
   void initState() {
     super.initState();
@@ -63,9 +69,10 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
 
   void _save() {
     final type = _type;
-    if (type == null) {
+    if (type == null || _saving) {
       return;
     }
+    setState(() => _saving = true);
     if (widget.existing == null) {
       widget.cubit.logSymptom(
         type: type,
@@ -86,6 +93,8 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
   }
 
   void _delete() {
+    if (_saving) return;
+    setState(() => _saving = true);
     widget.cubit.deleteSymptomLog(widget.existing!.id);
     Navigator.of(context).pop();
   }
@@ -177,23 +186,54 @@ class _SymptomLogSheetState extends State<SymptomLogSheet> {
               const SizedBox(height: AppSpacing.sm),
               _NotesField(controller: _notes),
               const SizedBox(height: AppSpacing.sm),
-              FilledButton.icon(
-                onPressed: _type == null ? null : _save,
-                icon: const Icon(Icons.check),
-                label: Text(isEditing ? 'Save changes' : 'Add symptom'),
+              // The cubit drops a write while another mutation is in flight or
+              // before the initial load lands, so the buttons follow its own
+              // guard instead of failing silently.
+              BlocBuilder<SymptomsCubit, SymptomsState>(
+                bloc: widget.cubit,
+                builder: (context, state) {
+                  final busy = _saving ||
+                      state is! SymptomsLoaded ||
+                      state.isLoading;
+                  final hint = _type == null
+                      ? 'Pick a symptom to continue'
+                      : (busy ? 'Just a moment…' : null);
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FilledButton.icon(
+                        onPressed: _type == null || busy ? null : _save,
+                        icon: const Icon(Icons.check),
+                        label:
+                            Text(isEditing ? 'Save changes' : 'Add symptom'),
+                      ),
+                      if (hint != null) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          hint,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                      if (isEditing) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        TextButton.icon(
+                          onPressed: busy ? null : _delete,
+                          icon: Icon(Icons.delete_outline,
+                              color: theme.colorScheme.error),
+                          label: Text(
+                            'Delete',
+                            style: TextStyle(color: theme.colorScheme.error),
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
-              if (isEditing) ...[
-                const SizedBox(height: AppSpacing.xs),
-                TextButton.icon(
-                  onPressed: _delete,
-                  icon: Icon(Icons.delete_outline,
-                      color: theme.colorScheme.error),
-                  label: Text(
-                    'Delete',
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-                ),
-              ],
             ],
           ),
         ),

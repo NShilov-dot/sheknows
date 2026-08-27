@@ -99,3 +99,65 @@ class SymptomTile extends StatelessWidget {
     );
   }
 }
+
+/// A blank rounded block standing in for content that has not arrived yet.
+/// Deliberately static — no shimmer, no animation.
+class SkeletonBox extends StatelessWidget {
+  const SkeletonBox({
+    super.key,
+    this.width,
+    required this.height,
+    this.radius = AppRadius.swatch,
+  });
+
+  /// Null stretches to the available width.
+  final double? width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+}
+
+/// Placeholder with roughly [SymptomTile]'s footprint, so the list does not
+/// jump when the real entries replace it.
+class SymptomTileSkeleton extends StatelessWidget {
+  const SymptomTileSkeleton({super.key, this.titleWidth = 120});
+
+  final double titleWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(width: titleWidth, height: 14),
+                const SizedBox(height: AppSpacing.sm),
+                const SkeletonBox(width: 180, height: 12),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          const SkeletonBox(width: 24, height: 24),
+        ],
+      ),
+    );
+  }
+}

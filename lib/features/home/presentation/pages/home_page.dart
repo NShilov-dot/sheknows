@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
@@ -15,28 +16,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('sheknows'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthSignOutRequested());
-            },
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign out',
-          ),
-        ],
-      ),
-      body: BlocSelector<AuthBloc, AuthState, UserEntity?>(
-        selector: (state) => state is AuthAuthenticated ? state.user : null,
-        builder: (context, user) {
-          if (user == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) => current is AuthError,
+      listener: (context, state) {
+        if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(failureMessage(state.failure))),
+          );
+          context.read<AuthBloc>().add(const AuthErrorCleared());
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('sheknows'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const AuthSignOutRequested());
+              },
+              icon: const Icon(Icons.logout),
+              tooltip: 'Sign out',
+            ),
+          ],
+        ),
+        body: BlocSelector<AuthBloc, AuthState, UserEntity?>(
+          selector: (state) => state is AuthAuthenticated ? state.user : null,
+          builder: (context, user) {
+            if (user == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return _AuthenticatedHome(user: user);
-        },
+            return _AuthenticatedHome(user: user);
+          },
+        ),
       ),
     );
   }
