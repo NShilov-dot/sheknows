@@ -640,6 +640,10 @@
       }
     }
   },
+  "homeGoPremiumButton": "Go Premium",
+  "@homeGoPremiumButton": {
+    "description": "Button on the home screen that presents the RevenueCat paywall. Keep short — it sits next to an icon on one line."
+  },
   "homeLogSymptomsButton": "Log symptoms",
   "@homeLogSymptomsButton": {
     "description": "Button on the home screen that opens the symptom logging screen. Keep short — it sits next to an icon on one line."

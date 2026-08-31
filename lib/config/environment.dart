@@ -13,6 +13,12 @@ class Environment {
   static const String supabasePublishableKey =
       String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
 
+  /// RevenueCat public SDK key. Test Store key (`test_…`) works on both
+  /// platforms; switch to per-platform `appl_…` / `goog_…` keys once the
+  /// App Store / Play Store apps are registered in RevenueCat.
+  static const String revenueCatApiKey =
+      String.fromEnvironment('REVENUECAT_API_KEY');
+
   /// Deep link used for OAuth redirect on mobile/desktop.
   /// Must match the scheme registered in the native platform config and the
   /// redirect URL added in Supabase Dashboard -> Authentication -> URL Configuration.
@@ -25,10 +31,13 @@ class Environment {
   /// Throws a [StateError] if required configuration is missing.
   /// Call this during startup so misconfiguration fails fast with a clear message.
   static void validate() {
-    if (supabaseUrl.isEmpty || supabasePublishableKey.isEmpty) {
+    if (supabaseUrl.isEmpty ||
+        supabasePublishableKey.isEmpty ||
+        revenueCatApiKey.isEmpty) {
       throw StateError(
-        'Missing Supabase configuration. Provide SUPABASE_URL and '
-        'SUPABASE_PUBLISHABLE_KEY via --dart-define-from-file=env.json. '
+        'Missing configuration. Provide SUPABASE_URL, '
+        'SUPABASE_PUBLISHABLE_KEY and REVENUECAT_API_KEY via '
+        '--dart-define-from-file=env.json. '
         'See env.example.json for the expected format.',
       );
     }

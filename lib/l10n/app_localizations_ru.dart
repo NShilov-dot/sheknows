@@ -501,6 +501,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get homeGoPremiumButton => 'Оформить Premium';
+
+  @override
   String get homeLogSymptomsButton => 'Отметить симптомы';
 
   @override

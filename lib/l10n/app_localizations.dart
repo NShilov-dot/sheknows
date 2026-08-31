@@ -886,6 +886,12 @@ abstract class AppLocalizations {
   /// **'Email: {email}'**
   String homeEmailLabel(String email);
 
+  /// Button on the home screen that presents the RevenueCat paywall. Keep short — it sits next to an icon on one line.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Premium'**
+  String get homeGoPremiumButton;
+
   /// Button on the home screen that opens the symptom logging screen. Keep short — it sits next to an icon on one line.
   ///
   /// In en, this message translates to:

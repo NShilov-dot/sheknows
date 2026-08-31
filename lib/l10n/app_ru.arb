@@ -131,6 +131,7 @@
   "homeEmailConfirmedNo": "Эл. почта подтверждена: Нет",
   "homeEmailConfirmedYes": "Эл. почта подтверждена: Да",
   "homeEmailLabel": "Эл. почта: {email}",
+  "homeGoPremiumButton": "Оформить Premium",
   "homeLogSymptomsButton": "Отметить симптомы",
   "homeProfileLoadedFromDatabase": "Загружено из таблицы profiles.",
   "homeProfileNameLabel": "Имя: {name}",

@@ -490,6 +490,9 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get homeGoPremiumButton => 'Premiumga oʻtish';
+
+  @override
   String get homeLogSymptomsButton => 'Simptomlarni belgilash';
 
   @override

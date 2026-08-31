@@ -131,6 +131,7 @@
   "homeEmailConfirmedNo": "E-pochta tasdiqlangan: Yoʻq",
   "homeEmailConfirmedYes": "E-pochta tasdiqlangan: Ha",
   "homeEmailLabel": "E-pochta: {email}",
+  "homeGoPremiumButton": "Premiumga oʻtish",
   "homeLogSymptomsButton": "Simptomlarni belgilash",
   "homeProfileLoadedFromDatabase": "profiles jadvalidan yuklandi.",
   "homeProfileNameLabel": "Ism: {name}",

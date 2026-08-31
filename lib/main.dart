@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sheknows/app.dart';
 import 'package:sheknows/config/environment.dart';
@@ -25,6 +27,10 @@ void main() async {
       await Supabase.initialize(
         url: Environment.supabaseUrl,
         publishableKey: Environment.supabasePublishableKey,
+      );
+      await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.info);
+      await Purchases.configure(
+        PurchasesConfiguration(Environment.revenueCatApiKey),
       );
     }
     // Open the symptoms feature's local-store boxes before DI resolves them.

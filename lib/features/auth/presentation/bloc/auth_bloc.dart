@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/error/failures.dart';
+import 'package:sheknows/core/services/revenuecat_identity.dart';
 import 'package:sheknows/features/auth/presentation/utils/auth_validators.dart';
 import 'package:sheknows/core/usecases/usecase.dart';
 import 'package:sheknows/features/auth/domain/usecases/auth_usecases.dart';
@@ -191,6 +192,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     return null;
+  }
+
+  @override
+  void onChange(Change<AuthState> change) {
+    super.onChange(change);
+    // Single choke point for every auth transition: keep the RevenueCat
+    // subscriber id in sync with the session (fire-and-forget).
+    final next = change.nextState;
+    if (next is AuthAuthenticated) {
+      unawaited(RevenueCatIdentity.logIn(next.user.id));
+    } else if (next is AuthUnauthenticated) {
+      unawaited(RevenueCatIdentity.logOut());
+    }
   }
 
   @override
