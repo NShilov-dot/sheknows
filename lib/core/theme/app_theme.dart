@@ -120,12 +120,18 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: scaffoldBackground,
       textTheme: TextTheme(
-        displayLarge: display.copyWith(fontSize: 57, fontWeight: FontWeight.w500),
-        displayMedium: display.copyWith(fontSize: 45, fontWeight: FontWeight.w500),
-        displaySmall: display.copyWith(fontSize: 36, fontWeight: FontWeight.w500),
-        headlineLarge: display.copyWith(fontSize: 32, fontWeight: FontWeight.w600),
-        headlineMedium: display.copyWith(fontSize: 28, fontWeight: FontWeight.w600),
-        headlineSmall: display.copyWith(fontSize: 24, fontWeight: FontWeight.w600),
+        displayLarge:
+            display.copyWith(fontSize: 57, fontWeight: FontWeight.w500),
+        displayMedium:
+            display.copyWith(fontSize: 45, fontWeight: FontWeight.w500),
+        displaySmall:
+            display.copyWith(fontSize: 36, fontWeight: FontWeight.w500),
+        headlineLarge:
+            display.copyWith(fontSize: 32, fontWeight: FontWeight.w600),
+        headlineMedium:
+            display.copyWith(fontSize: 28, fontWeight: FontWeight.w600),
+        headlineSmall:
+            display.copyWith(fontSize: 24, fontWeight: FontWeight.w600),
         titleLarge: body.copyWith(fontSize: 22, fontWeight: FontWeight.w600),
         titleMedium: body.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
         titleSmall: body.copyWith(fontSize: 14, fontWeight: FontWeight.w600),
@@ -146,13 +152,16 @@ abstract final class AppTheme {
         // Android and which clobbers the nav bar AppInitializer sets.
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: const Color(0x00000000),
-          statusBarIconBrightness:
-              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
-          statusBarBrightness:
-              brightness == Brightness.dark ? Brightness.dark : Brightness.light,
+          statusBarIconBrightness: brightness == Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
+          statusBarBrightness: brightness == Brightness.dark
+              ? Brightness.dark
+              : Brightness.light,
           systemNavigationBarColor: scaffoldBackground,
-          systemNavigationBarIconBrightness:
-              brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          systemNavigationBarIconBrightness: brightness == Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
         ),
         titleTextStyle: display.copyWith(
           fontSize: 24,
@@ -162,14 +171,16 @@ abstract final class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: scheme.surface.withValues(alpha: brightness == Brightness.dark ? AppAlpha.surface : 1),
+        color: scheme.surface.withValues(
+            alpha: brightness == Brightness.dark ? AppAlpha.surface : 1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.card),
           // Light mode puts a white card on a near-white scaffold — 1.02:1,
           // an invisible rectangle at elevation 0. Dark mode separates on
           // its own, so it keeps the borderless look.
           side: brightness == Brightness.light
-              ? BorderSide(color: scheme.outline.withValues(alpha: AppAlpha.muted))
+              ? BorderSide(
+                  color: scheme.outline.withValues(alpha: AppAlpha.muted))
               : BorderSide.none,
         ),
         margin: EdgeInsets.zero,
@@ -177,14 +188,16 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.button)),
           textStyle: body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.button)),
           side: BorderSide(color: scheme.outline),
           textStyle: body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
         ),
@@ -223,7 +236,8 @@ abstract final class AppTheme {
         modalBackgroundColor: scheme.surface,
         showDragHandle: true,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
         ),
       ),
       datePickerTheme: DatePickerThemeData(
@@ -236,10 +250,37 @@ abstract final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.snackBar)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.snackBar)),
       ),
       listTileTheme: ListTileThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.field)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.field)),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: scheme.surface,
+        // M3's default elevation 3 tints the bar toward primary; the bar is a
+        // flat surface band, the same tone as the cards.
+        elevation: 0,
+        // NOT secondaryContainer (the default): rose-gold is reserved for
+        // period data, and a rose pill under the active tab would read as one.
+        indicatorColor: scheme.primary.withValues(alpha: AppAlpha.future),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? scheme.primary
+                : scheme.onSurfaceVariant,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => body.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: states.contains(WidgetState.selected)
+                ? scheme.onSurface
+                : scheme.onSurfaceVariant,
+          ),
+        ),
       ),
     );
   }

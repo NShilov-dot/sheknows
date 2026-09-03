@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sheknows/core/di/injection.dart';
-import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
+import 'package:sheknows/core/widgets/skeleton_box.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_history_list.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_log_sheet.dart';
-import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/core/widgets/load_error_view.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
@@ -18,12 +17,10 @@ class SymptomsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The cubit is AppShell's, shared with the dashboard; the id is what the
+    // error state's retry re-runs the load with.
     return AuthGate(
-      builder: (context, userId) => BlocProvider(
-        create: (_) => sl<SymptomsCubit>()..load(userId),
-        // The id the error state's retry re-runs the load with.
-        child: _SymptomsView(userId: userId),
-      ),
+      builder: (context, userId) => _SymptomsView(userId: userId),
     );
   }
 }
@@ -50,7 +47,6 @@ class _SymptomsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.symptomsTitle),
-        leading: BackButton(onPressed: () => context.go('/home')),
         actions: [
           IconButton(
             icon: const Icon(Icons.insights),
@@ -64,37 +60,18 @@ class _SymptomsView extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: Text(l10n.symptomLogAction),
       ),
-      body: BlocConsumer<SymptomsCubit, SymptomsState>(
-        listenWhen: (previous, current) {
-          if (current is! SymptomsLoaded || current.mutationFailure == null) {
-            return false;
-          }
-          return previous is! SymptomsLoaded ||
-              previous.mutationFailure != current.mutationFailure;
-        },
-        listener: (context, state) {
-          if (state is SymptomsLoaded && state.mutationFailure != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  failureMessage(
-                    AppLocalizations.of(context),
-                    state.mutationFailure!,
-                  ),
-                ),
-              ),
-            );
-          }
-        },
+      // Mutation failures are announced by AppShell, which owns the cubit.
+      body: BlocBuilder<SymptomsCubit, SymptomsState>(
         builder: (context, state) {
           // Keyed branches so the skeleton cross-fades into the list instead
           // of being replaced in a single frame.
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: switch (state) {
-              SymptomsInitial() || SymptomsLoading() =>
+              SymptomsInitial() ||
+              SymptomsLoading() =>
                 const _SymptomsSkeleton(key: ValueKey('loading')),
-              SymptomsError(:final failure) => SymptomsErrorView(
+              SymptomsError(:final failure) => LoadErrorView(
                   key: const ValueKey('error'),
                   failure: failure,
                   onRetry: () => context.read<SymptomsCubit>().load(userId),
@@ -164,7 +141,8 @@ class _EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.healing_outlined,
-                size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
+                size: AppIconSize.empty,
+                color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(height: AppSpacing.md),
             Text(
               l10n.symptomsEmptyTitle,

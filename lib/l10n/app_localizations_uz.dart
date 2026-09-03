@@ -136,6 +136,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get commonPageNotFoundTitle => 'Sahifa topilmadi';
 
   @override
+  String get commonSave => 'Saqlash';
+
+  @override
   String get commonSkip => 'Oʻtkazib yuborish';
 
   @override
@@ -469,58 +472,23 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeAppBarTitle => 'sheknows';
 
   @override
-  String get homeDeleteAccountButton => 'Hisobni oʻchirish';
-
-  @override
-  String get homeDeleteAccountDialogBody =>
-      'Hisobingiz va barcha maʼlumotlaringiz butunlay oʻchiriladi. Buni bekor qilib boʻlmaydi.';
-
-  @override
-  String get homeDeleteAccountDialogTitle => 'Hisob oʻchirilsinmi?';
-
-  @override
-  String get homeEmailConfirmedNo => 'E-pochta tasdiqlangan: Yoʻq';
-
-  @override
-  String get homeEmailConfirmedYes => 'E-pochta tasdiqlangan: Ha';
-
-  @override
-  String homeEmailLabel(String email) {
-    return 'E-pochta: $email';
+  String homeLastDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Oxirgi $count kun',
+    );
+    return '$_temp0';
   }
-
-  @override
-  String get homeGoPremiumButton => 'Premiumga oʻtish';
 
   @override
   String get homeLogSymptomsButton => 'Simptomlarni belgilash';
 
   @override
-  String get homeProfileLoadedFromDatabase => 'profiles jadvalidan yuklandi.';
-
-  @override
-  String homeProfileNameLabel(String name) {
-    return 'Ism: $name';
-  }
-
-  @override
-  String get homeProfileNameNotSet => 'Koʻrsatilmagan';
-
-  @override
-  String get homeProfileNoRowFound =>
-      'Profil yozuvi topilmadi (autentifikatsiya metamaʼlumotlari koʻrsatilmoqda).';
-
-  @override
-  String get homeProfileSectionTitle => 'Profil';
-
-  @override
-  String get homeSignOutTooltip => 'Chiqish';
-
-  @override
-  String get homeSignedIn => 'Tizimga kirdingiz';
-
-  @override
   String get homeTrackCycleButton => 'Tsiklni kuzatish';
+
+  @override
+  String get navHome => 'Asosiy';
 
   @override
   String get onboardingGetStarted => 'Boshlash';
@@ -540,6 +508,43 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get onboardingPredictSubtext =>
       'sheknows sizning ritmingizni oʻrganib, tsiklni oldindan aytadi — hech narsa sizni kutilmaganda ushlamaydi.';
+
+  @override
+  String get profileAccountSection => 'Hisob';
+
+  @override
+  String get profileAddName => 'Ismingizni kiriting';
+
+  @override
+  String get profileDeleteAccount => 'Hisobni oʻchirish';
+
+  @override
+  String get profileDeleteAccountDialogBody =>
+      'Hisobingiz va barcha maʼlumotlaringiz butunlay oʻchiriladi. Buni bekor qilib boʻlmaydi.';
+
+  @override
+  String get profileDeleteAccountDialogTitle => 'Hisob oʻchirilsinmi?';
+
+  @override
+  String get profileEditName => 'Ismni tahrirlash';
+
+  @override
+  String get profileEmailUnconfirmed => 'E-pochta hali tasdiqlanmagan';
+
+  @override
+  String get profileGoPremium => 'Premiumga oʻtish';
+
+  @override
+  String get profileNameFieldLabel => 'Ism';
+
+  @override
+  String get profileNameHint => 'Sizga qanday murojaat qilaylik?';
+
+  @override
+  String get profileSignOut => 'Chiqish';
+
+  @override
+  String get profileTitle => 'Profil';
 
   @override
   String get symptomAddSymptom => 'Simptomni qo\'shish';

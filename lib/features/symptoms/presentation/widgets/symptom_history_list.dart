@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/core/widgets/skeleton_box.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
@@ -58,7 +59,8 @@ class SymptomDateHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xs),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xs),
       child: Text(
         MaterialLocalizations.of(context).formatFullDate(date),
         style: theme.textTheme.titleSmall?.copyWith(
@@ -100,34 +102,6 @@ class SymptomTile extends StatelessWidget {
       trailing: Icon(
         Icons.chevron_right,
         color: theme.colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
-}
-
-/// A blank rounded block standing in for content that has not arrived yet.
-/// Deliberately static — no shimmer, no animation.
-class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({
-    super.key,
-    this.width,
-    required this.height,
-    this.radius = AppRadius.swatch,
-  });
-
-  /// Null stretches to the available width.
-  final double? width;
-  final double height;
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(radius),
       ),
     );
   }

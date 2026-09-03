@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:sheknows/core/di/injection.dart';
-import 'package:sheknows/core/error/failure_messages.dart';
-import 'package:sheknows/core/error/failures.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sheknows/core/widgets/load_error_view.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
 import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
 import 'package:sheknows/features/period/presentation/widgets/cycle_calendar_card.dart';
@@ -14,66 +10,47 @@ import 'package:sheknows/features/period/presentation/widgets/cycle_insights_car
 import 'package:sheknows/features/period/presentation/widgets/cycle_moon_header.dart';
 import 'package:sheknows/features/period/presentation/widgets/period_actions_card.dart';
 import 'package:sheknows/features/period/presentation/widgets/period_history_list.dart';
-import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
+/// The Cycle tab. Its [PeriodCubit] comes from `AppShell`, shared with the
+/// dashboard, so the two never disagree about what has been logged.
 class PeriodTrackerPage extends StatelessWidget {
   const PeriodTrackerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // The id is what the error state's retry re-runs the load with.
     return AuthGate(
-      builder: (context, userId) => BlocProvider(
-        create: (_) => sl<PeriodCubit>()..load(userId),
-        child: const _PeriodTrackerView(),
-      ),
+      builder: (context, userId) => _PeriodTrackerView(userId: userId),
     );
   }
 }
 
 class _PeriodTrackerView extends StatelessWidget {
-  const _PeriodTrackerView();
+  const _PeriodTrackerView({required this.userId});
+
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).cycleTitle),
-        leading: BackButton(onPressed: () => context.go('/home')),
       ),
-      body: BlocConsumer<PeriodCubit, PeriodState>(
-        listenWhen: (previous, current) {
-          if (current is! PeriodLoaded || current.mutationFailure == null) {
-            return false;
-          }
-          return previous is! PeriodLoaded ||
-              previous.mutationFailure != current.mutationFailure;
-        },
-        listener: (context, state) {
-          if (state is PeriodLoaded && state.mutationFailure != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  failureMessage(
-                    AppLocalizations.of(context),
-                    state.mutationFailure!,
-                  ),
-                ),
-              ),
-            );
-          }
-        },
+      // Mutation failures are announced by AppShell, which owns the cubit.
+      body: BlocBuilder<PeriodCubit, PeriodState>(
         builder: (context, state) {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: switch (state) {
               PeriodInitial() || PeriodLoading() => const _PeriodSkeleton(
-                key: ValueKey('loading'),
-              ),
-              PeriodError(:final failure) => _PeriodErrorView(
-                key: const ValueKey('error'),
-                failure: failure,
-              ),
+                  key: ValueKey('loading'),
+                ),
+              PeriodError(:final failure) => LoadErrorView(
+                  key: const ValueKey('error'),
+                  failure: failure,
+                  onRetry: () => context.read<PeriodCubit>().load(userId),
+                ),
               PeriodLoaded() => const _PeriodBody(key: ValueKey('loaded')),
             },
           );
@@ -112,54 +89,6 @@ class _PeriodBody extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             const PeriodHistoryList(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// The error arm of the cycle screen. A bare centred string stranded the user:
-/// re-entering /cycle was the only way to re-run [PeriodCubit.load].
-class _PeriodErrorView extends StatelessWidget {
-  const _PeriodErrorView({super.key, required this.failure});
-
-  final Failure failure;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.cloud_off_outlined,
-              size: AppIconSize.empty,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              failureMessage(AppLocalizations.of(context), failure),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton.icon(
-              onPressed: () {
-                final authState = context.read<AuthBloc>().state;
-                if (authState is! AuthAuthenticated) {
-                  return;
-                }
-                context.read<PeriodCubit>().load(authState.user.id);
-              },
-              icon: const Icon(Icons.refresh),
-              label: Text(AppLocalizations.of(context).commonTryAgain),
-            ),
           ],
         ),
       ),

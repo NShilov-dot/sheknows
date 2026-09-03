@@ -123,7 +123,7 @@ void main() {
           l10n.errorNetworkOffline,
           l10n.authLoginTitle,
           l10n.authSignUp,
-          l10n.homeSignOutTooltip,
+          l10n.profileSignOut,
           l10n.cycleTitle,
           l10n.cycleLegendLogged,
           l10n.cyclePhaseMenstrual,

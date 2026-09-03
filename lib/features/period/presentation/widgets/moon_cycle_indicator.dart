@@ -18,7 +18,7 @@ class MoonCycleIndicator extends StatelessWidget {
 
   /// Cycle length used for phase mapping; falls back to 28 days when there
   /// are not yet enough logged periods to compute an average.
-  int get _cycleLength {
+  static int cycleLengthOf(CycleStats stats) {
     final average = stats.averageCycleLength;
     if (average != null && average > 0) {
       return average;
@@ -28,10 +28,13 @@ class MoonCycleIndicator extends StatelessWidget {
 
   /// Progress through the cycle: 0 = day 1 (new moon), 0.5 = mid-cycle
   /// (full moon), just under 1 = eve of the next period.
-  double get _phase {
+  static double phaseOf(CycleStats stats) {
     final day = stats.currentCycleDay ?? 1;
-    return ((day - 1) / _cycleLength).clamp(0.0, 0.999);
+    return ((day - 1) / cycleLengthOf(stats)).clamp(0.0, 0.999);
   }
+
+  int get _cycleLength => cycleLengthOf(stats);
+  double get _phase => phaseOf(stats);
 
   /// The cycle is mapped onto the moon's eight phases.
   static const _phaseCount = 8;
@@ -80,7 +83,7 @@ class MoonCycleIndicator extends StatelessWidget {
           : l10n.cycleMoonSemantics(day, _cycleLength, phaseName, phaseHint),
       child: Column(
         children: [
-          _GlowingMoon(phase: _phase, size: size),
+          GlowingMoon(phase: _phase, size: size),
           if (day != null) ...[
             const SizedBox(height: 12),
             // One message, not two spans: ru/uz reorder the day and the
@@ -110,8 +113,10 @@ class MoonCycleIndicator extends StatelessWidget {
   }
 }
 
-class _GlowingMoon extends StatelessWidget {
-  const _GlowingMoon({required this.phase, required this.size});
+/// The moon disc and its halo, on their own. The home dashboard lays its own
+/// text beside this; [MoonCycleIndicator] stacks the standard captions under it.
+class GlowingMoon extends StatelessWidget {
+  const GlowingMoon({super.key, required this.phase, required this.size});
 
   final double phase;
   final double size;
@@ -217,9 +222,8 @@ class _MoonPainter extends CustomPainter {
     final limbSweep =
         waxing ? math.pi : -math.pi; // waxing lights the right side...
     // ...waning lights the left side.
-    final terminatorSweep = waxing
-        ? (k > 0 ? -math.pi : math.pi)
-        : (k > 0 ? math.pi : -math.pi);
+    final terminatorSweep =
+        waxing ? (k > 0 ? -math.pi : math.pi) : (k > 0 ? math.pi : -math.pi);
 
     final path = Path()
       ..moveTo(center.dx, center.dy - radius)

@@ -304,6 +304,12 @@ abstract class AppLocalizations {
   /// **'Page not found'**
   String get commonPageNotFoundTitle;
 
+  /// Confirm button of small edit sheets, e.g. the display-name editor. One word.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
   /// Skips the onboarding pitch and goes straight to sign-in.
   ///
   /// In en, this message translates to:
@@ -850,47 +856,11 @@ abstract class AppLocalizations {
   /// **'sheknows'**
   String get homeAppBarTitle;
 
-  /// Destructive text button at the bottom of the home screen that opens the delete-account confirmation dialog.
+  /// Time-window caption on the home dashboard: the sub-line of the symptoms stat tile and the header of the most-frequent-symptoms card. Called with count: 30. Keep short — it sits in a small tile under a large number.
   ///
   /// In en, this message translates to:
-  /// **'Delete account'**
-  String get homeDeleteAccountButton;
-
-  /// Body text of the delete-account confirmation dialog. Health data is involved, so the warning must stay explicit that the deletion is permanent.
-  ///
-  /// In en, this message translates to:
-  /// **'This permanently deletes your account and all of your data. This cannot be undone.'**
-  String get homeDeleteAccountDialogBody;
-
-  /// Title of the confirmation dialog shown before permanently deleting the user's account.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete account?'**
-  String get homeDeleteAccountDialogTitle;
-
-  /// Shown on the home screen when the user's email address has not been confirmed. DEBUG COPY — recommend deleting rather than translating.
-  ///
-  /// In en, this message translates to:
-  /// **'Email confirmed: No'**
-  String get homeEmailConfirmedNo;
-
-  /// Shown on the home screen when the user's email address has been confirmed. DEBUG COPY — recommend deleting rather than translating.
-  ///
-  /// In en, this message translates to:
-  /// **'Email confirmed: Yes'**
-  String get homeEmailConfirmedYes;
-
-  /// Label and value showing the signed-in user's email address on the home screen. {email} is the raw address and is never translated.
-  ///
-  /// In en, this message translates to:
-  /// **'Email: {email}'**
-  String homeEmailLabel(String email);
-
-  /// Button on the home screen that presents the RevenueCat paywall. Keep short — it sits next to an icon on one line.
-  ///
-  /// In en, this message translates to:
-  /// **'Go Premium'**
-  String get homeGoPremiumButton;
+  /// **'{count, plural, one{Last {count} day} other{Last {count} days}}'**
+  String homeLastDays(int count);
 
   /// Button on the home screen that opens the symptom logging screen. Keep short — it sits next to an icon on one line.
   ///
@@ -898,53 +868,17 @@ abstract class AppLocalizations {
   /// **'Log symptoms'**
   String get homeLogSymptomsButton;
 
-  /// Caption under the profile name when the profile came from the database. DEBUG COPY — recommend deleting rather than translating. 'profiles' is a database table name and must stay untranslated.
-  ///
-  /// In en, this message translates to:
-  /// **'Loaded from the profiles table.'**
-  String get homeProfileLoadedFromDatabase;
-
-  /// Label and value showing the user's display name in the profile section of the home screen. {name} holds either the user's own display name or the localized homeProfileNameNotSet fallback, so it is not always a person's name.
-  ///
-  /// In en, this message translates to:
-  /// **'Name: {name}'**
-  String homeProfileNameLabel(String name);
-
-  /// Fallback value passed into homeProfileNameLabel when the user has no display name. Must read naturally as the value after 'Name:'.
-  ///
-  /// In en, this message translates to:
-  /// **'Not set'**
-  String get homeProfileNameNotSet;
-
-  /// Caption under the profile name when no database profile row exists and auth metadata is displayed instead. DEBUG COPY — recommend deleting rather than translating.
-  ///
-  /// In en, this message translates to:
-  /// **'No profile row found (showing auth metadata).'**
-  String get homeProfileNoRowFound;
-
-  /// Section heading above the profile details block on the home screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get homeProfileSectionTitle;
-
-  /// Tooltip / accessibility label for the logout icon button in the home app bar.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out'**
-  String get homeSignOutTooltip;
-
-  /// Heading on the home screen shown once the user is authenticated. DEBUG COPY — recommend deleting rather than translating.
-  ///
-  /// In en, this message translates to:
-  /// **'Signed in'**
-  String get homeSignedIn;
-
   /// Primary button on the home screen that opens the menstrual cycle tracker. Keep short — it sits next to an icon on one line.
   ///
   /// In en, this message translates to:
   /// **'Track my cycle'**
   String get homeTrackCycleButton;
+
+  /// Label of the first bottom-navigation tab, which opens the dashboard. One short word — it sits under an icon in a bar shared with the Cycle, Symptoms and Profile tabs.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
 
   /// Primary button on the last onboarding page; leads to sign-in.
   ///
@@ -975,6 +909,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.'**
   String get onboardingPredictSubtext;
+
+  /// Caption above the account-actions card on the Profile tab (premium, sign out). One word.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileAccountSection;
+
+  /// Shown in place of the display name on the Profile tab when the user has none yet; the edit icon beside it opens the name editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your name'**
+  String get profileAddName;
+
+  /// Label of the destructive account-deletion row at the bottom of the Profile tab. Rendered in the error colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get profileDeleteAccount;
+
+  /// Body text of the delete-account confirmation dialog. Health data is involved, so the warning must stay explicit that the deletion is permanent.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account and all of your data. This cannot be undone.'**
+  String get profileDeleteAccountDialogBody;
+
+  /// Title of the confirmation dialog shown before permanently deleting the user's account.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get profileDeleteAccountDialogTitle;
+
+  /// Tooltip of the edit icon in the Profile header, and title of the display-name editor sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit name'**
+  String get profileEditName;
+
+  /// One-line notice under the email on the Profile tab while the account's address is unverified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not confirmed yet'**
+  String get profileEmailUnconfirmed;
+
+  /// Label of the Profile-tab row that presents the RevenueCat paywall. Keep short — it sits beside an icon on one line.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Premium'**
+  String get profileGoPremium;
+
+  /// Floating label of the single text field in the display-name editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileNameFieldLabel;
+
+  /// Hint inside the display-name field while it is empty. A friendly question, not an instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'How should we call you?'**
+  String get profileNameHint;
+
+  /// Label of the sign-out row on the Profile tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get profileSignOut;
+
+  /// Title of the Profile tab's app bar and label of its bottom-navigation destination. One short word.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
 
   /// Submit button of the symptom log sheet when creating a new entry.
   ///

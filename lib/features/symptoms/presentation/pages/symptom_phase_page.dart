@@ -10,7 +10,7 @@ import 'package:sheknows/features/symptoms/presentation/cubit/symptom_phase_stat
 import 'package:sheknows/features/symptoms/presentation/utils/symptom_labels.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/bar_row.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/range_selector.dart';
-import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/core/widgets/load_error_view.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
@@ -47,12 +47,11 @@ class _PhaseView extends StatelessWidget {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: switch (state) {
-              SymptomPhaseInitial() || SymptomPhaseLoading() =>
-                const Center(
+              SymptomPhaseInitial() || SymptomPhaseLoading() => const Center(
                   key: ValueKey('loading'),
                   child: CircularProgressIndicator(),
                 ),
-              SymptomPhaseError(:final failure) => SymptomsErrorView(
+              SymptomPhaseError(:final failure) => LoadErrorView(
                   key: const ValueKey('error'),
                   failure: failure,
                   onRetry: () => context.read<SymptomPhaseCubit>().load(userId),
@@ -75,8 +74,7 @@ class _Loaded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trends = state.trends;
-    final logged =
-        trends.phases.where((summary) => summary.count > 0).toList();
+    final logged = trends.phases.where((summary) => summary.count > 0).toList();
     // CyclePhase.unknown is the calculator's "could not place this day" bucket,
     // not a phase. On its own it means the user has symptoms but no period
     // dates to attribute them to, which is guidance, not a chart.
@@ -207,7 +205,8 @@ class _EmptyPhases extends StatelessWidget {
       child: Column(
         children: [
           Icon(Icons.pie_chart_outline,
-              size: AppIconSize.empty, color: theme.colorScheme.onSurfaceVariant),
+              size: AppIconSize.empty,
+              color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(height: AppSpacing.md),
           Text(
             hasUnplaced

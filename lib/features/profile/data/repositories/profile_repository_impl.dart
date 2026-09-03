@@ -13,4 +13,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, ProfileEntity?>> getProfile(String userId) =>
       guard(() => _remoteDataSource.getProfile(userId));
+
+  @override
+  Future<Either<Failure, ProfileEntity>> updateProfile({
+    required String userId,
+    required String? displayName,
+  }) =>
+      guard(
+        () => _remoteDataSource.upsertProfile(
+          userId: userId,
+          displayName: displayName,
+        ),
+      );
 }

@@ -167,7 +167,7 @@ lib/
 ├── core/              # DI, router, error types, use case base
 ├── features/
 │   ├── auth/          # data / domain / presentation
-│   ├── profile/       # data / domain / presentation (read-only DB example)
+│   ├── profile/       # data / domain / presentation (profiles row: read + edit)
 │   └── tasks/         # data / domain / presentation (CRUD + RLS example)
 ├── utils/             # App initialization
 ├── app.dart           # Root widget and AuthBloc scope

@@ -20,6 +20,7 @@ void main() {
     '/symptoms',
     '/symptom-trends',
     '/symptom-phases',
+    '/profile',
   ];
 
   group('resolveAuthRedirect while the session is restoring', () {

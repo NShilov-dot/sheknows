@@ -1,186 +1,166 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
-import 'package:sheknows/core/error/failure_messages.dart';
+import 'package:sheknows/core/constants/home.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
-import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sheknows/features/auth/presentation/bloc/auth_state.dart';
-import 'package:sheknows/features/home/presentation/widgets/delete_account_dialog.dart';
-import 'package:sheknows/features/home/presentation/widgets/profile_section.dart';
-import 'package:sheknows/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:sheknows/core/widgets/load_error_view.dart';
+import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
+import 'package:sheknows/features/home/presentation/widgets/cycle_stat_tiles.dart';
+import 'package:sheknows/features/home/presentation/widgets/dashboard_hero.dart';
+import 'package:sheknows/features/home/presentation/widgets/top_symptoms_card.dart';
+import 'package:sheknows/features/period/domain/entities/cycle_stats.dart';
+import 'package:sheknows/features/period/domain/entities/period_log_entity.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_cubit.dart';
+import 'package:sheknows/features/period/presentation/cubit/period_state.dart';
+import 'package:sheknows/features/period/presentation/widgets/cycle_calendar_card.dart';
+import 'package:sheknows/features/symptoms/domain/entities/symptom_trends.dart';
+import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
+import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
+import 'package:sheknows/core/widgets/skeleton_box.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
+/// The dashboard: where the cycle stands today, the numbers behind it, this
+/// month's calendar, and what has been bothering the user lately.
+///
+/// Reads the [PeriodCubit] and [SymptomsCubit] that `AppShell` provides above
+/// the tabs — the same instances the Cycle and Symptoms tabs mutate, so a
+/// period logged over there is already here when the user comes back.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) => current is AuthError,
-      listener: (context, state) {
-        if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failureMessage(l10n, state.failure))),
-          );
-          context.read<AuthBloc>().add(const AuthErrorCleared());
-        }
-      },
-      child: Scaffold(
+    return AuthGate(
+      builder: (context, userId) => Scaffold(
         appBar: AppBar(
-          title: Text(l10n.homeAppBarTitle),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(const AuthSignOutRequested());
-              },
-              icon: const Icon(Icons.logout),
-              tooltip: l10n.homeSignOutTooltip,
-            ),
-          ],
+          title: Text(AppLocalizations.of(context).homeAppBarTitle),
         ),
-        body: BlocSelector<AuthBloc, AuthState, UserEntity?>(
-          selector: (state) => state is AuthAuthenticated ? state.user : null,
-          builder: (context, user) {
-            if (user == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            return _AuthenticatedHome(user: user);
-          },
+        body: BlocBuilder<PeriodCubit, PeriodState>(
+          // A mutation's isLoading flip or a mutationFailure emit changes
+          // nothing here; the shell shows the snack bar.
+          buildWhen: (previous, current) =>
+              previous is! PeriodLoaded ||
+              current is! PeriodLoaded ||
+              previous.stats != current.stats ||
+              previous.logs != current.logs,
+          builder: (context, state) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: switch (state) {
+              PeriodInitial() ||
+              PeriodLoading() =>
+                const _DashboardSkeleton(key: ValueKey('loading')),
+              PeriodError(:final failure) => LoadErrorView(
+                  key: const ValueKey('error'),
+                  failure: failure,
+                  onRetry: () => context.read<PeriodCubit>().load(userId),
+                ),
+              PeriodLoaded(:final stats, :final logs) => _Dashboard(
+                  key: const ValueKey('loaded'),
+                  stats: stats,
+                  logs: logs,
+                  userId: userId,
+                ),
+            },
+          ),
         ),
       ),
     );
   }
 }
 
-class _AuthenticatedHome extends StatefulWidget {
-  const _AuthenticatedHome({required this.user});
+class _Dashboard extends StatelessWidget {
+  const _Dashboard({
+    super.key,
+    required this.stats,
+    required this.logs,
+    required this.userId,
+  });
 
-  final UserEntity user;
+  final CycleStats stats;
+  final List<PeriodLogEntity> logs;
+  final String userId;
 
-  @override
-  State<_AuthenticatedHome> createState() => _AuthenticatedHomeState();
-}
-
-class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ProfileCubit>().loadProfile(widget.user.id);
-  }
-
-  @override
-  void didUpdateWidget(covariant _AuthenticatedHome oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.user.id != widget.user.id) {
-      context.read<ProfileCubit>().loadProfile(widget.user.id);
-    }
-  }
+  static const _calculator = SymptomTrendsCalculator();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    const padding = EdgeInsets.all(AppSpacing.xl);
-
-    return SafeArea(
-      top: false,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: padding,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - padding.vertical,
-              ),
-              child: IntrinsicHeight(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 480),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.homeSignedIn,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Text(l10n.homeEmailLabel(widget.user.email)),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          widget.user.emailConfirmed
-                              ? l10n.homeEmailConfirmedYes
-                              : l10n.homeEmailConfirmedNo,
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        Text(
-                          l10n.homeProfileSectionTitle,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        ProfileSection(user: widget.user),
-                        const SizedBox(height: AppSpacing.xxl),
-                        FilledButton.icon(
-                          onPressed: () => context.go('/cycle'),
-                          icon: const Icon(Icons.calendar_month),
-                          label: Text(l10n.homeTrackCycleButton),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        FilledButton.icon(
-                          onPressed: () => context.go('/symptoms'),
-                          icon: const Icon(Icons.healing_outlined),
-                          label: Text(l10n.homeLogSymptomsButton),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        OutlinedButton.icon(
-                          onPressed: () => RevenueCatUI.presentPaywallIfNeeded(
-                            'premium',
-                            displayCloseButton: true,
-                          ),
-                          icon: const Icon(Icons.workspace_premium),
-                          label: Text(l10n.homeGoPremiumButton),
-                        ),
-                        const Spacer(),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            onPressed: () => _confirmDeleteAccount(context),
-                            icon: Icon(
-                              Icons.delete_forever,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            label: Text(
-                              l10n.homeDeleteAccountButton,
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+    return BlocBuilder<SymptomsCubit, SymptomsState>(
+      buildWhen: (previous, current) =>
+          previous is! SymptomsLoaded ||
+          current is! SymptomsLoaded ||
+          previous.logs != current.logs,
+      builder: (context, state) {
+        // Computed here, once, so the tile count and the ranked bars can never
+        // disagree about what "the last 30 days" contains.
+        final trends = state is SymptomsLoaded
+            ? _calculator.calculate(
+                state.logs,
+                from: DateTime.now().subtract(
+                  const Duration(days: kDashboardSymptomsWindowDays),
                 ),
-              ),
+              )
+            : null;
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ListView(
+              // No viewPadding term: the shell's navigation bar already
+              // covers the bottom inset.
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              children: [
+                DashboardHero(stats: stats, logs: logs),
+                const SizedBox(height: AppSpacing.lg),
+                CycleStatTiles(
+                  stats: stats,
+                  symptomCount: trends?.totalEntries,
+                  symptomsWindowDays: kDashboardSymptomsWindowDays,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                const CycleCalendarCard(),
+                const SizedBox(height: AppSpacing.lg),
+                TopSymptomsCard(
+                  trends: trends,
+                  failure: state is SymptomsError ? state.failure : null,
+                  windowDays: kDashboardSymptomsWindowDays,
+                  onRetry: () => context.read<SymptomsCubit>().load(userId),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
+}
 
-  Future<void> _confirmDeleteAccount(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => const DeleteAccountDialog(),
+/// The loaded layout's silhouette — hero, two tile rows, calendar, card — so
+/// nothing jumps when the data lands.
+class _DashboardSkeleton extends StatelessWidget {
+  const _DashboardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const tile = Expanded(
+      child: SkeletonBox(height: 88, radius: AppRadius.card),
     );
-
-    if (confirmed == true && context.mounted) {
-      HapticFeedback.heavyImpact();
-      context.read<AuthBloc>().add(const AuthDeleteAccountRequested());
-    }
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          children: const [
+            SkeletonBox(height: 112, radius: AppRadius.card),
+            SizedBox(height: AppSpacing.lg),
+            Row(children: [tile, SizedBox(width: AppSpacing.md), tile]),
+            SizedBox(height: AppSpacing.md),
+            Row(children: [tile, SizedBox(width: AppSpacing.md), tile]),
+            SizedBox(height: AppSpacing.lg),
+            SkeletonBox(height: 340, radius: AppRadius.card),
+            SizedBox(height: AppSpacing.lg),
+            SkeletonBox(height: 160, radius: AppRadius.card),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sheknows/core/router/app_shell.dart';
 import 'package:sheknows/core/router/auth_refresh_listenable.dart';
 import 'package:sheknows/core/router/route_not_found_page.dart';
 import 'package:sheknows/features/auth/presentation/bloc/auth_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:sheknows/features/home/presentation/pages/home_page.dart';
 import 'package:sheknows/features/onboarding/data/onboarding_prefs.dart';
 import 'package:sheknows/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:sheknows/features/period/presentation/pages/period_tracker_page.dart';
+import 'package:sheknows/features/profile/presentation/pages/profile_page.dart';
 import 'package:sheknows/features/splash/presentation/pages/splash_page.dart';
 import 'package:sheknows/features/symptoms/presentation/pages/symptom_phase_page.dart';
 import 'package:sheknows/features/symptoms/presentation/pages/symptom_trends_page.dart';
@@ -85,25 +87,54 @@ class AppRouter {
         path: '/register',
         builder: (context, state) => const RegisterPage(),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomePage(),
-      ),
-      GoRoute(
-        path: '/cycle',
-        builder: (context, state) => const PeriodTrackerPage(),
-      ),
-      GoRoute(
-        path: '/symptoms',
-        builder: (context, state) => const SymptomsPage(),
-      ),
-      GoRoute(
-        path: '/symptom-trends',
-        builder: (context, state) => const SymptomTrendsPage(),
-      ),
-      GoRoute(
-        path: '/symptom-phases',
-        builder: (context, state) => const SymptomPhasePage(),
+      // The signed-in app: one branch per bottom-navigation tab, each with
+      // its own navigator so tab state survives switching. Branch order is
+      // the destination order in AppShell.
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/cycle',
+                builder: (context, state) => const PeriodTrackerPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/symptoms',
+                builder: (context, state) => const SymptomsPage(),
+              ),
+              GoRoute(
+                path: '/symptom-trends',
+                builder: (context, state) => const SymptomTrendsPage(),
+              ),
+              GoRoute(
+                path: '/symptom-phases',
+                builder: (context, state) => const SymptomPhasePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

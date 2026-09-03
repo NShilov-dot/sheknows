@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
+import 'package:sheknows/core/widgets/inline_error_row.dart';
 import 'package:sheknows/core/widgets/section_label.dart';
 import 'package:sheknows/features/symptoms/domain/entities/symptom_log_entity.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
@@ -86,7 +87,7 @@ class _DaySymptomsBody extends StatelessWidget {
                 return const _SymptomsPlaceholder();
               }
               if (state is SymptomsError) {
-                return _SymptomsErrorRow(
+                return InlineErrorRow(
                   message: failureMessage(l10n, state.failure),
                   onRetry: () => context
                       .read<SymptomsCubit>()
@@ -105,7 +106,7 @@ class _DaySymptomsBody extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _SymptomsErrorRow(
+                    InlineErrorRow(
                       message: failureMessage(l10n, mutationFailure),
                       onRetry: () => context
                           .read<SymptomsCubit>()
@@ -182,8 +183,7 @@ class _SymptomLines extends StatelessWidget {
                 TimeOfDay.fromDateTime(log.loggedAt).format(context),
               ),
             ),
-            onTap: () =>
-                _openSymptomSheet(context, day: day, existing: log),
+            onTap: () => _openSymptomSheet(context, day: day, existing: log),
           ),
       ],
     );
@@ -207,41 +207,6 @@ class _SymptomsPlaceholder extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.swatch),
         ),
       ),
-    );
-  }
-}
-
-/// Shown when this day's symptoms could not be loaded, with a way back.
-class _SymptomsErrorRow extends StatelessWidget {
-  const _SymptomsErrorRow({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Icon(
-          Icons.cloud_off_outlined,
-          size: AppIconSize.md,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Text(
-            message,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: onRetry,
-          child: Text(AppLocalizations.of(context).commonTryAgain),
-        ),
-      ],
     );
   }
 }

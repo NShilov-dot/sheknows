@@ -18,13 +18,38 @@ final class ProfileLoading extends ProfileState {
 }
 
 final class ProfileLoaded extends ProfileState {
-  const ProfileLoaded(this.profile);
+  const ProfileLoaded(
+    this.profile, {
+    this.isSaving = false,
+    this.mutationFailure,
+  });
 
   /// Null when the user has no profile row yet.
   final ProfileEntity? profile;
 
+  /// True while an edit is in flight; [profile] already shows the new value.
+  final bool isSaving;
+
+  /// The last rejected edit, after [profile] has been rolled back.
+  final Failure? mutationFailure;
+
+  ProfileLoaded copyWith({
+    ProfileEntity? profile,
+    bool? isSaving,
+    Failure? mutationFailure,
+    bool clearMutationFailure = false,
+  }) {
+    return ProfileLoaded(
+      profile ?? this.profile,
+      isSaving: isSaving ?? this.isSaving,
+      mutationFailure: clearMutationFailure
+          ? null
+          : (mutationFailure ?? this.mutationFailure),
+    );
+  }
+
   @override
-  List<Object?> get props => [profile];
+  List<Object?> get props => [profile, isSaving, mutationFailure];
 }
 
 final class ProfileError extends ProfileState {

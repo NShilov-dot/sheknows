@@ -138,6 +138,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonPageNotFoundTitle => 'Page not found';
 
   @override
+  String get commonSave => 'Save';
+
+  @override
   String get commonSkip => 'Skip';
 
   @override
@@ -470,58 +473,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeAppBarTitle => 'sheknows';
 
   @override
-  String get homeDeleteAccountButton => 'Delete account';
-
-  @override
-  String get homeDeleteAccountDialogBody =>
-      'This permanently deletes your account and all of your data. This cannot be undone.';
-
-  @override
-  String get homeDeleteAccountDialogTitle => 'Delete account?';
-
-  @override
-  String get homeEmailConfirmedNo => 'Email confirmed: No';
-
-  @override
-  String get homeEmailConfirmedYes => 'Email confirmed: Yes';
-
-  @override
-  String homeEmailLabel(String email) {
-    return 'Email: $email';
+  String homeLastDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Last $count days',
+      one: 'Last $count day',
+    );
+    return '$_temp0';
   }
-
-  @override
-  String get homeGoPremiumButton => 'Go Premium';
 
   @override
   String get homeLogSymptomsButton => 'Log symptoms';
 
   @override
-  String get homeProfileLoadedFromDatabase => 'Loaded from the profiles table.';
-
-  @override
-  String homeProfileNameLabel(String name) {
-    return 'Name: $name';
-  }
-
-  @override
-  String get homeProfileNameNotSet => 'Not set';
-
-  @override
-  String get homeProfileNoRowFound =>
-      'No profile row found (showing auth metadata).';
-
-  @override
-  String get homeProfileSectionTitle => 'Profile';
-
-  @override
-  String get homeSignOutTooltip => 'Sign out';
-
-  @override
-  String get homeSignedIn => 'Signed in';
-
-  @override
   String get homeTrackCycleButton => 'Track my cycle';
+
+  @override
+  String get navHome => 'Home';
 
   @override
   String get onboardingGetStarted => 'Get started';
@@ -540,6 +509,43 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingPredictSubtext =>
       'sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.';
+
+  @override
+  String get profileAccountSection => 'Account';
+
+  @override
+  String get profileAddName => 'Add your name';
+
+  @override
+  String get profileDeleteAccount => 'Delete account';
+
+  @override
+  String get profileDeleteAccountDialogBody =>
+      'This permanently deletes your account and all of your data. This cannot be undone.';
+
+  @override
+  String get profileDeleteAccountDialogTitle => 'Delete account?';
+
+  @override
+  String get profileEditName => 'Edit name';
+
+  @override
+  String get profileEmailUnconfirmed => 'Email not confirmed yet';
+
+  @override
+  String get profileGoPremium => 'Go Premium';
+
+  @override
+  String get profileNameFieldLabel => 'Name';
+
+  @override
+  String get profileNameHint => 'How should we call you?';
+
+  @override
+  String get profileSignOut => 'Sign out';
+
+  @override
+  String get profileTitle => 'Profile';
 
   @override
   String get symptomAddSymptom => 'Add symptom';

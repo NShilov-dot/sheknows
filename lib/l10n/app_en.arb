@@ -151,6 +151,10 @@
   "@commonPageNotFoundTitle": {
     "description": "Title of the router fallback screen shown when a deep link or push matches no route."
   },
+  "commonSave": "Save",
+  "@commonSave": {
+    "description": "Confirm button of small edit sheets, e.g. the display-name editor. One word."
+  },
   "commonSkip": "Skip",
   "@commonSkip": {
     "description": "Skips the onboarding pitch and goes straight to sign-in."
@@ -611,79 +615,26 @@
   "@homeAppBarTitle": {
     "description": "App bar title on the home screen. Product/brand name — must stay identical in every locale, do not translate or transliterate."
   },
-  "homeDeleteAccountButton": "Delete account",
-  "@homeDeleteAccountButton": {
-    "description": "Destructive text button at the bottom of the home screen that opens the delete-account confirmation dialog."
-  },
-  "homeDeleteAccountDialogBody": "This permanently deletes your account and all of your data. This cannot be undone.",
-  "@homeDeleteAccountDialogBody": {
-    "description": "Body text of the delete-account confirmation dialog. Health data is involved, so the warning must stay explicit that the deletion is permanent."
-  },
-  "homeDeleteAccountDialogTitle": "Delete account?",
-  "@homeDeleteAccountDialogTitle": {
-    "description": "Title of the confirmation dialog shown before permanently deleting the user's account."
-  },
-  "homeEmailConfirmedNo": "Email confirmed: No",
-  "@homeEmailConfirmedNo": {
-    "description": "Shown on the home screen when the user's email address has not been confirmed. DEBUG COPY — recommend deleting rather than translating."
-  },
-  "homeEmailConfirmedYes": "Email confirmed: Yes",
-  "@homeEmailConfirmedYes": {
-    "description": "Shown on the home screen when the user's email address has been confirmed. DEBUG COPY — recommend deleting rather than translating."
-  },
-  "homeEmailLabel": "Email: {email}",
-  "@homeEmailLabel": {
-    "description": "Label and value showing the signed-in user's email address on the home screen. {email} is the raw address and is never translated.",
+  "homeLastDays": "{count, plural, one{Last {count} day} other{Last {count} days}}",
+  "@homeLastDays": {
+    "description": "Time-window caption on the home dashboard: the sub-line of the symptoms stat tile and the header of the most-frequent-symptoms card. Called with count: 30. Keep short — it sits in a small tile under a large number.",
     "placeholders": {
-      "email": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
-  },
-  "homeGoPremiumButton": "Go Premium",
-  "@homeGoPremiumButton": {
-    "description": "Button on the home screen that presents the RevenueCat paywall. Keep short — it sits next to an icon on one line."
   },
   "homeLogSymptomsButton": "Log symptoms",
   "@homeLogSymptomsButton": {
     "description": "Button on the home screen that opens the symptom logging screen. Keep short — it sits next to an icon on one line."
   },
-  "homeProfileLoadedFromDatabase": "Loaded from the profiles table.",
-  "@homeProfileLoadedFromDatabase": {
-    "description": "Caption under the profile name when the profile came from the database. DEBUG COPY — recommend deleting rather than translating. 'profiles' is a database table name and must stay untranslated."
-  },
-  "homeProfileNameLabel": "Name: {name}",
-  "@homeProfileNameLabel": {
-    "description": "Label and value showing the user's display name in the profile section of the home screen. {name} holds either the user's own display name or the localized homeProfileNameNotSet fallback, so it is not always a person's name.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "homeProfileNameNotSet": "Not set",
-  "@homeProfileNameNotSet": {
-    "description": "Fallback value passed into homeProfileNameLabel when the user has no display name. Must read naturally as the value after 'Name:'."
-  },
-  "homeProfileNoRowFound": "No profile row found (showing auth metadata).",
-  "@homeProfileNoRowFound": {
-    "description": "Caption under the profile name when no database profile row exists and auth metadata is displayed instead. DEBUG COPY — recommend deleting rather than translating."
-  },
-  "homeProfileSectionTitle": "Profile",
-  "@homeProfileSectionTitle": {
-    "description": "Section heading above the profile details block on the home screen."
-  },
-  "homeSignOutTooltip": "Sign out",
-  "@homeSignOutTooltip": {
-    "description": "Tooltip / accessibility label for the logout icon button in the home app bar."
-  },
-  "homeSignedIn": "Signed in",
-  "@homeSignedIn": {
-    "description": "Heading on the home screen shown once the user is authenticated. DEBUG COPY — recommend deleting rather than translating."
-  },
   "homeTrackCycleButton": "Track my cycle",
   "@homeTrackCycleButton": {
     "description": "Primary button on the home screen that opens the menstrual cycle tracker. Keep short — it sits next to an icon on one line."
+  },
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Label of the first bottom-navigation tab, which opens the dashboard. One short word — it sits under an icon in a bar shared with the Cycle, Symptoms and Profile tabs."
   },
   "onboardingGetStarted": "Get started",
   "@onboardingGetStarted": {
@@ -704,6 +655,54 @@
   "onboardingPredictSubtext": "sheknows learns your rhythm and predicts your cycle — so nothing catches you off guard.",
   "@onboardingPredictSubtext": {
     "description": "Body copy under the first onboarding headline. \"sheknows\" is the product name — never translated."
+  },
+  "profileAccountSection": "Account",
+  "@profileAccountSection": {
+    "description": "Caption above the account-actions card on the Profile tab (premium, sign out). One word."
+  },
+  "profileAddName": "Add your name",
+  "@profileAddName": {
+    "description": "Shown in place of the display name on the Profile tab when the user has none yet; the edit icon beside it opens the name editor."
+  },
+  "profileDeleteAccount": "Delete account",
+  "@profileDeleteAccount": {
+    "description": "Label of the destructive account-deletion row at the bottom of the Profile tab. Rendered in the error colour."
+  },
+  "profileDeleteAccountDialogBody": "This permanently deletes your account and all of your data. This cannot be undone.",
+  "@profileDeleteAccountDialogBody": {
+    "description": "Body text of the delete-account confirmation dialog. Health data is involved, so the warning must stay explicit that the deletion is permanent."
+  },
+  "profileDeleteAccountDialogTitle": "Delete account?",
+  "@profileDeleteAccountDialogTitle": {
+    "description": "Title of the confirmation dialog shown before permanently deleting the user's account."
+  },
+  "profileEditName": "Edit name",
+  "@profileEditName": {
+    "description": "Tooltip of the edit icon in the Profile header, and title of the display-name editor sheet."
+  },
+  "profileEmailUnconfirmed": "Email not confirmed yet",
+  "@profileEmailUnconfirmed": {
+    "description": "One-line notice under the email on the Profile tab while the account's address is unverified."
+  },
+  "profileGoPremium": "Go Premium",
+  "@profileGoPremium": {
+    "description": "Label of the Profile-tab row that presents the RevenueCat paywall. Keep short — it sits beside an icon on one line."
+  },
+  "profileNameFieldLabel": "Name",
+  "@profileNameFieldLabel": {
+    "description": "Floating label of the single text field in the display-name editor."
+  },
+  "profileNameHint": "How should we call you?",
+  "@profileNameHint": {
+    "description": "Hint inside the display-name field while it is empty. A friendly question, not an instruction."
+  },
+  "profileSignOut": "Sign out",
+  "@profileSignOut": {
+    "description": "Label of the sign-out row on the Profile tab."
+  },
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Title of the Profile tab's app bar and label of its bottom-navigation destination. One short word."
   },
   "symptomAddSymptom": "Add symptom",
   "@symptomAddSymptom": {

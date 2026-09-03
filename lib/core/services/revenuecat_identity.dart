@@ -9,6 +9,10 @@ class RevenueCatIdentity {
 
   static Future<void> logIn(String userId) async {
     try {
+      // Native side aborts the process (Swift fatalError) instead of
+      // throwing when RevenueCat was never configured — dev mode skips
+      // configure(), so the catch below would never see it.
+      if (!await Purchases.isConfigured) return;
       final info = await Purchases.getCustomerInfo();
       if (info.originalAppUserId == userId) return;
       await Purchases.logIn(userId);
@@ -20,6 +24,10 @@ class RevenueCatIdentity {
 
   static Future<void> logOut() async {
     try {
+      // Native side aborts the process (Swift fatalError) instead of
+      // throwing when RevenueCat was never configured — dev mode skips
+      // configure(), so the catch below would never see it.
+      if (!await Purchases.isConfigured) return;
       final info = await Purchases.getCustomerInfo();
       // logOut on an anonymous user throws — skip it.
       if (info.originalAppUserId.startsWith(r'$RCAnonymousID:')) return;

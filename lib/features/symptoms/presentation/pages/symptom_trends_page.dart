@@ -5,9 +5,9 @@ import 'package:sheknows/core/di/injection.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_cubit.dart';
 import 'package:sheknows/features/symptoms/presentation/cubit/symptoms_state.dart';
-import 'package:sheknows/features/symptoms/presentation/widgets/symptom_history_list.dart';
+import 'package:sheknows/core/widgets/skeleton_box.dart';
 import 'package:sheknows/features/symptoms/presentation/widgets/symptom_trends_body.dart';
-import 'package:sheknows/features/symptoms/presentation/widgets/symptoms_error_view.dart';
+import 'package:sheknows/core/widgets/load_error_view.dart';
 import 'package:sheknows/features/auth/presentation/widgets/auth_gate.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
@@ -53,9 +53,10 @@ class _TrendsView extends StatelessWidget {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: switch (state) {
-              SymptomsInitial() || SymptomsLoading() =>
+              SymptomsInitial() ||
+              SymptomsLoading() =>
                 const _TrendsSkeleton(key: ValueKey('loading')),
-              SymptomsError(:final failure) => SymptomsErrorView(
+              SymptomsError(:final failure) => LoadErrorView(
                   key: const ValueKey('error'),
                   failure: failure,
                   onRetry: () => context.read<SymptomsCubit>().load(userId),

@@ -145,6 +145,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonPageNotFoundTitle => 'Страница не найдена';
 
   @override
+  String get commonSave => 'Сохранить';
+
+  @override
   String get commonSkip => 'Пропустить';
 
   @override
@@ -480,58 +483,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeAppBarTitle => 'sheknows';
 
   @override
-  String get homeDeleteAccountButton => 'Удалить аккаунт';
-
-  @override
-  String get homeDeleteAccountDialogBody =>
-      'Аккаунт и все ваши данные будут удалены безвозвратно. Отменить это действие нельзя.';
-
-  @override
-  String get homeDeleteAccountDialogTitle => 'Удалить аккаунт?';
-
-  @override
-  String get homeEmailConfirmedNo => 'Эл. почта подтверждена: Нет';
-
-  @override
-  String get homeEmailConfirmedYes => 'Эл. почта подтверждена: Да';
-
-  @override
-  String homeEmailLabel(String email) {
-    return 'Эл. почта: $email';
+  String homeLastDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Последние $count дня',
+      many: 'Последние $count дней',
+      few: 'Последние $count дня',
+      one: 'Последний $count день',
+    );
+    return '$_temp0';
   }
-
-  @override
-  String get homeGoPremiumButton => 'Оформить Premium';
 
   @override
   String get homeLogSymptomsButton => 'Отметить симптомы';
 
   @override
-  String get homeProfileLoadedFromDatabase => 'Загружено из таблицы profiles.';
-
-  @override
-  String homeProfileNameLabel(String name) {
-    return 'Имя: $name';
-  }
-
-  @override
-  String get homeProfileNameNotSet => 'Не указано';
-
-  @override
-  String get homeProfileNoRowFound =>
-      'Запись профиля не найдена (показаны метаданные авторизации).';
-
-  @override
-  String get homeProfileSectionTitle => 'Профиль';
-
-  @override
-  String get homeSignOutTooltip => 'Выйти';
-
-  @override
-  String get homeSignedIn => 'Вы вошли';
-
-  @override
   String get homeTrackCycleButton => 'Отслеживать цикл';
+
+  @override
+  String get navHome => 'Главная';
 
   @override
   String get onboardingGetStarted => 'Начать';
@@ -551,6 +522,43 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get onboardingPredictSubtext =>
       'sheknows изучает ваш ритм и прогнозирует цикл — чтобы ничто не застало вас врасплох.';
+
+  @override
+  String get profileAccountSection => 'Аккаунт';
+
+  @override
+  String get profileAddName => 'Добавьте имя';
+
+  @override
+  String get profileDeleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get profileDeleteAccountDialogBody =>
+      'Аккаунт и все ваши данные будут удалены безвозвратно. Отменить это действие нельзя.';
+
+  @override
+  String get profileDeleteAccountDialogTitle => 'Удалить аккаунт?';
+
+  @override
+  String get profileEditName => 'Изменить имя';
+
+  @override
+  String get profileEmailUnconfirmed => 'Эл. почта ещё не подтверждена';
+
+  @override
+  String get profileGoPremium => 'Оформить Premium';
+
+  @override
+  String get profileNameFieldLabel => 'Имя';
+
+  @override
+  String get profileNameHint => 'Как к вам обращаться?';
+
+  @override
+  String get profileSignOut => 'Выйти';
+
+  @override
+  String get profileTitle => 'Профиль';
 
   @override
   String get symptomAddSymptom => 'Добавить симптом';

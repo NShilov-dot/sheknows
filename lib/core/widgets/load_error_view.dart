@@ -4,14 +4,14 @@ import 'package:sheknows/core/error/failures.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/l10n/app_localizations.dart';
 
-/// Failed-load state for the symptom screens: an icon, copy the user can act
+/// Failed-load state for a data-backed screen: an icon, copy the user can act
 /// on (never the raw backend text — see [failureMessage]) and a way back in.
 ///
-/// Every symptom screen owns its own [SymptomsCubit]/[SymptomPhaseCubit]
-/// instance created in the route's [BlocProvider], so [onRetry] re-running the
-/// load is the only recovery path short of leaving the screen.
-class SymptomsErrorView extends StatelessWidget {
-  const SymptomsErrorView({
+/// Each screen owns the cubit it loads with, so [onRetry] re-running that load
+/// is the only recovery path short of leaving the screen. For a failure inside
+/// one section of an otherwise healthy screen use [InlineErrorRow] instead.
+class LoadErrorView extends StatelessWidget {
+  const LoadErrorView({
     super.key,
     required this.failure,
     required this.onRetry,
