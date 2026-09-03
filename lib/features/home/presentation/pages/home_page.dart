@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:sheknows/core/error/failure_messages.dart';
 import 'package:sheknows/core/theme/app_spacing.dart';
 import 'package:sheknows/features/auth/domain/entities/user_entity.dart';
@@ -133,6 +134,15 @@ class _AuthenticatedHomeState extends State<_AuthenticatedHome> {
                           onPressed: () => context.go('/symptoms'),
                           icon: const Icon(Icons.healing_outlined),
                           label: Text(l10n.homeLogSymptomsButton),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        OutlinedButton.icon(
+                          onPressed: () => RevenueCatUI.presentPaywallIfNeeded(
+                            'premium',
+                            displayCloseButton: true,
+                          ),
+                          icon: const Icon(Icons.workspace_premium),
+                          label: Text(l10n.homeGoPremiumButton),
                         ),
                         const Spacer(),
                         Align(

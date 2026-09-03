@@ -491,6 +491,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeGoPremiumButton => 'Go Premium';
+
+  @override
   String get homeLogSymptomsButton => 'Log symptoms';
 
   @override
